@@ -6,7 +6,7 @@ template<typename T>
 class Node
 {
 protected:
-    Cell* mData;
+    T* mData;
     bool mVisited;
     Node* mCallMe;
     std::vector<Node<T>*> mAllNeighbors;
@@ -19,7 +19,7 @@ public:
 
     static Node<T>* GetNodeInTab(int i, int j, int lenght_i, std::vector<Node<T>*> allNodes);
 
-    void SetAll(Cell* data, bool visited, Node<T>* callMe, std::vector<Node<T>*> neighbor, int disStart, int disEnd)
+    void SetAll(T* data, bool visited, Node<T>* callMe, std::vector<Node<T>*> neighbor, int disStart, int disEnd)
     {
         SetData(data); SetVisited(visited); SetCallMe(callMe); SetNeighbor(neighbor); SetDisStart(disStart); SetDisEnd(disEnd);
     }
@@ -27,8 +27,10 @@ public:
     void SetVisited(bool visited) { mVisited = visited; }
     bool GetVisited() { return mVisited; }
 
-    void SetData(Cell* data) { mData = data; }
-    Cell* GetData() { return mData; }
+    void SetData(T* data) { mData = data; }
+    T* GetData() { return mData; }
+
+
 
     void SetCallMe(Node<T>* callMe) { mCallMe = callMe; }
     Node<T>* GetCallMe() { return mCallMe; }
