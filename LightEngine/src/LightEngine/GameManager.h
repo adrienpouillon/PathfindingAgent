@@ -52,6 +52,8 @@ public:
 	void CreateWindow(unsigned int width, unsigned int height, const char* title, int fpsLimit = 60, sf::Color clearColor = sf::Color::Black);
 	sf::RenderWindow* GetWindow() const { return mpWindow; }
 
+	std::list<Entity*>& GetEntities() { return mEntities; }
+
 	template<typename T>
 	void LaunchScene();
 

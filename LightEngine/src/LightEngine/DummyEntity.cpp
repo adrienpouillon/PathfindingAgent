@@ -4,5 +4,4 @@
 
 void DummyEntity::OnCollision(Entity* other)
 {
-	std::cout << "DummyEntity::OnCollision" << std::endl;
 }

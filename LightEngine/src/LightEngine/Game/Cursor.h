@@ -1,23 +1,29 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+class Entity;
+
 class Cell;
+class Scene;
 
 class Cursor
 {
 	sf::Vector2f mPos;
 
 	Cell* pCurrentCell;
+	Scene* pCurrentScene;
 public:
 	Cursor() { Start(); }
 
-	void Start() { pCurrentCell = nullptr; mPos = sf::Vector2f(0, 0); }
+	void Start();
 	void Update();
 
-	void HandleKey()
-	{
-		
-	}
+	//Get
+	const sf::Vector2f& GetPosition() { return mPos; }
+
+	void HandleInputs();
+
+	void AddAgent(Entity* pInstance = nullptr);
 
 	void DisplayCoords();
 };

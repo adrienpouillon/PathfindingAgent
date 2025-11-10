@@ -1,16 +1,24 @@
 #include "MainScene.h"
 #include "Cursor.h"
+#include "Grid.h"
 #include <iostream>
 
 void MainScene::Clear()
 {
-	delete pCursor;
-	pCursor = nullptr;
+	delete mpCursor;
+	mpCursor = nullptr;
+
+	delete mpGrid;
+	mpGrid = nullptr;
 }
 
 void MainScene::OnInitialize()
 {
-	pCursor = new Cursor();
+	SetGridSize(20, 20);
+
+	mView.setSize(1920, 1080);
+	mpCursor = new Cursor();
+	mpGrid = new Grid<Cell>(50);
 }
 
 void MainScene::OnEvent(const sf::Event& event)
@@ -19,6 +27,10 @@ void MainScene::OnEvent(const sf::Event& event)
 
 void MainScene::OnUpdate()
 {
-	pCursor->Update();
-	pCursor->DisplayCoords();
+	GameManager::Get()->GetWindow()->setView(mView);
+
+	mpCursor->Update();
+	mpCursor->DisplayCoords();
+
+	mpGrid->Update();
 }
