@@ -1,5 +1,5 @@
 #pragma once
-#include "../LightEngine/Scene.h"
+#include "../Scene.h"
 
 class Cursor;
 

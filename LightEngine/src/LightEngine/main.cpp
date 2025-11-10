@@ -3,7 +3,7 @@
 
 #include "GameManager.h"
 #include "SampleScene.h"
-#include "../Game/MainScene.h"
+#include "Game/MainScene.h"
 
 #include <cstdlib>
 #include <crtdbg.h>

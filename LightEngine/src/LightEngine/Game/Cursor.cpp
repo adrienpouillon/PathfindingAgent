@@ -1,5 +1,5 @@
 #include "Cursor.h"
-#include "../LightEngine/GameManager.h"
+#include "../GameManager.h"
 #include <iostream>
 
 void Cursor::Update()
