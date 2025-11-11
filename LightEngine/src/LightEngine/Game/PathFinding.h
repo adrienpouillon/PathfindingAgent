@@ -12,8 +12,8 @@ protected:
 	bool mFinish;
 	std::priority_queue<Node<T>*, std::vector<Node<T>*>, CompareASTAR<T>> mQueue;
 	std::vector<Node<T>*> mPath;
-	T* mStartNode;
-	T* mEndNode;
+	Node<T>* mStartNode;
+	Node<T>* mEndNode;
 public:
 	PathFinding() { Start(); }
 
@@ -22,9 +22,11 @@ public:
 	void Update();
 
 	void InitQueue();
+	void ResetQueue();
 
-	void PathBegin();
+	void PathBegin(Node<T>* startNode, Node<T>* endNode);
 	void FindPath();
+	void FindPathWithDebug();
 	void CreatePath();
 
 
@@ -37,11 +39,11 @@ public:
 	void SetPath(std::vector<Node<T>*> path) { mPath = path; }
 	std::vector<Node<T>*>* GetPath() { return &mPath; }
 
-	void SetStartNode(bool startNode) { mStartNode = startNode; }
-	bool GetStartNode() { return mStartNode; }
+	void SetStartNode(Node<T>* startNode) { mStartNode = startNode; }
+	Node<T>* GetStartNode() { return mStartNode; }
 
-	void SetEndNode(bool endNode) { mEndNode = endNode; }
-	bool GetEndNode() { return mEndNode; }
+	void SetEndNode(Node<T>* endNode) { mEndNode = endNode; }
+	Node<T>* GetEndNode() { return mEndNode; }
 
 	~PathFinding();
 };
