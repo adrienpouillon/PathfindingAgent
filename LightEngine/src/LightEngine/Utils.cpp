@@ -34,4 +34,9 @@ namespace Utils
 
 		return std::atan2(det, dot) * 180 / 3.14159265;
 	}
+
+	int DisManhattan(sf::Vector2f currentPos, sf::Vector2f endPos)
+	{
+		return abs(currentPos.x - endPos.x) + abs(currentPos.y - endPos.y);
+	}
 }
