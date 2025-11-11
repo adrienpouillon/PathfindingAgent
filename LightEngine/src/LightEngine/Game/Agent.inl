@@ -39,7 +39,7 @@ inline void Agent<T>::UpdatePath()
 template<typename T>
 inline void Agent<T>::GoToCell(T* cellEnd, std::vector<Node<T>*> allNodes)
 {
-	GoToCell(cellEnd.getPosition(), std::vector<Node<T>*> allNodes);
+	GoToCell(cellEnd.getPosition(), allNodes);
 }
 
 template<typename T>
