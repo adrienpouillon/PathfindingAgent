@@ -1,7 +1,8 @@
 #include "Cursor.h"
 #include "../GameManager.h"
-#include "../Scene.h"
 #include "../Entity.h"
+#include "MainScene.h"
+#include "Grid.h"
 #include "../DummyEntity.h"
 
 #include <iostream>
@@ -9,7 +10,11 @@
 void Cursor::Start()
 {
 	pCurrentCell = nullptr;
-	pCurrentScene = GameManager::Get()->GetScene();
+	pCurrentScene = dynamic_cast<MainScene*>(GameManager::Get()->GetScene());
+
+	if(pCurrentScene != nullptr)
+		mGridCellSize = pCurrentScene->GetGrid()->GetCellSize();
+
 	mPos = sf::Vector2f(0, 0);
 }
 void Cursor::Update()
@@ -25,7 +30,7 @@ void Cursor::HandleInputs()
 {
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
-		AddAgent();
+		AddAgent<DummyEntity>(mGridCellSize * 0.25f, sf::Color::Cyan);
 	}
 	else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 	{
@@ -34,17 +39,9 @@ void Cursor::HandleInputs()
 			if (e->IsInside(mPos.x, mPos.y))
 			{
 				e->Destroy();
-				break;
 			}
 		}
 	}
-}
-
-void Cursor::AddAgent(Entity* pInstance)
-{
-	Entity* newEntity = pCurrentScene->CreateEntity<DummyEntity>(10, sf::Color::Cyan);
-
-	newEntity->SetPosition(mPos.x, mPos.y);
 }
 
 void Cursor::DisplayCoords()

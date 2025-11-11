@@ -14,11 +14,12 @@ void MainScene::Clear()
 
 void MainScene::OnInitialize()
 {
-	SetGridSize(20, 20);
+	SetGridSize(5, 5);
 
 	mView.setSize(1920, 1080);
-	mpCursor = new Cursor();
 	mpGrid = new Grid<Cell>(50);
+
+	mpCursor = new Cursor();
 }
 
 void MainScene::OnEvent(const sf::Event& event)
@@ -30,7 +31,5 @@ void MainScene::OnUpdate()
 	GameManager::Get()->GetWindow()->setView(mView);
 
 	mpCursor->Update();
-	mpCursor->DisplayCoords();
-
 	mpGrid->Update();
 }

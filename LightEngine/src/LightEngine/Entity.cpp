@@ -7,13 +7,12 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 
-void Entity::Initialize(float radius, const sf::Color& color)
+void Entity::Initialize(const sf::Color& color)
 {
 	mDirection = sf::Vector2f(0.0f, 0.0f);
 
-	mShape.setOrigin(0.f, 0.f);
-	mShape.setRadius(radius);
-	mShape.setFillColor(color);
+	mpShape->setOrigin(0.f, 0.f);
+	mpShape->setFillColor(color);
 	
 	mTarget.isSet = false;
 
@@ -22,51 +21,87 @@ void Entity::Initialize(float radius, const sf::Color& color)
 
 void Entity::Repulse(Entity* other) 
 {
-	sf::Vector2f distance = GetPosition(0.5f, 0.5f) - other->GetPosition(0.5f, 0.5f);
-	
-	float sqrLength = (distance.x * distance.x) + (distance.y * distance.y);
-	float length = std::sqrt(sqrLength);
+	if (mTag == (int)ShapeType::Circle)
+	{
+		sf::CircleShape* current = dynamic_cast<sf::CircleShape*>(mpShape);
+		sf::CircleShape* currentOther = dynamic_cast<sf::CircleShape*>(other->mpShape);
 
-	float radius1 = mShape.getRadius();
-	float radius2 = other->mShape.getRadius();
+		sf::Vector2f distance = GetPosition() - other->GetPosition();
 
-	float overlap = (length - (radius1 + radius2)) * 0.5f;
+		float sqrLength = (distance.x * distance.x) + (distance.y * distance.y);
+		float length = std::sqrt(sqrLength);
 
-	sf::Vector2f normal = distance / length;
+		float radius1 = current->getRadius();
+		float radius2 = currentOther->getRadius();
 
-	sf::Vector2f translation = overlap * normal;
+		float overlap = (length - (radius1 + radius2)) * 0.5f;
 
-	sf::Vector2f position1 = GetPosition(0.5f, 0.5f) - translation;
-	sf::Vector2f position2 = other->GetPosition(0.5f, 0.5f) + translation;
+		sf::Vector2f normal = distance / length;
 
-	SetPosition(position1.x, position1.y, 0.5f, 0.5f);
-	other->SetPosition(position2.x, position2.y, 0.5f, 0.5f);
+		sf::Vector2f translation = overlap * normal;
+
+		sf::Vector2f position1 = GetPosition() - translation;
+		sf::Vector2f position2 = other->GetPosition() + translation;
+
+		SetPosition(position1.x, position1.y);
+		other->SetPosition(position2.x, position2.y);
+	}
 }
 
 bool Entity::IsColliding(Entity* other) const
 {
-	sf::Vector2f distance = GetPosition(0.5f, 0.5f) - other->GetPosition(0.5f, 0.5f);
+	if (mTag == (int)ShapeType::Circle)
+	{
+		sf::CircleShape* current = dynamic_cast<sf::CircleShape*>(mpShape);
+		sf::CircleShape* currentOther = dynamic_cast<sf::CircleShape*>(other->mpShape);
 
-	float sqrLength = (distance.x * distance.x) + (distance.y * distance.y);
+		sf::Vector2f distance = GetPosition() - other->GetPosition();
 
-	float radius1 = mShape.getRadius();
-	float radius2 = other->mShape.getRadius();
+		float sqrLength = (distance.x * distance.x) + (distance.y * distance.y);
 
-	float sqrRadius = (radius1 + radius2) * (radius1 + radius2);
+		float radius1 = current->getRadius();
+		float radius2 = currentOther->getRadius();
 
-	return sqrLength < sqrRadius;
+		float sqrRadius = (radius1 + radius2) * (radius1 + radius2);
+
+		return sqrLength < sqrRadius;
+	}
 }
 
 bool Entity::IsInside(float x, float y) const
 {
-	sf::Vector2f position = GetPosition(0.5f, 0.5f);
+	if (mTag == (int)ShapeType::Circle)
+	{
+		sf::CircleShape* current = dynamic_cast<sf::CircleShape*>(mpShape);
 
-	float dx = x - position.x;
-	float dy = y - position.y;
+		sf::Vector2f position = GetPosition();
 
-	float radius = mShape.getRadius();
+		float dx = x - position.x;
+		float dy = y - position.y;
 
-	return (dx * dx + dy * dy) < (radius * radius);
+		float radius = current->getRadius();
+
+		return (dx * dx + dy * dy) < (radius * radius);
+	}
+	else if (mTag == (int)ShapeType::Rectangle)
+	{
+		sf::RectangleShape* current = dynamic_cast<sf::RectangleShape*>(mpShape);
+
+		sf::Vector2f position = GetPosition();
+		sf::Vector2f size = current->getSize();
+
+		if (x >= position.x - size.x * 0.5f && x <= position.x + size.x * 0.5f)
+		{
+			if (y >= position.y - size.y * 0.5f && y <= position.y + size.y * 0.5f)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	return false;
 }
 
 void Entity::Destroy()
@@ -76,39 +111,61 @@ void Entity::Destroy()
 	OnDestroy();
 }
 
-void Entity::SetPosition(float x, float y, float ratioX, float ratioY)
+void Entity::SetPosition(float x, float y)
 {
-	float size = mShape.getRadius() * 2;
+	sf::Vector2f size = GetSize();
 
-	x -= size * ratioX;
-	y -= size * ratioY;
+	x -= size.x * 0.5f;
+	y -= size.y * 0.5f;
 
-	mShape.setPosition(x, y);
+	mpShape->setPosition(x, y);
+
 
 	//#TODO Optimise
 	if (mTarget.isSet) 
 	{
-		sf::Vector2f position = GetPosition(0.5f, 0.5f);
+		sf::Vector2f position = GetPosition();
 		mTarget.distance = Utils::GetDistance(position.x, position.y, mTarget.position.x, mTarget.position.y);
 		GoToDirection(mTarget.position.x, mTarget.position.y);
 		mTarget.isSet = true;
 	}
 }
 
-sf::Vector2f Entity::GetPosition(float ratioX, float ratioY) const
+const sf::Vector2f& Entity::GetSize() const
 {
-	float size = mShape.getRadius() * 2;
-	sf::Vector2f position = mShape.getPosition();
+	sf::Vector2f size = { 0, 0 };
 
-	position.x += size * ratioX;
-	position.y += size * ratioY;
+	if (mTag == (int)ShapeType::Circle)
+	{
+		sf::CircleShape* current = dynamic_cast<sf::CircleShape*>(mpShape);
+
+		size.x = current->getRadius() * 2;
+		size.y = size.x;
+	}
+	else if (mTag == (int)ShapeType::Rectangle)
+	{
+		sf::RectangleShape* current = dynamic_cast<sf::RectangleShape*>(mpShape);
+
+		size = current->getSize();
+	}
+
+	return size;
+}
+
+sf::Vector2f Entity::GetPosition() const
+{
+	sf::Vector2f size = GetSize();
+	sf::Vector2f position = mpShape->getPosition();
+
+	position.x += size.x * 0.5f;
+	position.y += size.y * 0.5f;
 
 	return position;
 }
 
 bool Entity::GoToDirection(int x, int y, float speed)
 {
-	sf::Vector2f position = GetPosition(0.5f, 0.5f);
+	sf::Vector2f position = GetPosition();
 	sf::Vector2f direction = sf::Vector2f(x - position.x, y - position.y);
 	
 	bool success = Utils::Normalize(direction);
@@ -125,7 +182,7 @@ bool Entity::GoToPosition(int x, int y, float speed)
 	if (GoToDirection(x, y, speed) == false)
 		return false;
 
-	sf::Vector2f position = GetPosition(0.5f, 0.5f);
+	sf::Vector2f position = GetPosition();
 
 	mTarget.position = { x, y };
 	mTarget.distance = Utils::GetDistance(position.x, position.y, x, y);
@@ -148,12 +205,12 @@ void Entity::Update()
 	float dt = GetDeltaTime();
 	float distance = dt * mSpeed;
 	sf::Vector2f translation = distance * mDirection;
-	mShape.move(translation);
+	mpShape->move(translation);
 
 	if (mTarget.isSet) 
 	{
-		float x1 = GetPosition(0.5f, 0.5f).x;
-		float y1 = GetPosition(0.5f, 0.5f).y;
+		float x1 = GetPosition().x;
+		float y1 = GetPosition().y;
 
 		float x2 = x1 + mDirection.x * mTarget.distance;
 		float y2 = y1 + mDirection.y * mTarget.distance;
@@ -166,7 +223,7 @@ void Entity::Update()
 
 		if (mTarget.distance <= 0.f)
 		{
-			SetPosition(mTarget.position.x, mTarget.position.y, 0.5f, 0.5f);
+			SetPosition(mTarget.position.x, mTarget.position.y);
 			mDirection = sf::Vector2f(0.f, 0.f);
 			mTarget.isSet = false;
 		}

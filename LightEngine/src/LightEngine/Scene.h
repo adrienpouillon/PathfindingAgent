@@ -4,6 +4,8 @@ class GameManager;
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 
 class Scene
 {
@@ -22,7 +24,10 @@ protected:
 
 public:
 	template<typename T>
-	T* CreateEntity(float radius, const sf::Color& color);
+	T* CreateCircleEntity(float radius, const sf::Color& color);
+	
+	template<typename T>
+	T* CreateRectEntity(float width, float height, const sf::Color& color);
 
 	float GetDeltaTime() const;
 

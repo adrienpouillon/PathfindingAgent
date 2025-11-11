@@ -6,11 +6,11 @@
 
 void SampleScene::OnInitialize()
 {
-	pEntity1 = CreateEntity<DummyEntity>(100, sf::Color::Red);
+	pEntity1 = CreateCircleEntity<DummyEntity>(100, sf::Color::Red);
 	pEntity1->SetPosition(100, 100);
 	pEntity1->SetRigidBody(true);
 
-	pEntity2 = CreateEntity<DummyEntity>(50, sf::Color::Green);
+	pEntity2 = CreateCircleEntity<DummyEntity>(50, sf::Color::Green);
 	pEntity2->SetPosition(500, 500);
 	pEntity2->SetRigidBody(true);
 
