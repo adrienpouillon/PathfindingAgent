@@ -3,6 +3,14 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 
+enum class ShapeType
+{
+    Circle,
+    Rectangle,
+
+    Count
+};
+
 namespace sf 
 {
 	class Shape;
@@ -21,7 +29,7 @@ class Entity
     };
 
 protected:
-    sf::CircleShape mShape;
+    sf::Shape* mpShape;
     sf::Vector2f mDirection;
 	Target mTarget;
     float mSpeed = 0.f;
@@ -32,17 +40,20 @@ protected:
 public:
 	bool GoToDirection(int x, int y, float speed = -1.f);
     bool GoToPosition(int x, int y, float speed = -1.f);
-    void SetPosition(float x, float y, float ratioX = 0.5f, float ratioY = 0.5f);
+    void SetPosition(float x, float y);
 	void SetDirection(float x, float y, float speed = -1.f);
 	void SetSpeed(float speed) { mSpeed = speed; }
 	void SetTag(int tag) { mTag = tag; }
-	float GetRadius() const { return mShape.getRadius(); }
 	void SetRigidBody(bool isRigitBody) { mRigidBody = isRigitBody; }
 	bool IsRigidBody() const { return mRigidBody; }
 	Target GetTarget() const { return mTarget; }
 
-    sf::Vector2f GetPosition(float ratioX = 0.5f, float ratioY = 0.5f) const;
-	sf::Shape* GetShape() { return &mShape; }
+    const sf::Vector2f& GetSize() const;
+
+    template<typename TShape>
+    TShape* CreateShape() { TShape* t = new TShape(); mpShape = t; return t; }
+    sf::Vector2f GetPosition() const;
+	sf::Shape* GetShape() { return mpShape; }
 
 	bool IsTag(int tag) const { return mTag == tag; }
     bool IsColliding(Entity* other) const;
@@ -58,11 +69,14 @@ public:
 	float GetDeltaTime() const;
 
     template<typename T>
-    T* CreateEntity(float radius, const sf::Color& color);
+    T* CreateCircleEntity(float radius, const sf::Color& color);
+
+    template<typename T>
+    T* CreateRectEntity(float width, float height, const sf::Color& color);
 
 protected:
     Entity() = default;
-    ~Entity() = default;
+    ~Entity() { delete mpShape; }
 
     virtual void OnUpdate() {};
     virtual void OnCollision(Entity* collidedWith) {};
@@ -71,7 +85,7 @@ protected:
 	
 private:
     void Update();
-	void Initialize(float radius, const sf::Color& color);
+	void Initialize(const sf::Color& color);
 	void Repulse(Entity* other);
 
     friend class GameManager;

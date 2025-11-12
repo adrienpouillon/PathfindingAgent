@@ -1,3 +1,4 @@
+#pragma once
 #include "Entity.h"
 
 #include "GameManager.h"
@@ -12,9 +13,14 @@ T* Entity::GetScene() const
 	return pScene;
 }
 
+template<typename T>
+T* Entity::CreateCircleEntity(float radius, const sf::Color& color)
+{
+	return GetScene()->CreateCircleEntity<T>(radius, color);
+}
 
 template<typename T>
-T* Entity::CreateEntity(float radius, const sf::Color& color)
+T* Entity::CreateRectEntity(float width, float height, const sf::Color& color)
 {
-	return GetScene()->CreateEntity<T>(radius, color);
+	return GetScene()->CreateRectEntity<T>(width, height, color);
 }

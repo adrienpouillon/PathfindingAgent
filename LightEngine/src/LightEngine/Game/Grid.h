@@ -13,6 +13,10 @@ public:
 	Grid(int cellSize) { mCellSize = cellSize; Start(); }
 	void Start();
 	void Update();
+	void DrawGrid();
+	void UpdateCellsStatut();
+	const int& GetCellSize() { return mCellSize; }
+	std::vector<std::vector<Cell>>& GetAllCells() { return mAllCells; }
 };
 
 #include "Grid.inl"

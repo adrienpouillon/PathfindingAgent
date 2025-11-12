@@ -15,13 +15,6 @@ Debug* Debug::Get()
 
 void Debug::Draw(sf::RenderWindow* pRenderWindow)
 {
-	for (Line& line : mLines)
-	{
-		pRenderWindow->draw(&line.start, 2, sf::Lines);
-	}
-
-	mLines.clear();
-
 	for (sf::Text& text : mTexts)
 	{
 		pRenderWindow->draw(text);
@@ -35,6 +28,20 @@ void Debug::Draw(sf::RenderWindow* pRenderWindow)
 	}
 
 	mCircles.clear();
+
+	for (sf::RectangleShape& rect : mRects)
+	{
+		pRenderWindow->draw(rect);
+	}
+
+	mRects.clear();
+
+	for (Line& line : mLines)
+	{
+		pRenderWindow->draw(&line.start, 2, sf::Lines);
+	}
+
+	mLines.clear();
 }
 
 void Debug::DrawLine(float x1, float y1, float x2, float y2, const sf::Color& color)
@@ -50,12 +57,23 @@ void Debug::DrawLine(float x1, float y1, float x2, float y2, const sf::Color& co
 	Debug::Get()->mLines.push_back(line);
 }
 
-void Debug::DrawRectangle(float x, float y, float width, float height, const sf::Color& color)
+void Debug::DrawRectangleFrame(float x, float y, float width, float height, const sf::Color& color)
 {
 	DrawLine(x, y, x + width, y, color);
 	DrawLine(x + width, y, x + width, y + height, color);
 	DrawLine(x + width, y + height, x, y + height, color);
 	DrawLine(x, y + height, x, y, color);
+}
+
+void Debug::DrawRectangle(float x, float y, float width, float height, const sf::Color& color)
+{
+	sf::RectangleShape rect;
+
+	rect.setSize(sf::Vector2f(width, height));
+	rect.setFillColor(color);
+	rect.setPosition(x - width * 0.5f, y - height * 0.5f);
+
+	Debug::Get()->mRects.push_back(rect);
 }
 
 void Debug::DrawCircle(float x, float y, float radius, const sf::Color& color)

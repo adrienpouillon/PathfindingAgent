@@ -25,6 +25,8 @@ public:
 
 	sf::View& GetView() { return mView; }
 
+	Grid<Cell>* GetGrid() { return mpGrid; }
+
 	void OnInitialize() override;
 	void OnEvent(const sf::Event& event) override;
 	void OnUpdate() override;
