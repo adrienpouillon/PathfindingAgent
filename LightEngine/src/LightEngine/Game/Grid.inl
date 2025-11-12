@@ -121,7 +121,7 @@ inline void Grid<T>::CreateEmptyGrid(int _rows, int _cols)
 	if (_rows < 1 || _cols < 1)
 		return;
 
-	if (_rows >= 100 || _cols >= 100)
+	if (_rows > 50 || _cols > 50)
 		return;
 
 	EraseGrid();
