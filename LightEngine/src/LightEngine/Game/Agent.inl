@@ -1,20 +1,33 @@
 #include "Agent.h"
 #include "Node.h"
 #include "Grid.h"
-
+#include "../Debug.h"
 
 template<typename T>
-inline void Agent<T>::OnUpdate(float deltatime)
+void Agent<T>::OnUpdate()
 {
 	UpdatePath();
 }
 
 template<typename T>
-inline void Agent<T>::UpdatePath()
+void Agent<T>::UpdatePath()
 {
 	if (mPath.GetPathFinish())
 	{
 		return;
+	}
+
+	std::vector<Node<T>*>* allPaths = mPath.GetPath();
+	int lenghtAllPaths = allPaths->size() - 1;
+	for (int i = mIndexPath; i < lenghtAllPaths; i++)
+	{
+		T* currentCell = (*allPaths)[i]->GetData();
+		T* nextCell = (*allPaths)[i + 1]->GetData();
+
+		sf::Vector2f currentPos = currentCell->getPosition();
+		sf::Vector2f nextPos = nextCell->getPosition();
+
+		Debug::DrawLine(currentPos.x, currentPos.y, nextPos.x, nextPos.y, sf::Color::Yellow);
 	}
 
 	if (GetTarget().isSet)
@@ -22,65 +35,43 @@ inline void Agent<T>::UpdatePath()
 		return;
 	}
 
-	std::vector<Node<T>*>* allPaths = mPath.GetPath();
-	T* cell = (*allPaths)[mIndexPath]->GetData();
-	sf::Vector2f pos = cell->getPosition();
-	GoToPosition(pos.x, pos.y);
+	//std::vector<Node<T>*>* allPaths = mPath.GetPath();
+	T* currentCell = (*allPaths)[mIndexPath]->GetData();
+	sf::Vector2f currentPos = currentCell->getPosition();
+	GoToPosition(currentPos.x, currentPos.y);
 	mIndexPath++;
 	if (mIndexPath == allPaths->size())
 	{
+		Node<T> startNode = mPath.GetStartNode();
 		mPath.SetPathFinish(true);
+		mPath.SetPath(std::vector<Node<T>*>());
 		mIndexPath = 0;
 
 		if (GetRoam())
 		{
-			GoToNode(mPath.GetStartNode());
+			Grid<T>* grid = GameManager::Get()->GetScene<MainScene>()->GetGrid();
+			GoToNode(startNode, grid);
 		}
 	}
 }
 
 template<typename T>
-inline void Agent<T>::GoToCell(T* cellEnd, std::vector<Node<T>*> allNodes)
+void Agent<T>::GoToCell(T* cellEnd, Grid<T>* grid)
 {
-	GoToCell(cellEnd.getPosition(), allNodes);
+	GoToCell(cellEnd.getPosition(), grid);
 }
 
 template<typename T>
-inline void Agent<T>::GoToCell(sf::Vector2f pos, std::vector<Node<T>*> allNodes)
+void Agent<T>::GoToCell(sf::Vector2f pos, Grid<T>* grid)
 {
-	GoToNode(Node<T>::GetNodeInTab(pos.x, pos.y, allNodes.size(), allNodes));
+	GoToNode(Utils::GetNode(pos, grid), grid);
+	//::GetNodeInTab(pos.x, pos.y, allNodes.size(), allNodes));
 }
 
 template<typename T>
-inline void Agent<T>::GoToNode(Node<T>* nodeEnd)
+void Agent<T>::GoToNode(Node<T>* nodeEnd, Grid<T>* grid)
 {
-	//sf::Vector2f currentPos = GetPosition();
-	//MainScene* mainScene = GameManager::Get()->GetScene<MainScene>();
-
-	Grid<T>* grid = GameManager::Get()->GetScene<MainScene>()->GetGrid();
-	
-	//std::vector<Node<T>> allNodes = grid->GetAllNodes();
-	//int cellSize = grid->GetCellSize();
-
-	//sf::Vector2f index = Utils::GetCellInPos(GetPosition(), grid->GetCellSize());
-
-	//Node<T>* nodeStart = Node<T>::GetNodeInTab(index.x, index.y, allNodes.size(), allNodes);
-	Node<T>* nodeStart = GetCurrentNode(grid);
+	Node<T>* nodeStart = Utils::GetNode(GetPosition(), grid);
 	mPath.PathBegin(nodeStart, nodeEnd);
 	mPath.FindPath();
-}
-
-template<typename T>
-T* Agent<T>::GetCurrentCell(Grid<T>* grid)
-{
-	sf::Vector2f index = Utils::GetCellInPos(GetPosition(), grid->GetCellSize());
-	return grid->GetAllCells()[index.x][index.y];
-}
-
-template<typename T>
-Node<T>* Agent<T>::GetCurrentNode(Grid<T>* grid)
-{
-	sf::Vector2f index = Utils::GetCellInPos(GetPosition(), grid->GetCellSize());
-	std::vector<Node<T>> allNodes = grid->GetAllNodes();
-	return Node<T>::GetNodeInTab(index.x, index.y, allNodes.size(), &allNodes);
 }

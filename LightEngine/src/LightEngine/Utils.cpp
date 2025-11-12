@@ -1,5 +1,4 @@
 #include <SFML/System/Vector2.hpp>
-
 #include <cmath>
 
 namespace Utils 
@@ -42,6 +41,6 @@ namespace Utils
 
 	sf::Vector2f GetCellInPos(sf::Vector2f pos, int sizeCell)
 	{
-		return sf::Vector2f((int)(pos.x * (float)sizeCell), (int)(pos.y * (float)sizeCell));
+		return sf::Vector2f((int)(pos.x / (float)sizeCell), (int)(pos.y / (float)sizeCell));
 	}
 }

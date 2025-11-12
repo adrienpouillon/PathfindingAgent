@@ -24,14 +24,13 @@ void PathFinding<T>::PathBegin(Node<T>* startNode, Node<T>* endNode)
     SetStartNode(startNode);
     SetEndNode(endNode);
 
-    InitQueue();
     SetPathFinish(false);
     SetPath(std::vector<Node<T>*>());
 
     startNode->SetDisStart(0);
     startNode->SetDisEnd(Utils::DisManhattan(startNode->GetData()->getPosition(), endNode->GetData()->getPosition()));
-
-    mQueue.push(startNode);
+    
+    InitQueue();
 }
 
 template<typename T>

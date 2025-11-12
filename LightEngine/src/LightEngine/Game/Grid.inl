@@ -11,41 +11,61 @@
 template<typename T>
 void Grid<T>::Start()
 {
+	mCellSize = 100;
 	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
 
 	if (pCurrentScene)
 	{
-		int rows = pCurrentScene->GetGridRows();
-		int cols = pCurrentScene->GetGridCols();
-
-		InitTab(rows, cols);
-		InitNodeNeighbor(rows, cols);
-		pCurrentScene->GetView().setCenter((int)((float)rows * 0.5f) * mCellSize, (int)((float)cols * 0.5f) * mCellSize);
+		//std::string strGrid = GetStringFromTxt("grid.txt");
+		//InitTab(strGrid);
+		InitTab(std::string());
 	}
 }
 
 template<typename T>
-void Grid<T>::InitTab(int rows, int cols)
+void Grid<T>::InitTab(std::string strGrid)
 {
+	int rows = pCurrentScene->GetGridRows();
+	int cols = pCurrentScene->GetGridCols();
+
+	mAllCells = *EraseTab<T>(&mAllCells);
+	mAllNodes = *EraseTab<Node<T>>(&mAllNodes);
+	CreateTab(rows, cols, strGrid);
+	InitNodeNeighbor(rows, cols);
+	pCurrentScene->GetView().setCenter(GetPositionToView(rows, cols, 0.5f, mCellSize));
+}
+
+template<typename T>
+void Grid<T>::CreateTab(int rows, int cols, std::string strGrid)
+{
+	int count = 0;
 	for (int r = 0; r < rows; r++)
 	{
-		std::vector<T> current;
+		std::vector<T*> current;
 		for (int c = 0; c < cols; c++)
 		{
-			T cell;
-			cell.SetSize(mCellSize);
+			T* cell = new T();
 			sf::Vector2f pos = sf::Vector2f(r * mCellSize, c * mCellSize);
-			cell.SetAll(pos, false);
+			cell->SetAll(pos, false);
+
+			if (strGrid.size() > 0)
+			{
+				if (strGrid[count] == 'X')
+				{
+					cell->SetObstacle(true);
+				}
+				count++;
+			}
 
 			current.push_back(cell);
 
-			Node<T> node;
+			Node<T>* node = new Node<T>();
 			bool visited = false;
 			Node<T>* callMe = nullptr;
 			std::vector<Node<T>*> neighbor = std::vector<Node<T>*>();
 			int disStart = 0;
 			int disEnd = 0;
-			node.SetAll(&cell, visited, callMe, neighbor, disStart, disEnd);
+			node->SetAll(cell, visited, callMe, neighbor, disStart, disEnd);
 			mAllNodes.push_back(node);
 		}
 		mAllCells.push_back(current);
@@ -114,14 +134,33 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 }
 
 template<typename T>
-inline void Grid<T>::EraseGrid()
+template<typename A>
+inline std::vector<A*>* Grid<T>::EraseTab(std::vector<A*>* all)
 {
-	for (auto& row : mAllCells)
+	int lenghtAll = all->size() - 1;
+	for (int i = lenghtAll; i > -1; i--)
 	{
-		row.clear();
+		delete (*all)[i];
 	}
+	return all;
+}
 
-	mAllCells.clear();
+template<typename T>
+template<typename A>
+inline std::vector<std::vector<A*>>* Grid<T>::EraseTab(std::vector<std::vector<A*>>* all)
+{
+	int lenghtAllI = all->size() - 1;
+	int lenghtAllJ = all[0].size() - 1;
+	for (int i = lenghtAllI; i > -1; i--)
+	{
+		for (int j = lenghtAllJ; j > -1; i--)
+		{
+			delete (*all)[i][j];
+		}
+		all[0].clear();
+	}
+	all->clear();
+	return all;
 }
 
 template<typename T>
@@ -130,7 +169,7 @@ inline void Grid<T>::SaveGrid(std::string fileName)
 }
 
 template<typename T>
-inline void Grid<T>::InitGridFromTxt(std::string fileName)
+inline std::string Grid<T>::GetStringFromTxt(std::string fileName)
 {
 	std::string txtOutput;
 	std::ifstream file("../../../res/" + fileName);
@@ -166,50 +205,7 @@ inline void Grid<T>::InitGridFromTxt(std::string fileName)
 	pCurrentScene->SetGridRows(rowsCount);
 	file.close();
 
-	EraseGrid();
-
-	//////////////////////////////////////////////////////
-
-	int rows = pCurrentScene->GetGridRows();
-	int cols = pCurrentScene->GetGridCols();
-
-	int count = 0;
-	for (int r = 0; r < rows; r++)
-	{
-		std::vector<Cell> current;
-
-		for (int c = 0; c < cols; c++)
-		{
-			Cell cell;
-			cell.SetSize(mCellSize);
-
-			cell.setPosition(r * mCellSize, c * mCellSize);
-
-			if (txtOutput[count] == 'X')
-			{
-				cell.SetObstacle(true);
-			}
-
-			current.push_back(cell);
-
-			count++;
-		}
-
-		mAllCells.push_back(current);
-	}
-
-	for (auto& row : mAllCells)
-	{
-		for (auto& cell : row)
-		{
-			Node<T> node;
-			node.SetData(&cell);
-
-			mAllNodes.push_back(node);
-		}
-	}
-
-	pCurrentScene->GetView().setCenter((int)((float)rows * 0.5f) * mCellSize, (int)((float)cols * 0.5f) * mCellSize);
+	return txtOutput;
 }
 
 template<typename T>
@@ -222,11 +218,11 @@ void Grid<T>::Update()
 template<typename T>
 inline void Grid<T>::UpdateCellsStatut()
 {
-	for (auto& row : mAllCells)
+	for (auto row : mAllCells)
 	{
-		for (auto& cell : row)
+		for (auto cell : row)
 		{
-			cell.CheckStatus();
+			cell->CheckStatus(mCellSize);
 		}
 	}
 }
@@ -234,26 +230,34 @@ inline void Grid<T>::UpdateCellsStatut()
 template<typename T>
 inline void Grid<T>::DrawGrid()
 {
+	DrawColorCell();
+	pCurrentScene->GetView().setCenter(GetPositionToView(pCurrentScene->GetGridRows(), pCurrentScene->GetGridCols(), 0.5f, mCellSize));
+	DrawLineGrid();
+}
+
+template<typename T>
+inline void Grid<T>::DrawColorCell()
+{
 	int rows = 0;
 	int cols = 0;
 
-	for (auto& row : mAllCells)
+	for (auto row : mAllCells)
 	{
-		for (auto& cell : row)
+		for (auto cell : row)
 		{
-			cell.setPosition(rows * mCellSize, cols * mCellSize);
+			cell->setPosition(rows * mCellSize, cols * mCellSize);
 
 			sf::Color indicator = sf::Color::Transparent;
 
-			if (cell.GetAgent() == true)
+			if (cell->GetAgent() == true)
 				indicator = sf::Color(255, 0, 0, 100);
 
-			if (cell.GetObstacle() == true)
+			if (cell->GetObstacle() == true)
 			{
 				indicator = sf::Color(255, 255, 255, 255);
 			}
 
-			sf::Vector2f pos = cell.getPosition();
+			sf::Vector2f pos = cell->getPosition();
 
 			Debug::DrawRectangle(pos.x, pos.y, mCellSize, mCellSize, indicator);
 
@@ -263,15 +267,18 @@ inline void Grid<T>::DrawGrid()
 		rows++;
 		cols = 0;
 	}
+}
 
-	pCurrentScene->GetView().setCenter((int)((float)pCurrentScene->GetGridRows() * 0.5f) * mCellSize, (int)((float)pCurrentScene->GetGridCols() * 0.5f) * mCellSize);
+template<typename T>
+inline void Grid<T>::DrawLineGrid()
+{
+	int lenghtCol = mAllCells.size();
+	int lenghtRow = mAllCells[0].size();
 
-	//////////////////////////////////////////////////////////////////////
-
-	for (int col = 0; col < mAllCells.size() + 1; col++)
+	for (int col = 0; col < lenghtCol + 1; col++)
 	{
-		sf::Vector2f startPos = mAllCells[0][0].getPosition();
-		sf::Vector2f endPos = mAllCells[mAllCells.size() - 1][mAllCells[0].size() - 1].getPosition();
+		sf::Vector2f startPos = mAllCells[0][0]->getPosition();
+		sf::Vector2f endPos = mAllCells[lenghtCol - 1][lenghtRow - 1]->getPosition();
 
 		sf::Vector2f p1 = { startPos.x + mCellSize * col - mCellSize * 0.5f, startPos.y - mCellSize * 0.5f };
 		sf::Vector2f p2 = { startPos.x + mCellSize * col - mCellSize * 0.5f, endPos.y + mCellSize * 0.5f };
@@ -279,14 +286,20 @@ inline void Grid<T>::DrawGrid()
 		Debug::DrawLine(p1.x, p1.y, p2.x, p2.y, sf::Color::White);
 	}
 
-	for (int row = 0; row < mAllCells[0].size() + 1; row++)
+	for (int row = 0; row < lenghtRow + 1; row++)
 	{
-		sf::Vector2f startPos = mAllCells[0][0].getPosition();
-		sf::Vector2f endPos = mAllCells[mAllCells.size() - 1][mAllCells[0].size() - 1].getPosition();
+		sf::Vector2f startPos = mAllCells[0][0]->getPosition();
+		sf::Vector2f endPos = mAllCells[lenghtCol - 1][lenghtRow - 1]->getPosition();
 
 		sf::Vector2f p1 = { startPos.x - mCellSize * 0.5f, startPos.y + mCellSize * row - mCellSize * 0.5f };
 		sf::Vector2f p2 = { endPos.x + mCellSize * 0.5f, startPos.y + mCellSize * row - mCellSize * 0.5f };
 
 		Debug::DrawLine(p1.x, p1.y, p2.x, p2.y, sf::Color::White);
 	}
+}
+
+template<typename T>
+inline sf::Vector2f Grid<T>::GetPositionToView(int rows, int cols, float coef, int size)
+{
+	return sf::Vector2f((int)((float)rows * coef) * mCellSize, (int)((float)cols * coef) * mCellSize);
 }

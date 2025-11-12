@@ -17,7 +17,7 @@ public:
 
     void Start() { SetData(nullptr); SetVisited(false); SetCallMe(nullptr); SetNeighbor(std::vector<Node<T>*>()); SetDisStart(0); SetDisEnd(0); }
 
-    static Node<T>* GetNodeInTab(int i, int j, int lenght_i, std::vector<Node<T>>* allNodes);
+    static Node<T>* GetNodeInTab(int i, int j, int lenght_i, std::vector<Node<T>*>* allNodes);
 
     void SetAll(T* data, bool visited, Node<T>* callMe, std::vector<Node<T>*> neighbor, int disStart, int disEnd)
     {
@@ -48,8 +48,4 @@ public:
     ~Node() {}
 };
 
-template<typename T>
-inline Node<T>* Node<T>::GetNodeInTab(int i, int j, int lenghtI, std::vector<Node<T>>* allNodes)
-{
-    return &(*allNodes)[i * lenghtI + j];
-}
+#include "Node.inl"

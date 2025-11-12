@@ -8,16 +8,16 @@ void Cell::Update()
 {
 }
 
-void Cell::CheckStatus()
+void Cell::CheckStatus(int size)
 {
 	for (Entity* e : GameManager::Get()->GetEntities())
 	{
 		sf::Vector2f pos = getPosition();
 		sf::Vector2f ePos = e->GetPosition();
 		
-		if (ePos.x - e->GetSize().x * 0.5f >= pos.x - mSize && ePos.x + e->GetSize().x * 0.5f <= pos.x + mSize)
+		if (ePos.x - e->GetSize().x * 0.5f >= pos.x - size && ePos.x + e->GetSize().x * 0.5f <= pos.x + size)
 		{
-			if (ePos.y - e->GetSize().y * 0.5f >= pos.y - mSize && ePos.y + e->GetSize().y * 0.5f <= pos.y + mSize)
+			if (ePos.y - e->GetSize().y * 0.5f >= pos.y - size && ePos.y + e->GetSize().y * 0.5f <= pos.y + size)
 			{
 				SetAgent(true);
 				return;

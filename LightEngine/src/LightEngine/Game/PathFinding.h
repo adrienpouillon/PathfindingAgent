@@ -18,7 +18,7 @@ protected:
 public:
 	PathFinding() { Start(); }
 
-	void Start() { SetCursor(nullptr); SetPathFinish(false); SetStartNode(nullptr); SetEndNode(nullptr); }
+	void Start() { SetCursor(nullptr); SetPathFinish(true); SetStartNode(nullptr); SetEndNode(nullptr); }
 
 	void Update();
 

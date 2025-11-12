@@ -60,7 +60,7 @@ PathFinding<Cell> MainScene::CreatePathFinding()
 {
 	PathFinding<Cell> pathFinding = PathFinding<Cell>();
 	pathFinding.SetCursor(mpCursor);
-	pathFinding.SetPathFinish(false);
+	pathFinding.SetPathFinish(true);
 	pathFinding.SetStartNode(nullptr);
 	pathFinding.SetEndNode(nullptr);
 	return pathFinding;

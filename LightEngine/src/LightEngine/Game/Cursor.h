@@ -10,8 +10,9 @@ class Cursor
 {
 	sf::Vector2f mPos;
 
-	Cell* pCurrentCell;
 	MainScene* pCurrentScene;
+
+	Entity* mEntitySelected;
 
 	int mGridCellSize = 1;
 
@@ -27,6 +28,11 @@ public:
 	void HandleInputs();
 
 	void* NearestCell();
+	Entity* IsInsideEntity();
+
 	void SetCellObstalce(bool state);
 	void DisplayCoords();
+
+	void SetEntitySelected(Entity* entitySelected) { mEntitySelected = entitySelected; }
+	Entity* GetEntitySelected() { return mEntitySelected; }
 };

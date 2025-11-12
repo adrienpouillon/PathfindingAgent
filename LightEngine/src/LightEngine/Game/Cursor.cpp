@@ -4,12 +4,12 @@
 #include "MainScene.h"
 #include "Grid.h"
 #include "Agent.h"
+#include "../Debug.h"
 
 #include <iostream>
 
 void Cursor::Start()
 {
-	pCurrentCell = nullptr;
 	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
 
 	if(pCurrentScene != nullptr)
@@ -24,15 +24,45 @@ void Cursor::Update()
 	mPos = win->mapPixelToCoords(sf::Mouse::getPosition(*win));
 
 	HandleInputs();
+
+	if (mEntitySelected != nullptr)
+	{
+		sf::Vector2f pos = mEntitySelected->GetPosition();
+		Debug::DrawCircle(pos.x, pos.y, 5.f, sf::Color::Magenta);
+	}
 }
 
 void Cursor::HandleInputs()
 {
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
-		sf::Vector2f pos = static_cast<Cell*>(NearestCell())->getPosition();
-			
-		pCurrentScene->CreateAgent(pos, 100.f, mGridCellSize * 0.25f, sf::Color::Cyan);
+		Entity* clicOnEntity = IsInsideEntity();
+		if(mEntitySelected == nullptr)
+		{
+			if (clicOnEntity != nullptr)
+			{
+				//selectionner une entity
+				mEntitySelected = clicOnEntity;
+			}
+			else
+			{
+				//creer une entity
+				sf::Vector2f pos = static_cast<Cell*>(NearestCell())->getPosition();
+
+				pCurrentScene->CreateAgent(pos, 100.f, mGridCellSize * 0.25f, sf::Color::Cyan);
+			}
+		}
+		else
+		{
+			if (clicOnEntity == nullptr)
+			{
+				//deplacer une entity
+				if (Agent<Cell>* a = dynamic_cast<Agent<Cell>*>(mEntitySelected))
+				{
+					a->GoToCell(mPos, pCurrentScene->GetGrid());
+				}
+			}
+		}
 	}
 	else if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
 	{
@@ -40,43 +70,60 @@ void Cursor::HandleInputs()
 	}
 	else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 	{
-		for (Entity* e : GameManager::Get()->GetEntities())
+		if(Entity* e = IsInsideEntity())
 		{
-			if (e->IsInside(mPos.x, mPos.y))
-			{
-				e->Destroy();
-				return;
-			}
+			mEntitySelected = nullptr;
+			e->Destroy();
+			return;
 		}
 
 		SetCellObstalce(false);
 	}
 }
 
-void Cursor::SetCellObstalce(bool state)
+void* Cursor::NearestCell()
 {
-	sf::Vector2f fixedPos = { 0, 0 };
-
 	Cell* nearest = nullptr;
 	float smallestSquaredDist = INT_MAX;
 
-	for (auto& row : pCurrentScene->GetGrid()->GetAllCells())
+	std::vector<std::vector<Cell*>> allCells = pCurrentScene->GetGrid()->GetAllCells();
+	for (auto row : allCells)
 	{
-		for (auto& cell : row)
+		for (auto cell : row)
 		{
-			float dx = abs(cell.getPosition().x - mPos.x);
-			float dy = abs(cell.getPosition().y - mPos.y);
+			float dx = abs(cell->getPosition().x - mPos.x);
+			float dy = abs(cell->getPosition().y - mPos.y);
 
 			float squaredDist = dx * dx + dy * dy;
 
 			if (squaredDist < smallestSquaredDist)
 			{
-				nearest = &cell;
+				nearest = cell;
 
 				smallestSquaredDist = squaredDist;
 			}
 		}
 	}
+	return nearest;
+}
+
+Entity* Cursor::IsInsideEntity()
+{
+	for (Entity* e : GameManager::Get()->GetEntities())
+	{
+		if (e->IsInside(mPos.x, mPos.y))
+		{
+			return e;
+		}
+	}
+	return nullptr;
+}
+
+void Cursor::SetCellObstalce(bool state)
+{
+	sf::Vector2f fixedPos = { 0, 0 };
+
+	Cell* nearest = static_cast<Cell*>(NearestCell());
 
 	if (nearest != nullptr)
 	{
@@ -85,33 +132,6 @@ void Cursor::SetCellObstalce(bool state)
 			nearest->SetObstacle(state);
 		}
 	}
-}
-
-void* Cursor::NearestCell()
-{
-	sf::Vector2f fixedPos = { 0, 0 };
-
-	Cell* nearest = nullptr;
-	float smallestSquaredDist = INT_MAX;
-
-	for (auto& row : pCurrentScene->GetGrid()->GetAllCells())
-	{
-		for (auto& cell : row)
-		{
-			float dx = abs(cell.getPosition().x - mPos.x);
-			float dy = abs(cell.getPosition().y - mPos.y);
-
-			float squaredDist = dx * dx + dy * dy;
-
-			if (squaredDist < smallestSquaredDist)
-			{
-				nearest = &cell;
-
-				smallestSquaredDist = squaredDist;
-			}
-		}
-	}
-	return nearest;
 }
 
 void Cursor::DisplayCoords()
