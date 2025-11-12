@@ -46,13 +46,14 @@ inline void Agent<T>::GoToCell(T* cellEnd, std::vector<Node<T>*> allNodes)
 template<typename T>
 inline void Agent<T>::GoToCell(sf::Vector2f pos, std::vector<Node<T>*> allNodes)
 {
-	GoToNode(GetNodeInTab(pos.x, pos.y, allNodes.size(), allNodes));
+	GoToNode(Node<T>::GetNodeInTab(pos.x, pos.y, allNodes.size(), allNodes));
 }
 
 template<typename T>
 inline void Agent<T>::GoToNode(Node<T>* nodeEnd)
 {
 	sf::Vector2f startPos = GetPosition();
-	mPath.PathBegin(startPos, nodeEnd);
+	Node<T>* nodeStart = Node<T>::GetNodeInTab(startPos.x, startPos.y, int lenght_i, allNodes);
+	mPath.PathBegin(t, nodeEnd);
 	mPath.FindPath();
 }
