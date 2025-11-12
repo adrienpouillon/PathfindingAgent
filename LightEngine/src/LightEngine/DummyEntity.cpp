@@ -15,7 +15,7 @@ void DummyEntity::OnUpdate()
 	direction.x = sf::Keyboard::isKeyPressed(sf::Keyboard::D) - sf::Keyboard::isKeyPressed(sf::Keyboard::Q);
 	direction.y = sf::Keyboard::isKeyPressed(sf::Keyboard::S) - sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
 
-	SetDirection(direction.x, direction.y, 100);
+	SetDirection(direction.x, direction.y, 1000);
 }
 
 void DummyEntity::OnCollision(Entity* other)
