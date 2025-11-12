@@ -10,7 +10,7 @@
 void Cursor::Start()
 {
 	pCurrentCell = nullptr;
-	pCurrentScene = dynamic_cast<MainScene*>(GameManager::Get()->GetScene());
+	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
 
 	if(pCurrentScene != nullptr)
 		mGridCellSize = pCurrentScene->GetGrid()->GetCellSize();

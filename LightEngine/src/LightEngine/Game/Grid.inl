@@ -11,7 +11,7 @@
 template<typename T>
 void Grid<T>::Start()
 {
-	pCurrentScene = dynamic_cast<MainScene*>(GameManager::Get()->GetScene());
+	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
 
 	if (pCurrentScene)
 	{
@@ -62,6 +62,11 @@ inline void Grid<T>::EraseGrid()
 }
 
 template<typename T>
+inline void Grid<T>::SaveGrid(std::string fileName)
+{
+}
+
+template<typename T>
 inline void Grid<T>::InitGridFromTxt(std::string fileName)
 {
 	std::string txtOutput;
@@ -75,6 +80,19 @@ inline void Grid<T>::InitGridFromTxt(std::string fileName)
 
 	while (std::getline(file, line))
 	{
+		for (auto it = line.begin(); it != line.end();)
+		{
+			if (*it == ' ')
+			{
+				it = line.erase(it);
+				continue;
+			}
+			else
+			{
+				++it;
+			}
+		}
+
 		txtOutput += line;
 
 		pCurrentScene->SetGridCols(line.size());

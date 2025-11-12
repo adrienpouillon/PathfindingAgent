@@ -18,6 +18,7 @@ public:
 	Grid(int cellSize) { mCellSize = cellSize; Start(); }
 	void Start();
 	void EraseGrid();
+	void SaveGrid(std::string fileName);
 	void InitGridFromTxt(std::string fileName);
 	void Update();
 	void DrawGrid();

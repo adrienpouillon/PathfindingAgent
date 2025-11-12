@@ -9,7 +9,13 @@ void DummyEntity::OnInitialize()
 void DummyEntity::OnUpdate()
 {
 	sf::Vector2f pos = GetPosition();
-	SetPosition(pos.x + 20 * GameManager::Get()->GetDeltaTime(), pos.y + 20 * GameManager::Get()->GetDeltaTime());
+
+	sf::Vector2f direction = { 0, 0 };
+
+	direction.x = sf::Keyboard::isKeyPressed(sf::Keyboard::D) - sf::Keyboard::isKeyPressed(sf::Keyboard::Q);
+	direction.y = sf::Keyboard::isKeyPressed(sf::Keyboard::S) - sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
+
+	SetDirection(direction.x, direction.y, 100);
 }
 
 void DummyEntity::OnCollision(Entity* other)

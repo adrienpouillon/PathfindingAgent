@@ -59,6 +59,10 @@ public:
 
 	float GetDeltaTime() const { return mDeltaTime; }
 	Scene* GetScene() const { return mpScene; }
+
+	template<typename T>
+	T* GetScene() { if (T* t = dynamic_cast<T*>(mpScene)) return t; return nullptr; }
+
 	sf::Font& GetFont() { return mFont; };
 
 	friend Debug;
