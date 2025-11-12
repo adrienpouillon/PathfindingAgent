@@ -21,7 +21,7 @@ void Entity::Initialize(const sf::Color& color)
 
 void Entity::Repulse(Entity* other) 
 {
-	if (mTag == (int)ShapeType::Circle)
+	if (mShapeTag == (int)ShapeType::Circle)
 	{
 		sf::CircleShape* current = dynamic_cast<sf::CircleShape*>(mpShape);
 		sf::CircleShape* currentOther = dynamic_cast<sf::CircleShape*>(other->mpShape);
@@ -50,7 +50,7 @@ void Entity::Repulse(Entity* other)
 
 bool Entity::IsColliding(Entity* other) const
 {
-	if (mTag == (int)ShapeType::Circle)
+	if (mShapeTag == (int)ShapeType::Circle)
 	{
 		sf::CircleShape* current = dynamic_cast<sf::CircleShape*>(mpShape);
 		sf::CircleShape* currentOther = dynamic_cast<sf::CircleShape*>(other->mpShape);
@@ -70,7 +70,7 @@ bool Entity::IsColliding(Entity* other) const
 
 bool Entity::IsInside(float x, float y) const
 {
-	if (mTag == (int)ShapeType::Circle)
+	if (mShapeTag == (int)ShapeType::Circle)
 	{
 		sf::CircleShape* current = dynamic_cast<sf::CircleShape*>(mpShape);
 
@@ -83,7 +83,7 @@ bool Entity::IsInside(float x, float y) const
 
 		return (dx * dx + dy * dy) < (radius * radius);
 	}
-	else if (mTag == (int)ShapeType::Rectangle)
+	else if (mShapeTag == (int)ShapeType::Rectangle)
 	{
 		sf::RectangleShape* current = dynamic_cast<sf::RectangleShape*>(mpShape);
 
@@ -135,14 +135,14 @@ const sf::Vector2f& Entity::GetSize() const
 {
 	sf::Vector2f size = { 0, 0 };
 
-	if (mTag == (int)ShapeType::Circle)
+	if (mShapeTag == (int)ShapeType::Circle)
 	{
 		sf::CircleShape* current = dynamic_cast<sf::CircleShape*>(mpShape);
 
 		size.x = current->getRadius() * 2;
 		size.y = size.x;
 	}
-	else if (mTag == (int)ShapeType::Rectangle)
+	else if (mShapeTag == (int)ShapeType::Rectangle)
 	{
 		sf::RectangleShape* current = dynamic_cast<sf::RectangleShape*>(mpShape);
 

@@ -11,7 +11,7 @@ T* Scene::CreateCircleEntity(float radius, const sf::Color& color)
 	T* newEntity = new T();
 
 	Entity* entity = newEntity;
-	entity->SetTag((int)ShapeType::Circle);
+	entity->SetShapeTag((int)ShapeType::Circle);
 	sf::CircleShape* pShape = entity->CreateShape<sf::CircleShape>();
 	pShape->setRadius(radius);
 	entity->Initialize(color);
@@ -29,7 +29,7 @@ T* Scene::CreateRectEntity(float width, float height, const sf::Color& color)
 	T* newEntity = new T();
 
 	Entity* entity = newEntity;
-	entity->SetTag((int)ShapeType::Rectangle);
+	entity->SetShapeTag((int)ShapeType::Rectangle);
 	sf::RectangleShape* pShape = entity->CreateShape<sf::RectangleShape>();
 	pShape->setSize(sf::Vector2f(width, height));
 	entity->Initialize(color);

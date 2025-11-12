@@ -159,10 +159,15 @@ void Grid<T>::Update()
 template<typename T>
 inline void Grid<T>::DrawGrid()
 {
+	int rows = 0;
+	int cols = 0;
+
 	for (auto& row : mAllCells)
 	{
 		for (auto& cell : row)
 		{
+			cell.setPosition(rows * mCellSize, cols * mCellSize);
+
 			sf::Color indicator = sf::Color::Transparent;
 
 			if (cell.GetAgent() == true)
@@ -176,8 +181,17 @@ inline void Grid<T>::DrawGrid()
 			sf::Vector2f pos = cell.getPosition();
 
 			Debug::DrawRectangle(pos.x, pos.y, mCellSize, mCellSize, indicator);
+
+			cols++;
 		}
+
+		rows++;
+		cols = 0;
 	}
+
+	pCurrentScene->GetView().setCenter((int)((float)pCurrentScene->GetGridRows() * 0.5f) * mCellSize, (int)((float)pCurrentScene->GetGridCols() * 0.5f) * mCellSize);
+
+	//////////////////////////////////////////////////////////////////////
 
 	for (int col = 0; col < mAllCells.size() + 1; col++)
 	{
@@ -210,6 +224,7 @@ inline void Grid<T>::UpdateCellsStatut()
 	{
 		for (auto& cell : row)
 		{
+			cell.SetSize(mCellSize);
 			cell.CheckStatus();
 		}
 	}

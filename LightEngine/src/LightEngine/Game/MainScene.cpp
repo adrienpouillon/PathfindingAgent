@@ -32,4 +32,13 @@ void MainScene::OnUpdate()
 
 	mpCursor->Update();
 	mpGrid->Update();
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+	{
+		mView.zoom(1.f - GetDeltaTime());
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
+	{
+		mView.zoom(1.f + GetDeltaTime());
+	}
 }

@@ -1,6 +1,8 @@
 #include "Cell.h"
 #include "../GameManager.h"
 #include "../Entity.h"
+#include "../Debug.h"
+#include <iostream>
 
 void Cell::Update()
 {

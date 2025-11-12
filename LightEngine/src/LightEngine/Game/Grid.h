@@ -16,14 +16,19 @@ class Grid
 	MainScene* pCurrentScene = nullptr;
 public:
 	Grid(int cellSize) { mCellSize = cellSize; Start(); }
+
 	void Start();
 	void EraseGrid();
 	void SaveGrid(std::string fileName);
 	void InitGridFromTxt(std::string fileName);
 	void Update();
+
+	const int& GetCellSize() { return mCellSize; }
+	void SetCellSize(int val) { mCellSize = val; }
+
 	void DrawGrid();
 	void UpdateCellsStatut();
-	const int& GetCellSize() { return mCellSize; }
+
 	std::vector<std::vector<Cell>>& GetAllCells() { return mAllCells; }
 };
 

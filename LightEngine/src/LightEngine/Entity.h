@@ -35,6 +35,7 @@ protected:
     float mSpeed = 0.f;
     bool mToDestroy = false;
     int mTag = -1;
+    int mShapeTag = -1;
 	bool mRigidBody = false;
 
 public:
@@ -44,6 +45,7 @@ public:
 	void SetDirection(float x, float y, float speed = -1.f);
 	void SetSpeed(float speed) { mSpeed = speed; }
 	void SetTag(int tag) { mTag = tag; }
+    void SetShapeTag(int shapeTag) { mShapeTag = shapeTag; }
 	void SetRigidBody(bool isRigitBody) { mRigidBody = isRigitBody; }
 	bool IsRigidBody() const { return mRigidBody; }
 	Target GetTarget() const { return mTarget; }
@@ -55,6 +57,7 @@ public:
     sf::Vector2f GetPosition() const;
 	sf::Shape* GetShape() { return mpShape; }
 
+    bool IsShapeTag(int tag) const { return mShapeTag == tag; }
 	bool IsTag(int tag) const { return mTag == tag; }
     bool IsColliding(Entity* other) const;
 	bool IsInside(float x, float y) const;
