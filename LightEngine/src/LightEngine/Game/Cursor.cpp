@@ -28,29 +28,33 @@ void Cursor::Update()
 
 void Cursor::HandleInputs()
 {
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
 	{
-		sf::Vector2f pos = static_cast<Cell*>(NearestCell())->getPosition();
-			
-		pCurrentScene->CreateAgent(pos, 100.f, mGridCellSize * 0.25f, sf::Color::Cyan);
-	}
-	else if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
-	{
-		SetCellObstalce(true);
-	}
-	else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
-	{
-		for (Entity* e : GameManager::Get()->GetEntities())
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 		{
-			if (e->IsInside(mPos.x, mPos.y))
-			{
-				e->Destroy();
-				return;
-			}
-		}
+			sf::Vector2f pos = static_cast<Cell*>(NearestCell())->getPosition();
 
-		SetCellObstalce(false);
+			pCurrentScene->CreateAgent(pos, 100.f, mGridCellSize * 0.25f, sf::Color::Cyan);
+		}
+		else if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
+		{
+			SetCellObstalce(true);
+		}
+		else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+		{
+			for (Entity* e : GameManager::Get()->GetEntities())
+			{
+				if (e->IsInside(mPos.x, mPos.y))
+				{
+					e->Destroy();
+					return;
+				}
+			}
+
+			SetCellObstalce(false);
+		}
 	}
+	
 }
 
 void Cursor::SetCellObstalce(bool state)

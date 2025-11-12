@@ -20,8 +20,14 @@ protected:
 	Grid<Cell>* mpGrid = nullptr;
 
 	sf::View mView;
+
+	bool mIsSaving = false;
+
+	bool mIsResizing = false;
 public:
 	void Clear();
+
+	void CleanEntities();
 
 	void SetGridSize(int rows, int cols) { mGridRows = rows; mGridCols = cols; }
 	const int& GetGridRows() { return mGridRows; }
@@ -40,5 +46,7 @@ public:
 
 	Agent<Cell>* CreateAgent(sf::Vector2f pos, float speed, int radius, sf::Color color);
 	PathFinding<Cell> CreatePathFinding();
-	
+
+	void HandleGridSave();
+	void HandleGridResizing();
 };

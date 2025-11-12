@@ -14,12 +14,16 @@ class Grid
 	std::vector<std::vector<T>> mAllCells;
 
 	MainScene* pCurrentScene = nullptr;
+
 public:
 	Grid(int cellSize) { mCellSize = cellSize; Start(); }
 
 	void Start();
 	void InitTab(int rows, int cols);
 	void InitNodeNeighbor(int rows, int cols);
+
+
+	void CreateEmptyGrid(int _rows, int _cols);
 
 	void EraseGrid();
 	void SaveGrid(std::string fileName);

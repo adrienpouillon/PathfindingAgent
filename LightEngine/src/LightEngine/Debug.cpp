@@ -15,13 +15,6 @@ Debug* Debug::Get()
 
 void Debug::Draw(sf::RenderWindow* pRenderWindow)
 {
-	for (sf::Text& text : mTexts)
-	{
-		pRenderWindow->draw(text);
-	}
-
-	mTexts.clear();
-
 	for (sf::CircleShape& circle : mCircles)
 	{
 		pRenderWindow->draw(circle);
@@ -42,6 +35,13 @@ void Debug::Draw(sf::RenderWindow* pRenderWindow)
 	}
 
 	mLines.clear();
+
+	for (sf::Text& text : mTexts)
+	{
+		pRenderWindow->draw(text);
+	}
+
+	mTexts.clear();
 }
 
 void Debug::DrawLine(float x1, float y1, float x2, float y2, const sf::Color& color)
@@ -87,12 +87,12 @@ void Debug::DrawCircle(float x, float y, float radius, const sf::Color& color)
 	Debug::Get()->mCircles.push_back(circle);
 }
 
-void Debug::DrawText(float x, float y, const std::string& text, const sf::Color& color)
+void Debug::DrawText(float x, float y, const std::string& text, float size, const sf::Color& color)
 {
-	DrawText(x, y, text, 0.f, 0.f, color);
+	DrawText(x, y, text, 0.f, 0.f, size, color);
 }
 
-void Debug::DrawText(float x, float y, const std::string& text, float ratioX, float ratioY, const sf::Color& color)
+void Debug::DrawText(float x, float y, const std::string& text, float ratioX, float ratioY, float size, const sf::Color& color)
 {
 	_ASSERT(ratioX >= 0.f && ratioX <= 1.f);
 	_ASSERT(ratioY >= 0.f && ratioY <= 1.f);
@@ -104,8 +104,9 @@ void Debug::DrawText(float x, float y, const std::string& text, float ratioX, fl
 	sfText.setCharacterSize(20);
 	sfText.setFillColor(color);
 	sfText.setPosition(x, y);
+	sfText.setCharacterSize(size);
 
-	const sf::FloatRect& bounds = sfText.getLocalBounds();
+	const sf::FloatRect& bounds = sfText.getGlobalBounds();
 	sfText.setOrigin(bounds.width * ratioX, bounds.height * ratioY);
 
 	Debug::Get()->mTexts.push_back(sfText);
