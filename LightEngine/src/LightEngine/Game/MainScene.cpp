@@ -19,6 +19,8 @@ void MainScene::OnInitialize()
 	mView.setSize(1920, 1080);
 	mpGrid = new Grid<Cell>(50);
 
+	mpGrid->InitGridFromTxt("grid.txt");
+
 	mpCursor = new Cursor();
 }
 
