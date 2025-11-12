@@ -28,22 +28,13 @@ void Cursor::Update()
 
 void Cursor::HandleInputs()
 {
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Middle) == false)
-	{
-		mIsPressed = false;
-	}
-
-	if (mIsPressed)
-		return;
-
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
 		AddAgent<DummyEntity>(mGridCellSize * 0.25f, sf::Color::Cyan);
 	}
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
 	{
-		mIsPressed = true;
-		SwapCellObstalce();
+		SetCellObstalce(true);
 	}
 	else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 	{
@@ -52,12 +43,15 @@ void Cursor::HandleInputs()
 			if (e->IsInside(mPos.x, mPos.y))
 			{
 				e->Destroy();
+				return;
 			}
 		}
+
+		SetCellObstalce(false);
 	}
 }
 
-void Cursor::SwapCellObstalce()
+void Cursor::SetCellObstalce(bool state)
 {
 	sf::Vector2f fixedPos = { 0, 0 };
 
@@ -84,7 +78,10 @@ void Cursor::SwapCellObstalce()
 
 	if (nearest != nullptr)
 	{
-		nearest->SetObstacle(!nearest->GetObstacle());
+		if (nearest->GetAgent() == false)
+		{
+			nearest->SetObstacle(state);
+		}
 	}
 }
 

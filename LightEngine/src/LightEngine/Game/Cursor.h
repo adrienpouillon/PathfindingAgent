@@ -16,7 +16,6 @@ class Cursor
 
 	int mGridCellSize = 1;
 
-	bool mIsPressed = false;
 public:
 	Cursor() { Start(); }
 
@@ -30,7 +29,7 @@ public:
 
 	template<typename T>
 	void AddAgent(int radius, sf::Color color);
-	void SwapCellObstalce();
+	void SetCellObstalce(bool state);
 	void DisplayCoords();
 };
 
