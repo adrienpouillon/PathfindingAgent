@@ -14,7 +14,7 @@ void MainScene::Clear()
 
 void MainScene::OnInitialize()
 {
-	SetGridSize(5, 5);
+	SetGridSize(20, 20);
 
 	mView.setSize(1920, 1080);
 	mpGrid = new Grid<Cell>(50);

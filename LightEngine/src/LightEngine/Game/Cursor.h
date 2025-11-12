@@ -14,6 +14,7 @@ class Cursor
 	MainScene* pCurrentScene;
 
 	int mGridCellSize = 1;
+
 public:
 	Cursor() { Start(); }
 
@@ -27,7 +28,7 @@ public:
 
 	template<typename T>
 	T* AddAgent(int radius, sf::Color color);
-
+	void SetCellObstalce(bool state);
 	void DisplayCoords();
 };
 

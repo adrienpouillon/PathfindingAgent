@@ -23,6 +23,9 @@ public:
 	const int& GetGridRows() { return mGridRows; }
 	const int& GetGridCols() { return mGridCols; }
 
+	void SetGridRows(int val) { mGridRows = val; }
+	void SetGridCols(int val) { mGridCols = val; }
+
 	sf::View& GetView() { return mView; }
 
 	Grid<Cell>* GetGrid() { return mpGrid; }

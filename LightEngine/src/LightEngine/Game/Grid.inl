@@ -3,15 +3,20 @@
 #include "../Scene.h"
 #include "MainScene.h"
 #include "../Debug.h"
+
 #include <iostream>
+#include <fstream>
+#include <string>
 
 template<typename T>
 void Grid<T>::Start()
 {
-	if (MainScene* pScene = dynamic_cast<MainScene*>(GameManager::Get()->GetScene()))
+	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
+
+	if (pCurrentScene)
 	{
-		int rows = pScene->GetGridRows();
-		int cols = pScene->GetGridCols();
+		int rows = pCurrentScene->GetGridRows();
+		int cols = pCurrentScene->GetGridCols();
 
 		InitTab(rows, cols);
 		InitNodeNeighbor(rows, cols);
@@ -66,7 +71,7 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 
 				if (c != 0)
 				{
-					//î
+					//ï¿½
 					Node<T>* nodeNeighbor = Node<T>::GetNodeInTab(r, c - 1, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
@@ -108,6 +113,104 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 	}
 }
 
+inline void Grid<T>::EraseGrid()
+{
+	for (auto& row : mAllCells)
+	{
+		row.clear();
+	}
+
+	mAllCells.clear();
+}
+
+template<typename T>
+inline void Grid<T>::SaveGrid(std::string fileName)
+{
+}
+
+template<typename T>
+inline void Grid<T>::InitGridFromTxt(std::string fileName)
+{
+	std::string txtOutput;
+	std::ifstream file("../../../res/" + fileName);
+
+	if (file.is_open() == false)
+		return;
+
+	std::string line;
+	int rowsCount = 0;
+
+	while (std::getline(file, line))
+	{
+		for (auto it = line.begin(); it != line.end();)
+		{
+			if (*it == ' ')
+			{
+				it = line.erase(it);
+				continue;
+			}
+			else
+			{
+				++it;
+			}
+		}
+
+		txtOutput += line;
+
+		pCurrentScene->SetGridCols(line.size());
+
+		rowsCount++;
+	}
+
+	pCurrentScene->SetGridRows(rowsCount);
+	file.close();
+
+	EraseGrid();
+
+	//////////////////////////////////////////////////////
+
+	int rows = pCurrentScene->GetGridRows();
+	int cols = pCurrentScene->GetGridCols();
+
+	int count = 0;
+	for (int r = 0; r < rows; r++)
+	{
+		std::vector<Cell> current;
+
+		for (int c = 0; c < cols; c++)
+		{
+			Cell cell;
+			cell.SetSize(mCellSize);
+
+			cell.setPosition(r * mCellSize, c * mCellSize);
+
+			if (txtOutput[count] == 'X')
+			{
+				cell.SetObstacle(true);
+			}
+
+			current.push_back(cell);
+
+			count++;
+		}
+
+		mAllCells.push_back(current);
+	}
+
+	for (auto& row : mAllCells)
+	{
+		for (auto& cell : row)
+		{
+			Node<T> node;
+			node.SetData(&cell);
+
+			mAllNodes.push_back(node);
+		}
+	}
+
+	pCurrentScene->GetView().setCenter((int)((float)rows * 0.5f) * mCellSize, (int)((float)cols * 0.5f) * mCellSize);
+}
+
 template<typename T>
 void Grid<T>::Update()
 {
@@ -136,11 +239,13 @@ inline void Grid<T>::DrawGrid()
 		{
 			sf::Color indicator = sf::Color::Transparent;
 
-			if (cell.GetObstacle())
-				indicator = sf::Color(100, 100, 100, 0);
-
-			if (cell.GetAgent())
+			if (cell.GetAgent() == true)
 				indicator = sf::Color(255, 0, 0, 100);
+
+			if (cell.GetObstacle() == true)
+			{
+				indicator = sf::Color(255, 255, 255, 255);
+			}
 
 			sf::Vector2f pos = cell.getPosition();
 

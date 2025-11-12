@@ -2,6 +2,10 @@
 #include "../GameManager.h"
 #include "../Entity.h"
 
+void Cell::Update()
+{
+}
+
 void Cell::CheckStatus()
 {
 	for (Entity* e : GameManager::Get()->GetEntities())

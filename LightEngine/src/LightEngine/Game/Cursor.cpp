@@ -10,7 +10,7 @@
 void Cursor::Start()
 {
 	pCurrentCell = nullptr;
-	pCurrentScene = dynamic_cast<MainScene*>(GameManager::Get()->GetScene());
+	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
 
 	if(pCurrentScene != nullptr)
 		mGridCellSize = pCurrentScene->GetGrid()->GetCellSize();
@@ -32,6 +32,10 @@ void Cursor::HandleInputs()
 	{
 		Agent<Cell>* e = AddAgent<Agent<Cell>>(mGridCellSize * 0.25f, sf::Color::Cyan);
 	}
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
+	{
+		SetCellObstalce(true);
+	}
 	else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 	{
 		for (Entity* e : GameManager::Get()->GetEntities())
@@ -39,7 +43,44 @@ void Cursor::HandleInputs()
 			if (e->IsInside(mPos.x, mPos.y))
 			{
 				e->Destroy();
+				return;
 			}
+		}
+
+		SetCellObstalce(false);
+	}
+}
+
+void Cursor::SetCellObstalce(bool state)
+{
+	sf::Vector2f fixedPos = { 0, 0 };
+
+	Cell* nearest = nullptr;
+	float smallestSquaredDist = INT_MAX;
+
+	for (auto& row : pCurrentScene->GetGrid()->GetAllCells())
+	{
+		for (auto& cell : row)
+		{
+			float dx = abs(cell.getPosition().x - mPos.x);
+			float dy = abs(cell.getPosition().y - mPos.y);
+
+			float squaredDist = dx * dx + dy * dy;
+
+			if (squaredDist < smallestSquaredDist)
+			{
+				nearest = &cell;
+
+				smallestSquaredDist = squaredDist;
+			}
+		}
+	}
+
+	if (nearest != nullptr)
+	{
+		if (nearest->GetAgent() == false)
+		{
+			nearest->SetObstacle(state);
 		}
 	}
 }

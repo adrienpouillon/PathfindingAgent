@@ -1,7 +1,10 @@
 #pragma once
 #include <vector>
+#include <string>
 #include "Cell.h"
 #include "Node.h"
+
+class MainScene;
 
 template<typename T>
 class Grid
@@ -9,13 +12,17 @@ class Grid
 	int mCellSize = 100; // default
 	std::vector<Node<T>> mAllNodes;
 	std::vector<std::vector<T>> mAllCells;
+
+	MainScene* pCurrentScene = nullptr;
 public:
 	Grid(int cellSize) { mCellSize = cellSize; Start(); }
 
 	void Start();
 	void InitTab(int rows, int cols);
 	void InitNodeNeighbor(int rows, int cols);
-
+	void EraseGrid();
+	void SaveGrid(std::string fileName);
+	void InitGridFromTxt(std::string fileName);
 	void Update();
 	void UpdateCellsStatut();
 
