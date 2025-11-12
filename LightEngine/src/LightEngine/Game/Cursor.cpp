@@ -3,7 +3,7 @@
 #include "../Entity.h"
 #include "MainScene.h"
 #include "Grid.h"
-#include "../DummyEntity.h"
+#include "Agent.h"
 
 #include <iostream>
 
@@ -30,7 +30,7 @@ void Cursor::HandleInputs()
 {
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
-		AddAgent<DummyEntity>(mGridCellSize * 0.25f, sf::Color::Cyan);
+		Agent<Cell>* e = AddAgent<Agent<Cell>>(mGridCellSize * 0.25f, sf::Color::Cyan);
 	}
 	else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 	{

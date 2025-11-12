@@ -4,7 +4,6 @@
 #include <cmath>
 
 class Entity;
-
 class Cell;
 
 class Cursor
@@ -27,13 +26,13 @@ public:
 	void HandleInputs();
 
 	template<typename T>
-	void AddAgent(int radius, sf::Color color);
+	T* AddAgent(int radius, sf::Color color);
 
 	void DisplayCoords();
 };
 
 template<typename T>
-inline void Cursor::AddAgent(int radius, sf::Color color)
+inline T* Cursor::AddAgent(int radius, sf::Color color)
 {
 	sf::Vector2f fixedPos = {0, 0};
 
@@ -58,15 +57,19 @@ inline void Cursor::AddAgent(int radius, sf::Color color)
 		}
 	}
 
+	T* newEntity = nullptr;
+
 	if (nearest != nullptr)
 	{
 		if (nearest->GetAgent() == true)
-			return;
+			return nullptr;
 
-		Entity* newEntity = pCurrentScene->template CreateCircleEntity<T>(radius, color);
+		newEntity = pCurrentScene->template CreateCircleEntity<T>(radius, color);
 
 		fixedPos = nearest->getPosition();
 
 		newEntity->SetPosition(fixedPos.x, fixedPos.y);
 	}
+
+	return newEntity;
 }

@@ -8,15 +8,21 @@ class Grid
 {
 	int mCellSize = 100; // default
 	std::vector<Node<T>> mAllNodes;
-	std::vector<std::vector<Cell>> mAllCells;
+	std::vector<std::vector<T>> mAllCells;
 public:
 	Grid(int cellSize) { mCellSize = cellSize; Start(); }
+
 	void Start();
+	void InitTab(int rows, int cols);
+	void InitNodeNeighbor(int rows, int cols);
+
 	void Update();
-	void DrawGrid();
 	void UpdateCellsStatut();
+
+	void DrawGrid();
+
 	const int& GetCellSize() { return mCellSize; }
-	std::vector<std::vector<Cell>>& GetAllCells() { return mAllCells; }
+	std::vector<std::vector<T>>& GetAllCells() { return mAllCells; }
 };
 
 #include "Grid.inl"

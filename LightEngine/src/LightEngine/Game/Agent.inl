@@ -21,8 +21,9 @@ inline void Agent<T>::UpdatePath()
 	}
 
 	std::vector<Node<T>*>* allPaths = mPath.GetPath();
-	T* cell = (*allPaths)[mIndexPath].GetData();
-	GoToPosition(cell.getPosition);
+	T* cell = (*allPaths)[mIndexPath]->GetData();
+	sf::Vector2f pos = cell->getPosition();
+	GoToPosition(pos.x, pos.y);
 	mIndexPath++;
 	if (mIndexPath == allPaths->size())
 	{
