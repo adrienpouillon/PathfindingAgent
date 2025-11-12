@@ -3,7 +3,7 @@
 #include "../Entity.h"
 #include "MainScene.h"
 #include "Grid.h"
-#include "../DummyEntity.h"
+#include "Agent.h"
 
 #include <iostream>
 
@@ -30,9 +30,11 @@ void Cursor::HandleInputs()
 {
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
-		AddAgent<DummyEntity>(mGridCellSize * 0.25f, sf::Color::Cyan);
+		sf::Vector2f pos = static_cast<Cell*>(NearestCell())->getPosition();
+			
+		pCurrentScene->CreateAgent(pos, 100.f, mGridCellSize * 0.25f, sf::Color::Cyan);
 	}
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
+	else if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
 	{
 		SetCellObstalce(true);
 	}
@@ -83,6 +85,33 @@ void Cursor::SetCellObstalce(bool state)
 			nearest->SetObstacle(state);
 		}
 	}
+}
+
+void* Cursor::NearestCell()
+{
+	sf::Vector2f fixedPos = { 0, 0 };
+
+	Cell* nearest = nullptr;
+	float smallestSquaredDist = INT_MAX;
+
+	for (auto& row : pCurrentScene->GetGrid()->GetAllCells())
+	{
+		for (auto& cell : row)
+		{
+			float dx = abs(cell.getPosition().x - mPos.x);
+			float dy = abs(cell.getPosition().y - mPos.y);
+
+			float squaredDist = dx * dx + dy * dy;
+
+			if (squaredDist < smallestSquaredDist)
+			{
+				nearest = &cell;
+
+				smallestSquaredDist = squaredDist;
+			}
+		}
+	}
+	return nearest;
 }
 
 void Cursor::DisplayCoords()

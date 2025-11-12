@@ -1,12 +1,6 @@
 #include "PathFinding.h"
 #include "../Utils.h"
-#include <iostream>
-
-template<typename T>
-PathFinding<T>::PathFinding()
-{
-
-}
+#include "Cursor.h"
 
 template<typename T>
 void PathFinding<T>::InitQueue()
@@ -74,7 +68,7 @@ void PathFinding<T>::FindPath()
             if (nodeN->GetVisited() == false)
             {
                 nodeN->SetDisStart(disStart + 1);
-                nodeN->SetDisEnd(Utils::DisManahattan(nodeN->GetData()->getPosition(), endPosition));
+                nodeN->SetDisEnd(Utils::DisManhattan(nodeN->GetData()->getPosition(), endPosition));
                 nodeN->SetCallMe(nodeCurrent);
 
                 mQueue.push(nodeN);
@@ -119,7 +113,7 @@ void PathFinding<T>::FindPathWithDebug()
             if (nodeN->GetVisited() == false)
             {
                 nodeN->SetDisStart(disStart + 1);
-                nodeN->SetDisEnd(Utils::DisManahattan(nodeN->GetData()->getPosition(), endPosition));
+                nodeN->SetDisEnd(Utils::DisManhattan(nodeN->GetData()->getPosition(), endPosition));
                 nodeN->SetCallMe(nodeCurrent);
 
                 mQueue.push(nodeN);
@@ -142,7 +136,7 @@ void PathFinding<T>::CreatePath()
     std::vector<Node<T>*> allPathEnds = std::vector<Node<T>*>();
     while (endNode != mStartNode)
     {
-        allPathEnd.push_back(endNode);
+        allPathEnds.push_back(endNode);
         endNode = endNode->GetCallMe();
     }
 
@@ -157,13 +151,13 @@ void PathFinding<T>::CreatePath()
         allPathStarts = allFormerPaths;
     }
     
-    int lenghtAllPathEnds = allPathEnd.size() - 1;
+    int lenghtAllPathEnds = allPathEnds.size() - 1;
     for (int i = lenghtAllPathEnds; i > -1; i--)
     {
-        allPathStart.push_back(allPathEnd[i]);
+        allPathStarts.push_back(allPathEnds[i]);
     }
 
-    SetPath(allPathStart);
+    SetPath(allPathStarts);
 }
 
 template<typename T>

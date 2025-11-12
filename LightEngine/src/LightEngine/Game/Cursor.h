@@ -1,10 +1,9 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "MainScene.h"
 #include <cmath>
 
+class MainScene;
 class Entity;
-
 class Cell;
 
 class Cursor
@@ -27,47 +26,7 @@ public:
 
 	void HandleInputs();
 
-	template<typename T>
-	void AddAgent(int radius, sf::Color color);
+	void* NearestCell();
 	void SetCellObstalce(bool state);
 	void DisplayCoords();
 };
-
-template<typename T>
-inline void Cursor::AddAgent(int radius, sf::Color color)
-{
-	sf::Vector2f fixedPos = {0, 0};
-
-	Cell* nearest = nullptr;
-	float smallestSquaredDist = INT_MAX;
-
-	for (auto& row : pCurrentScene->GetGrid()->GetAllCells())
-	{
-		for (auto& cell : row)
-		{
-			float dx = abs(cell.getPosition().x - mPos.x);
-			float dy = abs(cell.getPosition().y - mPos.y);
-
-			float squaredDist = dx * dx + dy * dy;
-
-			if (squaredDist < smallestSquaredDist)
-			{
-				nearest = &cell;
-
-				smallestSquaredDist = squaredDist;
-			}
-		}
-	}
-
-	if (nearest != nullptr)
-	{
-		if (nearest->GetAgent() == true)
-			return;
-
-		Entity* newEntity = pCurrentScene->template CreateCircleEntity<T>(radius, color);
-
-		fixedPos = nearest->getPosition();
-
-		newEntity->SetPosition(fixedPos.x, fixedPos.y);
-	}
-}

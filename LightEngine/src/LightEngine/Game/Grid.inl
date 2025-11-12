@@ -18,35 +18,98 @@ void Grid<T>::Start()
 		int rows = pCurrentScene->GetGridRows();
 		int cols = pCurrentScene->GetGridCols();
 
-		for (int r = 0; r < rows; r++)
-		{
-			std::vector<Cell> current;
-
-			for (int c = 0; c < cols; c++)
-			{
-				Cell cell;
-				cell.SetSize(mCellSize);
-
-				cell.setPosition(r * mCellSize, c * mCellSize);
-
-				current.push_back(cell);
-			}
-
-			mAllCells.push_back(current);
-		}
-
-		for (auto& row : mAllCells)
-		{
-			for (auto& cell : row)
-			{
-				Node<T> node;
-				node.SetData(&cell);
-
-				mAllNodes.push_back(node);
-			}
-		}
-
+		InitTab(rows, cols);
+		InitNodeNeighbor(rows, cols);
 		pCurrentScene->GetView().setCenter((int)((float)rows * 0.5f) * mCellSize, (int)((float)cols * 0.5f) * mCellSize);
+	}
+}
+
+template<typename T>
+void Grid<T>::InitTab(int rows, int cols)
+{
+	for (int r = 0; r < rows; r++)
+	{
+		std::vector<T> current;
+		for (int c = 0; c < cols; c++)
+		{
+			T cell;
+			cell.SetSize(mCellSize);
+			sf::Vector2f pos = sf::Vector2f(r * mCellSize, c * mCellSize);
+			cell.SetAll(pos, false);
+
+			current.push_back(cell);
+
+			Node<T> node;
+			bool visited = false;
+			Node<T>* callMe = nullptr;
+			std::vector<Node<T>*> neighbor = std::vector<Node<T>*>();
+			int disStart = 0;
+			int disEnd = 0;
+			node.SetAll(&cell, visited, callMe, neighbor, disStart, disEnd);
+			mAllNodes.push_back(node);
+		}
+		mAllCells.push_back(current);
+	}
+}
+
+template<typename T>
+void Grid<T>::InitNodeNeighbor(int rows, int cols)
+{
+	for (int r = 0; r < rows; r++)
+	{
+		for (int c = 0; c < cols; c++)
+		{
+			Node<T>* node = Node<T>::GetNodeInTab(r, c, rows, &mAllNodes);
+
+			if (node->GetData()->GetObstacle() == true)
+			{
+				node->SetNeighbor(std::vector<Node<T>*>());
+			}
+			else
+			{
+				std::vector<Node<T>*> neighbor = std::vector<Node<T>*>();
+
+				if (c != 0)
+				{
+					//�
+					Node<T>* nodeNeighbor = Node<T>::GetNodeInTab(r, c - 1, rows, &mAllNodes);
+					if (nodeNeighbor->GetData()->GetObstacle() == false)
+					{
+						neighbor.push_back(nodeNeighbor);
+					}
+				}
+				if (r != 0)
+				{
+					//<-
+					Node<T>* nodeNeighbor = Node<T>::GetNodeInTab(r - 1, c, rows, &mAllNodes);
+					if (nodeNeighbor->GetData()->GetObstacle() == false)
+					{
+						neighbor.push_back(nodeNeighbor);
+					}
+				}
+				if (r != rows - 1)
+				{
+					//->
+					Node<T>* nodeNeighbor = Node<T>::GetNodeInTab(r + 1, c, rows, &mAllNodes);
+					if (nodeNeighbor->GetData()->GetObstacle() == false)
+					{
+						neighbor.push_back(nodeNeighbor);
+					}
+				}
+				if (c != cols - 1)
+				{
+					//!
+					Node<T>* nodeNeighbor = Node<T>::GetNodeInTab(r, c + 1, rows, &mAllNodes);
+					if (nodeNeighbor->GetData()->GetObstacle() == false)
+					{
+						neighbor.push_back(nodeNeighbor);
+					}
+				}
+
+				node->SetNeighbor(neighbor);
+			}
+
+		}
 	}
 }
 
@@ -157,6 +220,18 @@ void Grid<T>::Update()
 }
 
 template<typename T>
+inline void Grid<T>::UpdateCellsStatut()
+{
+	for (auto& row : mAllCells)
+	{
+		for (auto& cell : row)
+		{
+			cell.CheckStatus();
+		}
+	}
+}
+
+template<typename T>
 inline void Grid<T>::DrawGrid()
 {
 	int rows = 0;
@@ -213,19 +288,5 @@ inline void Grid<T>::DrawGrid()
 		sf::Vector2f p2 = { endPos.x + mCellSize * 0.5f, startPos.y + mCellSize * row - mCellSize * 0.5f };
 
 		Debug::DrawLine(p1.x, p1.y, p2.x, p2.y, sf::Color::White);
-	}
-}
-
-template<typename T>
-
-inline void Grid<T>::UpdateCellsStatut()
-{
-	for (auto& row : mAllCells)
-	{
-		for (auto& cell : row)
-		{
-			cell.SetSize(mCellSize);
-			cell.CheckStatus();
-		}
 	}
 }

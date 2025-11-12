@@ -11,25 +11,31 @@ class Grid
 {
 	int mCellSize = 100; // default
 	std::vector<Node<T>> mAllNodes;
-	std::vector<std::vector<Cell>> mAllCells;
+	std::vector<std::vector<T>> mAllCells;
 
 	MainScene* pCurrentScene = nullptr;
 public:
 	Grid(int cellSize) { mCellSize = cellSize; Start(); }
 
 	void Start();
+	void InitTab(int rows, int cols);
+	void InitNodeNeighbor(int rows, int cols);
+
 	void EraseGrid();
 	void SaveGrid(std::string fileName);
 	void InitGridFromTxt(std::string fileName);
+
 	void Update();
+	void UpdateCellsStatut();
+
+	void DrawGrid();
 
 	const int& GetCellSize() { return mCellSize; }
 	void SetCellSize(int val) { mCellSize = val; }
 
-	void DrawGrid();
-	void UpdateCellsStatut();
+	std::vector<std::vector<T>>& GetAllCells() { return mAllCells; }
 
-	std::vector<std::vector<Cell>>& GetAllCells() { return mAllCells; }
+	std::vector<Node<T>>& GetAllNodes() { return mAllNodes; }
 };
 
 #include "Grid.inl"
