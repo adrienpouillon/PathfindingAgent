@@ -61,11 +61,13 @@ inline void Grid<T>::DrawGrid()
 		{
 			sf::Color indicator = sf::Color::Transparent;
 
-			if (cell.GetObstacle())
-				indicator = sf::Color(100, 100, 100, 0);
-
-			if (cell.GetAgent())
+			if (cell.GetAgent() == true)
 				indicator = sf::Color(255, 0, 0, 100);
+
+			if (cell.GetObstacle() == true)
+			{
+				indicator = sf::Color(255, 255, 255, 255);
+			}
 
 			sf::Vector2f pos = cell.getPosition();
 

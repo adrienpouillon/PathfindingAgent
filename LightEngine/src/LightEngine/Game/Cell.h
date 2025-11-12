@@ -14,6 +14,7 @@ public:
 
     void SetAll(sf::Vector2f xy, bool obstacle) { setPosition(xy); SetObstacle(obstacle); }
 
+    void Update();
     void CheckStatus();
 
     const int& GetSize() { return mSize; }

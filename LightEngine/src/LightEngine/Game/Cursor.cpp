@@ -28,9 +28,22 @@ void Cursor::Update()
 
 void Cursor::HandleInputs()
 {
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Middle) == false)
+	{
+		mIsPressed = false;
+	}
+
+	if (mIsPressed)
+		return;
+
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
 		AddAgent<DummyEntity>(mGridCellSize * 0.25f, sf::Color::Cyan);
+	}
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
+	{
+		mIsPressed = true;
+		SwapCellObstalce();
 	}
 	else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 	{
@@ -41,6 +54,37 @@ void Cursor::HandleInputs()
 				e->Destroy();
 			}
 		}
+	}
+}
+
+void Cursor::SwapCellObstalce()
+{
+	sf::Vector2f fixedPos = { 0, 0 };
+
+	Cell* nearest = nullptr;
+	float smallestSquaredDist = INT_MAX;
+
+	for (auto& row : pCurrentScene->GetGrid()->GetAllCells())
+	{
+		for (auto& cell : row)
+		{
+			float dx = abs(cell.getPosition().x - mPos.x);
+			float dy = abs(cell.getPosition().y - mPos.y);
+
+			float squaredDist = dx * dx + dy * dy;
+
+			if (squaredDist < smallestSquaredDist)
+			{
+				nearest = &cell;
+
+				smallestSquaredDist = squaredDist;
+			}
+		}
+	}
+
+	if (nearest != nullptr)
+	{
+		nearest->SetObstacle(!nearest->GetObstacle());
 	}
 }
 
