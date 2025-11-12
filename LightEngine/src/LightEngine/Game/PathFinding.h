@@ -1,8 +1,9 @@
 #pragma once
 #include <queue>
-#include "Cursor.h"
 #include "Node.h"
 #include "Compare.h"
+
+class Cursor;
 
 template<typename T>
 class PathFinding

@@ -33,3 +33,26 @@ void MainScene::OnUpdate()
 	mpCursor->Update();
 	mpGrid->Update();
 }
+
+Agent<Cell>* MainScene::CreateAgent(sf::Vector2f pos, float speed, int radius, sf::Color color)
+{
+	Agent<Cell>* newEntity = CreateCircleEntity<Agent<Cell>>(radius, color);
+	newEntity->SetRoam(false);
+	newEntity->SetTag(AGENT);
+	newEntity->SetSpeed(speed);
+	newEntity->SetRigidBody(false);
+	newEntity->SetPathfinding(CreatePathFinding());
+	newEntity->SetPosition(pos.x, pos.y);
+
+	return newEntity;
+}
+
+PathFinding<Cell> MainScene::CreatePathFinding()
+{
+	PathFinding<Cell> pathFinding = PathFinding<Cell>();
+	pathFinding.SetCursor(mpCursor);
+	pathFinding.SetPathFinish(false);
+	pathFinding.SetStartNode(nullptr);
+	pathFinding.SetEndNode(nullptr);
+	return pathFinding;
+}

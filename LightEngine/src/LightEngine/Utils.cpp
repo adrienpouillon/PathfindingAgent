@@ -39,4 +39,9 @@ namespace Utils
 	{
 		return abs(currentPos.x - endPos.x) + abs(currentPos.y - endPos.y);
 	}
+
+	sf::Vector2f GetCellInPos(sf::Vector2f pos, int sizeCell)
+	{
+		return sf::Vector2f((int)(pos.x * (float)sizeCell), (int)(pos.y * (float)sizeCell));
+	}
 }

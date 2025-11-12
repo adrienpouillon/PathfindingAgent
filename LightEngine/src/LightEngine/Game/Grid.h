@@ -20,9 +20,11 @@ public:
 	void Start();
 	void InitTab(int rows, int cols);
 	void InitNodeNeighbor(int rows, int cols);
+
 	void EraseGrid();
 	void SaveGrid(std::string fileName);
 	void InitGridFromTxt(std::string fileName);
+
 	void Update();
 	void UpdateCellsStatut();
 
@@ -30,6 +32,8 @@ public:
 
 	const int& GetCellSize() { return mCellSize; }
 	std::vector<std::vector<T>>& GetAllCells() { return mAllCells; }
+
+	std::vector<Node<T>>& GetAllNodes() { return mAllNodes; }
 };
 
 #include "Grid.inl"

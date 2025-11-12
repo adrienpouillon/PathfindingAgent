@@ -1,6 +1,6 @@
 #include "PathFinding.h"
 #include "../Utils.h"
-#include <iostream>
+#include "Cursor.h"
 
 template<typename T>
 void PathFinding<T>::InitQueue()

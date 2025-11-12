@@ -2,13 +2,17 @@
 #include "../Scene.h"
 #include "Cell.h"
 
+#include "Agent.h"
+
 template<typename T>
 class Grid;
 
 class Cursor;
 
+
 class MainScene : public Scene
 {
+protected:
 	int mGridRows = 9; // default
 	int mGridCols = 9; // default
 	Cursor* mpCursor = nullptr;
@@ -33,5 +37,8 @@ public:
 	void OnInitialize() override;
 	void OnEvent(const sf::Event& event) override;
 	void OnUpdate() override;
-};
 
+	Agent<Cell>* CreateAgent(sf::Vector2f pos, float speed, int radius, sf::Color color);
+	PathFinding<Cell> CreatePathFinding();
+	
+};

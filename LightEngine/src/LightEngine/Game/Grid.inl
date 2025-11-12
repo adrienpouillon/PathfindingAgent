@@ -20,7 +20,7 @@ void Grid<T>::Start()
 
 		InitTab(rows, cols);
 		InitNodeNeighbor(rows, cols);
-		pScene->GetView().setCenter((int)((float)rows * 0.5f) * mCellSize, (int)((float)cols * 0.5f) * mCellSize);
+		pCurrentScene->GetView().setCenter((int)((float)rows * 0.5f) * mCellSize, (int)((float)cols * 0.5f) * mCellSize);
 	}
 }
 
@@ -113,6 +113,7 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 	}
 }
 
+template<typename T>
 inline void Grid<T>::EraseGrid()
 {
 	for (auto& row : mAllCells)
