@@ -3,6 +3,7 @@
 #include "../Scene.h"
 #include "MainScene.h"
 #include "../Debug.h"
+#include "Functions.h"
 
 #include <iostream>
 #include <fstream>
@@ -80,7 +81,7 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 	{
 		for (int c = 0; c < cols; c++)
 		{
-			Node<T>* node = Node<T>::GetNodeInTab(r, c, rows, &mAllNodes);
+			Node<T>* node = GetNodeInTab(r, c, rows, &mAllNodes);
 
 			if (node->GetData()->GetObstacle() == true)
 			{
@@ -93,7 +94,7 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 				if (c != 0)
 				{
 					//�
-					Node<T>* nodeNeighbor = Node<T>::GetNodeInTab(r, c - 1, rows, &mAllNodes);
+					Node<T>* nodeNeighbor = GetNodeInTab(r, c - 1, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);
@@ -102,7 +103,7 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 				if (r != 0)
 				{
 					//<-
-					Node<T>* nodeNeighbor = Node<T>::GetNodeInTab(r - 1, c, rows, &mAllNodes);
+					Node<T>* nodeNeighbor = GetNodeInTab(r - 1, c, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);
@@ -111,7 +112,7 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 				if (r != rows - 1)
 				{
 					//->
-					Node<T>* nodeNeighbor = Node<T>::GetNodeInTab(r + 1, c, rows, &mAllNodes);
+					Node<T>* nodeNeighbor = GetNodeInTab(r + 1, c, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);
@@ -120,7 +121,7 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 				if (c != cols - 1)
 				{
 					//!
-					Node<T>* nodeNeighbor = Node<T>::GetNodeInTab(r, c + 1, rows, &mAllNodes);
+					Node<T>* nodeNeighbor = GetNodeInTab(r, c + 1, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);

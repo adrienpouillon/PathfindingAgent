@@ -14,10 +14,10 @@ template<typename T>
 void ResetNodes(Grid<T>* grid);
 
 template<typename T>
-void FindPath(Node<T>* startNode, Node<T>* endNode, Grid<T>* grid, std::vector<Node<T>*> allFormerPaths);
+/*std::vector<Node<T>*>* */ void FindPath(Node<T>* startNode, Node<T>* endNode, Grid<T>* grid, std::vector<Node<T>*>* allFormerPaths);
 
 template<typename T>
-void CreatePath(bool isfinish, Node<T>* startNode, Node<T>* endNode, std::vector<Node<T>*> allFormerPaths);
+/*std::vector<Node<T>*>* */ void CreatePath(bool isfinish, Node<T>* startNode, Node<T>* endNode, std::vector<Node<T>*>* allFormerPaths);
 
 template<typename T>
 T* GetCell(sf::Vector2f pos, Grid<T>* grid);

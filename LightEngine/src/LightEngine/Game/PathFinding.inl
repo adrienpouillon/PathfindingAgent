@@ -7,21 +7,27 @@
 
 
 template<typename T>
-inline std::vector<Node<T>*> PathFinding<T>::Find(Node<T>* startNode, Node<T>* endNode, Grid<T>* grid)
+inline void PathFinding<T>::Find(Node<T>* startNode, Node<T>* endNode, Grid<T>* grid)
 {
-    //SetPathFinish(false);
-    //SetPath(std::vector<Node<T>*>());
+    SetReadFinish(false);
+    /*if (GetPath() == nullptr)
+    {
+        SetReadFinish(false);
+        SetPath(std::vector<Node<T>*>());
+    }*/
+    /*std::vector<Node<T>*>* path = */FindPath(startNode, endNode, grid, GetPath());
 
-    std::vector<Node<T>*> path = FindPath(startNode, endNode, grid, GetPath());
-
-    SetPath(path);
+    //SetPath(*path);
 }
 
 template<typename T>
 void PathFinding<T>::SetReadFinish(bool readFinish)
 {
     mReadFinish = readFinish;
-    SetPath(std::vector<Node<T>*>());
+    if (mReadFinish == true)
+    {
+        SetPath(std::vector<Node<T>*>());
+    }
 }
 
 template<typename T>
@@ -45,8 +51,8 @@ inline std::vector<Node<T>*>* PathFinding<T>::GetPath()
     }
     else
     {
-        SetReadFinish(true);
-        return nullptr;
+        mPath = std::vector<Node<T>*>();
+        return &mPath;
     }
 }
 

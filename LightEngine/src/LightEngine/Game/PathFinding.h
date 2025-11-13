@@ -17,7 +17,7 @@ public:
 
 	void Start() { SetReadFinish(true); }
 
-	std::vector<Node<T>*> Find(Node<T>* startNode, Node<T>* endNode, Grid<T>* grid);
+	void Find(Node<T>* startNode, Node<T>* endNode, Grid<T>* grid);
 
 	void SetReadFinish(bool readFinish);
 	bool GetReadFinish();

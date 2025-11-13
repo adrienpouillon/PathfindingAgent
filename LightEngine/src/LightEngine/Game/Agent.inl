@@ -15,7 +15,7 @@ template<typename T>
 void Agent<T>::UpdatePath()
 {
 	std::vector<Node<T>*>* allPaths = mPath.GetPath();
-	if (allPaths == nullptr)
+	if (allPaths->size() < 1)
 	{
 		return;
 	}
@@ -70,8 +70,20 @@ void Agent<T>::GoToCell(sf::Vector2f pos, Grid<T>* grid)
 template<typename T>
 void Agent<T>::GoToNode(Node<T>* endNode, Grid<T>* grid)
 {
-	Node<T>* startNode = GetNode(GetPosition(), grid);
+	Node<T>* startNode;
+	std::vector<Node<T>*>* currentePath = mPath.GetPath();
+	int lenght = currentePath->size();
+	if (lenght > 0)
+	{
+		//position final du path precedent
+		startNode = (*currentePath)[lenght - 1];
+	}
+	else
+	{
+		//position actuelle
+		startNode = GetNode(GetPosition(), grid);
+	}
 	SetStartNode(startNode);
 	SetEndNode(endNode);
-	mPath.FindPath(startNode, endNode, grid);
+	mPath.Find(startNode, endNode, grid);
 }

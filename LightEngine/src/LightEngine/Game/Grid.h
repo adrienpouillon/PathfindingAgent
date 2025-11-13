@@ -22,11 +22,6 @@ public:
 	void CreateTab(int rows, int cols, std::string strGrid);
 	void InitNodeNeighbor(int rows, int cols);
 
-	template<typename A>
-	std::vector<A*>* EraseTab(std::vector<A*>* all);
-	template<typename A>
-	std::vector<std::vector<A*>>* EraseTab(std::vector<std::vector<A*>>* all);
-
 	void SaveGrid(std::string fileName);
 	std::string GetStringFromTxt(std::string fileName);
 

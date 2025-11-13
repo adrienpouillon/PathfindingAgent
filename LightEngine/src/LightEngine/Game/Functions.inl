@@ -6,16 +6,16 @@
 template<typename T>
 inline T* GetCell(sf::Vector2f pos, Grid<T>* grid)
 {
-	sf::Vector2f index = GetCellInPos(pos, grid->GetCellSize());
+	sf::Vector2f index = Utils::GetCellInPos(pos, grid->GetCellSize());
 	return grid->GetAllCells()[index.x][index.y];
 }
 
 template<typename T>
 inline Node<T>* GetNode(sf::Vector2f pos, Grid<T>* grid)
 {
-	sf::Vector2f index = GetCellInPos(pos, grid->GetCellSize());
+	sf::Vector2f index = Utils::GetCellInPos(pos, grid->GetCellSize());
 	std::vector<Node<T>*> allNodes = grid->GetAllNodes();
-	return Node<T>::GetNodeInTab(index.x, index.y, grid->GetAllCells().size(), &allNodes);
+	return GetNodeInTab(index.x, index.y, grid->GetAllCells().size(), &allNodes);
 }
 
 template<typename T>
@@ -37,16 +37,16 @@ void ResetNodes(Grid<T>* grid)
 }
 
 template<typename T>
-std::vector<Node<T>*> FindPath(Node<T>* startNode, Node<T>* endNode, Grid<T>* grid, std::vector<Node<T>*> allFormerPaths)
+/*std::vector<Node<T>*>* */ void FindPath(Node<T>* startNode, Node<T>* endNode, Grid<T>* grid, std::vector<Node<T>*>* allFormerPaths)
 {
-
     ResetNodes(grid);
     std::priority_queue<Node<T>*, std::vector<Node<T>*>, CompareASTAR<T>> queue = std::priority_queue<Node<T>*, std::vector<Node<T>*>, CompareASTAR<T>>();
     queue.push(startNode);
     startNode->SetDisStart(0);
     startNode->SetDisEnd(Utils::DisManhattan(startNode->GetData()->getPosition(), endNode->GetData()->getPosition()));
 
-    while ((int)queue.size() != 0)
+    int lenght = (int)queue.size();
+    while (lenght != 0)
     {
         Node<T>* nodeCurrent = queue.top();
         queue.pop();
@@ -58,7 +58,20 @@ std::vector<Node<T>*> FindPath(Node<T>* startNode, Node<T>* endNode, Grid<T>* gr
 
         if (nodeCurrent == endNode)
         {
-            return CreatePath(false, startNode, endNode, allFormerPaths);
+            if (!queue.empty())
+            {
+                std::priority_queue<Node<T>*, std::vector<Node<T>*>, CompareASTAR<T>> queu = queue;
+                for (int i = 0; i < lenght; i++)
+                {
+                    Node<T>* node = queu.top();
+                    T* cell = node->GetData();
+                    sf::Vector2f nodePosition = cell->getPosition();
+                    Debug::DrawCircle(nodePosition.x, nodePosition.y, 5.f, sf::Color::White);
+                    queu.pop();
+                }
+            }
+            CreatePath(false, startNode, endNode, allFormerPaths);
+            return;
         }
 
         T* endCell = endNode->GetData();
@@ -83,11 +96,12 @@ std::vector<Node<T>*> FindPath(Node<T>* startNode, Node<T>* endNode, Grid<T>* gr
             }
         }
     }
-    return std::vector<Node<T>*>();
+    //return std::vector<Node<T>*>();
+    *allFormerPaths = std::vector<Node<T>*>();
 }
 
 template<typename T>
-std::vector<Node<T>*> CreatePath(bool isfinish, Node<T>* startNode, Node<T>* endNode, std::vector<Node<T>*> allFormerPaths)
+/*std::vector<Node<T>*>* */ void CreatePath(bool isfinish, Node<T>* startNode, Node<T>* endNode, std::vector<Node<T>*>* allFormerPaths)
 {
     std::vector<Node<T>*> allPathEnds = std::vector<Node<T>*>();
     while (endNode != startNode)
@@ -96,24 +110,19 @@ std::vector<Node<T>*> CreatePath(bool isfinish, Node<T>* startNode, Node<T>* end
         endNode = endNode->GetCallMe();
     }
 
-    //std::vector<Node<T>*> allFormerPaths = *GetPath();
-    std::vector<Node<T>*> allPathStarts;
+    std::vector<Node<T>*>* allPathStarts = allFormerPaths;
     if (isfinish)
     {
-        allPathStarts = std::vector<Node<T>*>();
-    }
-    else
-    {
-        allPathStarts = allFormerPaths;
+        *allPathStarts = std::vector<Node<T>*>();
     }
 
     int lenghtAllPathEnds = allPathEnds.size() - 1;
     for (int i = lenghtAllPathEnds; i > -1; i--)
     {
-        allPathStarts.push_back(allPathEnds[i]);
+        allPathStarts->push_back(allPathEnds[i]);
     }
 
-    return allPathStarts;
+    /*return allPathStarts;*/
 }
 
 /*template<typename T>
