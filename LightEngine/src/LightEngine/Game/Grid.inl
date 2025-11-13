@@ -11,7 +11,7 @@
 template<typename T>
 void Grid<T>::Start()
 {
-	mCellSize = 100;
+	SetCellSize(100);
 	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
 
 	if (pCurrentScene)
@@ -45,7 +45,8 @@ void Grid<T>::CreateTab(int rows, int cols, std::string strGrid)
 		for (int c = 0; c < cols; c++)
 		{
 			T* cell = new T();
-			sf::Vector2f pos = sf::Vector2f(r * mCellSize, c * mCellSize);
+			//sf::Vector2f pos = sf::Vector2f(r * mCellSize, c * mCellSize);
+			sf::Vector2f pos = sf::Vector2f(c * mCellSize, r * mCellSize);
 			cell->SetAll(pos, false);
 
 			if (strGrid.size() > 0)
@@ -131,36 +132,6 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 
 		}
 	}
-}
-
-template<typename T>
-template<typename A>
-inline std::vector<A*>* Grid<T>::EraseTab(std::vector<A*>* all)
-{
-	int lenghtAll = all->size() - 1;
-	for (int i = lenghtAll; i > -1; i--)
-	{
-		delete (*all)[i];
-	}
-	return all;
-}
-
-template<typename T>
-template<typename A>
-inline std::vector<std::vector<A*>>* Grid<T>::EraseTab(std::vector<std::vector<A*>>* all)
-{
-	int lenghtAllI = all->size() - 1;
-	int lenghtAllJ = all[0].size() - 1;
-	for (int i = lenghtAllI; i > -1; i--)
-	{
-		for (int j = lenghtAllJ; j > -1; i--)
-		{
-			delete (*all)[i][j];
-		}
-		all[0].clear();
-	}
-	all->clear();
-	return all;
 }
 
 template<typename T>

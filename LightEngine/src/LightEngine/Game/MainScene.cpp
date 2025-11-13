@@ -17,7 +17,8 @@ void MainScene::OnInitialize()
 	SetGridSize(20, 20);
 
 	mView.setSize(1920, 1080);
-	mpGrid = new Grid<Cell>(50);
+	mpGrid = new Grid<Cell>();
+	mpGrid->SetCellSize(100);
 
 	mpCursor = new Cursor();
 }
@@ -51,6 +52,7 @@ Agent<Cell>* MainScene::CreateAgent(sf::Vector2f pos, float speed, int radius, s
 	newEntity->SetSpeed(speed);
 	newEntity->SetRigidBody(false);
 	newEntity->SetPathfinding(CreatePathFinding());
+
 	newEntity->SetPosition(pos.x, pos.y);
 
 	return newEntity;
@@ -59,9 +61,6 @@ Agent<Cell>* MainScene::CreateAgent(sf::Vector2f pos, float speed, int radius, s
 PathFinding<Cell> MainScene::CreatePathFinding()
 {
 	PathFinding<Cell> pathFinding = PathFinding<Cell>();
-	pathFinding.SetCursor(mpCursor);
-	pathFinding.SetPathFinish(true);
-	pathFinding.SetStartNode(nullptr);
-	pathFinding.SetEndNode(nullptr);
+	pathFinding.SetReadFinish(true);
 	return pathFinding;
 }

@@ -15,7 +15,7 @@ class Grid
 
 	MainScene* pCurrentScene;
 public:
-	Grid(int cellSize) { mCellSize = cellSize; Start(); }
+	Grid() {Start(); }
 
 	void Start();
 	void InitTab(std::string strGrid);
@@ -42,9 +42,9 @@ public:
 	const int& GetCellSize() { return mCellSize; }
 	void SetCellSize(int val) { mCellSize = val; }
 
-	std::vector<std::vector<T*>> GetAllCells() { return mAllCells; }
+	std::vector<std::vector<T*>>& GetAllCells() { return mAllCells; }
 
-	std::vector<Node<T>*> GetAllNodes() { return mAllNodes; }
+	std::vector<Node<T>*>& GetAllNodes() { return mAllNodes; }
 };
 
 #include "Grid.inl"

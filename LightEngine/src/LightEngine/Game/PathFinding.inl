@@ -2,181 +2,52 @@
 #include "../Utils.h"
 #include "Cursor.h"
 #include "../Debug.h"
+#include "Grid.h"
+
+
 
 template<typename T>
-void PathFinding<T>::InitQueue()
+inline std::vector<Node<T>*> PathFinding<T>::Find(Node<T>* startNode, Node<T>* endNode, Grid<T>* grid)
 {
-    ResetQueue();
-    mQueue.push(GetStartNode());
+    //SetPathFinish(false);
+    //SetPath(std::vector<Node<T>*>());
+
+    std::vector<Node<T>*> path = FindPath(startNode, endNode, grid, GetPath());
+
+    SetPath(path);
 }
 
 template<typename T>
-void PathFinding<T>::ResetQueue()
+void PathFinding<T>::SetReadFinish(bool readFinish)
 {
-    for (int i = 0; i < mQueue.size(); i++)
-    {
-        mQueue.pop();
-    }
-}
-
-template<typename T>
-void PathFinding<T>::PathBegin(Node<T>* startNode, Node<T>* endNode)
-{
-    SetStartNode(startNode);
-    SetEndNode(endNode);
-
-    SetPathFinish(false);
-    SetPath(std::vector<Node<T>*>());
-
-    startNode->SetDisStart(0);
-    startNode->SetDisEnd(Utils::DisManhattan(startNode->GetData()->getPosition(), endNode->GetData()->getPosition()));
-    
-    InitQueue();
-}
-
-template<typename T>
-void PathFinding<T>::FindPath()
-{
-    Node<T>* endNode = GetEndNode();
-    while ((int)mQueue.size() != 0)
-    {
-        Node<T>* nodeCurrent = mQueue.top();
-        mQueue.pop();
-
-        if (nodeCurrent->GetVisited() == true)
-        {
-            continue;
-        }
-
-        if (nodeCurrent == endNode)
-        {
-            CreatePath();
-            return;
-        }
-
-        T* endCell = endNode->GetData();
-        sf::Vector2f endPosition = endCell->getPosition();
-
-
-        nodeCurrent->SetVisited(true);
-
-        int disStart = nodeCurrent->GetDisStart();
-
-        std::vector<Node<T>*> neighbor = nodeCurrent->GetNeighbor();
-
-        for (Node<T>* nodeN : neighbor)
-        {
-            if (nodeN->GetVisited() == false)
-            {
-                nodeN->SetDisStart(disStart + 1);
-                nodeN->SetDisEnd(Utils::DisManhattan(nodeN->GetData()->getPosition(), endPosition));
-                nodeN->SetCallMe(nodeCurrent);
-
-                mQueue.push(nodeN);
-            }
-        }
-    }
+    mReadFinish = readFinish;
     SetPath(std::vector<Node<T>*>());
 }
 
 template<typename T>
-void PathFinding<T>::FindPathWithDebug()
+bool PathFinding<T>::GetReadFinish()
 {
-    Node<T>* endNode = GetEndNode();
-    if((int)mQueue.size() != 0)
+    return mReadFinish;
+}
+
+template<typename T>
+inline void PathFinding<T>::SetPath(std::vector<Node<T>*> path)
+{
+    mPath = path;
+}
+
+template<typename T>
+inline std::vector<Node<T>*>* PathFinding<T>::GetPath()
+{
+    if (mReadFinish == false && mPath.size() > 0)
     {
-        Node<T>* nodeCurrent = mQueue.top();
-        mQueue.pop();
-
-        if (nodeCurrent->GetVisited() == true)
-        {
-            return;
-        }
-
-        if (nodeCurrent == endNode)
-        {
-            CreatePath();
-            ResetQueue();
-            return;
-        }
-
-        T* endCell = endNode->GetData();
-        sf::Vector2f endPosition = endCell->getPosition();
-        Debug::DrawCircle(endPosition.x, endPosition.y, 10.f, sf::Color::Red);
-
-        nodeCurrent->SetVisited(true);
-
-        int disStart = nodeCurrent->GetDisStart();
-
-        std::vector<Node<T>*> neighbor = nodeCurrent->GetNeighbor();
-
-        for (Node<T>* nodeN : neighbor)
-        {
-            if (nodeN->GetVisited() == false)
-            {
-                nodeN->SetDisStart(disStart + 1);
-                nodeN->SetDisEnd(Utils::DisManhattan(nodeN->GetData()->getPosition(), endPosition));
-                nodeN->SetCallMe(nodeCurrent);
-
-                mQueue.push(nodeN);
-            }
-        }
+        return &mPath;
     }
     else
     {
-        if (GetPath()->size() == 0)
-        {
-            SetPath(std::vector<Node<T>*>());
-        }
+        SetReadFinish(true);
+        return nullptr;
     }
-}
-
-template<typename T>
-void PathFinding<T>::CreatePath()
-{
-    Node<T>* endNode = mEndNode;
-    std::vector<Node<T>*> allPathEnds = std::vector<Node<T>*>();
-    while (endNode != mStartNode)
-    {
-        allPathEnds.push_back(endNode);
-        endNode = endNode->GetCallMe();
-    }
-
-    std::vector<Node<T>*> allFormerPaths = *GetPath();
-    std::vector<Node<T>*> allPathStarts;
-    if (GetPathFinish())
-    {
-        allPathStarts = std::vector<Node<T>*>();
-    }
-    else
-    {
-        allPathStarts = allFormerPaths;
-    }
-    
-    int lenghtAllPathEnds = allPathEnds.size() - 1;
-    for (int i = lenghtAllPathEnds; i > -1; i--)
-    {
-        allPathStarts.push_back(allPathEnds[i]);
-    }
-
-    SetPath(allPathStarts);
-}
-
-template<typename T>
-void PathFinding<T>::SetPathFinish(bool finish)
-{
-    mFinish = finish;
-    if (mFinish == true)
-    {
-        SetStartNode(nullptr);
-        SetEndNode(nullptr);
-    }
-}
-
-template<typename T>
-bool PathFinding<T>::GetPathFinish()
-{
-    return mFinish;
 }
 
 template<typename T>
