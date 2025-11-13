@@ -6,16 +6,15 @@
 
 class MainScene;
 
-template<typename T>
-class Grid
+class CGrid
 {
 	int mCellSize;
-	std::vector<Node<T>*> mAllNodes;
+	std::vector<Node<Cell>*> mAllNodes;
 	std::vector<std::vector<Cell*>> mAllCells;
 
 	MainScene* pCurrentScene = nullptr;
 public:
-	Grid(int cellSize) { mCellSize = cellSize; Start(); }
+	CGrid(int cellSize) { mCellSize = cellSize; Start(); }
 
 	void Start();
 	void InitTab(std::string strGrid);
@@ -24,8 +23,6 @@ public:
 
 	void CleanGrid();
 	
-	void CreateEmptyGrid(int _rows, int _cols);
-
 	void SaveGrid(std::string fileName);
 	std::string GetStringFromTxt(std::string fileName);
 
@@ -43,8 +40,5 @@ public:
 
 	std::vector<std::vector<Cell*>>& GetAllCells() { return mAllCells; }
 
-	std::vector<Node<T>*>& GetAllNodes() { return mAllNodes; }
+	std::vector<Node<Cell>*>& GetAllNodes() { return mAllNodes; }
 };
-
-#include "Grid.inl"
-

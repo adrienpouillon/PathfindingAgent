@@ -132,7 +132,7 @@ Cell* MainScene::GetNearestCell(sf::Vector2f pos)
 	std::vector<std::vector<Cell*>> allCells = GetGrid()->GetAllCells();
 	for (auto& row : allCells)
 	{
-		for (auto& cell : row)
+		for (auto cell : row)
 		{
 			float dx = abs(cell->getPosition().x - pos.x);
 			float dy = abs(cell->getPosition().y - pos.y);
@@ -164,7 +164,7 @@ void MainScene::OnInitialize()
 	SetGridSize(20, 20);
 
 	mView.setSize(1920, 1080);
-	mpGrid = new Grid<Cell>(50);
+	mpGrid = new CGrid(50);
 }
 
 void MainScene::OnEvent(const sf::Event& event)
@@ -272,13 +272,11 @@ void MainScene::HandleGridResizing()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1))
 	{
 		CleanEntities();
-		mpGrid->CreateEmptyGrid(mGridRows + 1, mGridCols + 1);
 		mIsResizing = true;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F2))
 	{
 		CleanEntities();
-		mpGrid->CreateEmptyGrid(mGridRows - 1, mGridCols - 1);
 		mIsResizing = true;
 	}
 }

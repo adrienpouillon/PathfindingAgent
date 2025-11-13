@@ -4,11 +4,9 @@
 
 #include "Agent.h"
 
+class CGrid;
 
 class Entity;
-
-template<typename T>
-class Grid;
 
 class MainScene : public Scene
 {
@@ -16,7 +14,7 @@ protected:
 	int mGridRows = 9; // default
 	int mGridCols = 9; // default
 
-	Grid<Cell>* mpGrid = nullptr;
+	CGrid* mpGrid = nullptr;
 
 	sf::View mView;
 
@@ -48,7 +46,7 @@ public:
 	Entity* GetNearestEntity(sf::Vector2f pos);
 	Cell* GetNearestCell(sf::Vector2f pos);
 
-	Grid<Cell>* GetGrid() { return mpGrid; }
+	CGrid* GetGrid() { return mpGrid; }
 
 	void OnInitialize() override;
 	void OnEvent(const sf::Event& event) override;

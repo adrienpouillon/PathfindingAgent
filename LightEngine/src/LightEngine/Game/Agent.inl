@@ -63,27 +63,27 @@ void Agent<T>::UpdatePath()
 
 		if (GetRoam())
 		{
-			Grid<T>* grid = GameManager::Get()->GetScene<MainScene>()->GetGrid();
+			CGrid* grid = GameManager::Get()->GetScene<MainScene>()->GetGrid();
 			GoToNode(startNode, grid);
 		}
 	}
 }
 
 template<typename T>
-void Agent<T>::GoToCell(T* cellEnd, Grid<T>* grid)
+void Agent<T>::GoToCell(T* cellEnd, CGrid* grid)
 {
 	GoToCell(cellEnd.getPosition(), grid);
 }
 
 template<typename T>
-void Agent<T>::GoToCell(sf::Vector2f pos, Grid<T>* grid)
+void Agent<T>::GoToCell(sf::Vector2f pos, CGrid* grid)
 {
 	GoToNode(Utils::GetNode(pos, grid), grid);
 	//::GetNodeInTab(pos.x, pos.y, allNodes.size(), allNodes));
 }
 
 template<typename T>
-void Agent<T>::GoToNode(Node<T>* nodeEnd, Grid<T>* grid)
+void Agent<T>::GoToNode(Node<T>* nodeEnd, CGrid* grid)
 {
 	Node<T>* nodeStart = Utils::GetNode(GetPosition(), grid);
 	mPath.PathBegin(nodeStart, nodeEnd);
