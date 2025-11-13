@@ -1,5 +1,6 @@
 #include "MainScene.h"
 #include "Grid.h"
+#include "Agent.h"
 #include <iostream>
 
 void MainScene::Clear()
@@ -26,7 +27,6 @@ void MainScene::SetCellObstacle(sf::Vector2f pos, bool state)
 void MainScene::InputManager(sf::Vector2f worldMousePos, const sf::Event& e)
 {
 	static bool isPressed = false;
-
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) == false)
 	{

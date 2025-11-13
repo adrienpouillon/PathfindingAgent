@@ -1,8 +1,9 @@
 #pragma once
 #include "../Scene.h"
+#include "PathFinding.h"
 #include "Cell.h"
 
-#include "Agent.h"
+class Agent;
 
 class Grid;
 

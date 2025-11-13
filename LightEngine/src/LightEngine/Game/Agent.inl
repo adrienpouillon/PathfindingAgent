@@ -1,7 +1,7 @@
 #include "Agent.h"
 
 #include "../Debug.h"
-
+#include "../GameManager.h"
 #include "MainScene.h"
 #include "Node.h"
 #include "Grid.h"
@@ -47,8 +47,11 @@ void Agent::UpdatePath()
 
 		if (GetRoam())
 		{
-			Grid* grid = GameManager::Get()->GetScene<MainScene>()->GetGrid();
-			GoToNode(GetStartNode(), grid);
+			if (MainScene* pScene = GameManager::Get()->GetScene<MainScene>())
+			{
+				Grid* grid = pScene->GetGrid();
+				GoToNode(GetStartNode(), grid);
+			}
 		}
 	}
 }
