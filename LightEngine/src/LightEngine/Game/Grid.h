@@ -6,7 +6,7 @@
 
 class MainScene;
 
-class CGrid
+class Grid
 {
 	int mCellSize;
 	std::vector<Node<Cell>*> mAllNodes;
@@ -17,7 +17,7 @@ class CGrid
 	void CreateTab(int _rows, int _cols, std::string strGrid);
 	void InitNodeNeighbor();
 public:
-	CGrid(int cellSize) { mCellSize = cellSize; Start(); }
+	Grid(int cellSize) { mCellSize = cellSize; Start(); }
 
 	void Start();
 	void InitTab(int _rows, int _cols, std::string strGrid = "");

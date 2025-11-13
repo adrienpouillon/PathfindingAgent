@@ -2,7 +2,7 @@
 #include "../Entity.h"
 #include "PathFinding.h"
 
-class CGrid;
+class Grid;
 
 enum TagAgent
 {
@@ -26,11 +26,11 @@ public:
 
 	virtual void UpdatePath();
 
-	void GoToCell(T* cellEnd, CGrid* grid);
+	void GoToCell(T* cellEnd, Grid* grid);
 
-	void GoToCell(sf::Vector2f pos, CGrid* grid);
+	void GoToCell(sf::Vector2f pos, Grid* grid);
 
-	void GoToNode(Node<T>* nodeEnd, CGrid* grid);
+	void GoToNode(Node<T>* nodeEnd, Grid* grid);
 
 	void SetPathfinding(PathFinding<T> path) { mPath = path; }
 	PathFinding<T>* GetPathfinding() { return &mPath; }

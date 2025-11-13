@@ -2,7 +2,7 @@
 
 #include <SFML/System/Vector2.hpp>
 
-class CGrid;
+class Grid;
 
 class Cell;
 
@@ -18,9 +18,9 @@ namespace Utils
 	int DisManhattan(sf::Vector2f currentPos, sf::Vector2f endPos);
 	sf::Vector2f GetCellInPos(sf::Vector2f pos, int sizeCell);
 
-	Cell* GetCell(sf::Vector2f pos, CGrid* grid);
+	Cell* GetCell(sf::Vector2f pos, Grid* grid);
 
-	Node<Cell>* GetNode(sf::Vector2f pos, CGrid* grid);
+	Node<Cell>* GetNode(sf::Vector2f pos, Grid* grid);
 }
 
 

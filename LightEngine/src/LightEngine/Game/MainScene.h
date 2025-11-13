@@ -4,7 +4,7 @@
 
 #include "Agent.h"
 
-class CGrid;
+class Grid;
 
 class Entity;
 
@@ -14,7 +14,7 @@ protected:
 	int mGridRows = 9; // default
 	int mGridCols = 9; // default
 
-	CGrid* mpGrid = nullptr;
+	Grid* mpGrid = nullptr;
 
 	sf::View mView;
 
@@ -46,7 +46,7 @@ public:
 	Entity* GetNearestEntity(sf::Vector2f pos);
 	Cell* GetNearestCell(sf::Vector2f pos);
 
-	CGrid* GetGrid() { return mpGrid; }
+	Grid* GetGrid() { return mpGrid; }
 
 	void OnInitialize() override;
 	void OnEvent(const sf::Event& event) override;

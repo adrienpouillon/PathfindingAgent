@@ -162,7 +162,7 @@ void MainScene::OnInitialize()
 	SetGridDimensions(20, 20);
 
 	mView.setSize(1920, 1080);
-	mpGrid = new CGrid(50);
+	mpGrid = new Grid(50);
 }
 
 void MainScene::OnEvent(const sf::Event& event)

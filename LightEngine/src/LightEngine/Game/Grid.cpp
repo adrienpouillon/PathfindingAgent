@@ -9,7 +9,7 @@
 #include <fstream>
 #include <string>
 
-void CGrid::Start()
+void Grid::Start()
 {
 	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
 
@@ -18,11 +18,11 @@ void CGrid::Start()
 		int rows = pCurrentScene->GetGridRows();
 		int cols = pCurrentScene->GetGridCols();
 
-		InitTab("grid.txt");
+		InitTab(rows, cols);
 	}
 }
 
-void CGrid::InitTab(int _rows, int _cols, std::string strGrid)
+void Grid::InitTab(int _rows, int _cols, std::string strGrid)
 {
 	CleanGrid();
 	CreateTab(_rows, _cols, strGrid);
@@ -30,7 +30,7 @@ void CGrid::InitTab(int _rows, int _cols, std::string strGrid)
 	pCurrentScene->GetView().setCenter(GetPositionToView(_rows, _cols, 0.5f, mCellSize));
 }
 
-void CGrid::InitTab(std::string fileName)
+void Grid::InitTab(std::string fileName)
 {
 	std::string strGrid = GetStringFromTxt(fileName);
 
@@ -43,7 +43,7 @@ void CGrid::InitTab(std::string fileName)
 	InitTab(pCurrentScene->GetGridRows(), pCurrentScene->GetGridCols(), strGrid);
 }
 
-void CGrid::CreateTab(int _rows, int _cols, std::string strGrid)
+void Grid::CreateTab(int _rows, int _cols, std::string strGrid)
 {
 	int rows = _rows;
 	int cols = _cols;
@@ -84,7 +84,7 @@ void CGrid::CreateTab(int _rows, int _cols, std::string strGrid)
 	}
 }
 
-void CGrid::InitNodeNeighbor()
+void Grid::InitNodeNeighbor()
 {
 	int rows = pCurrentScene->GetGridRows();
 	int cols = pCurrentScene->GetGridCols();
@@ -147,7 +147,7 @@ void CGrid::InitNodeNeighbor()
 	}
 }
 
-void CGrid::CleanGrid()
+void Grid::CleanGrid()
 {
 	for (auto it = mAllCells.begin(); it != mAllCells.end(); ++it)
 	{
@@ -171,7 +171,7 @@ void CGrid::CleanGrid()
 	mAllNodes.clear();
 }
 
-void CGrid::SaveGrid(std::string fileName)
+void Grid::SaveGrid(std::string fileName)
 {
 	std::ofstream file("../../../res/" + fileName, std::ios::out);
 
@@ -198,7 +198,7 @@ void CGrid::SaveGrid(std::string fileName)
 	file.close();
 }
 
-std::string CGrid::GetStringFromTxt(std::string fileName)
+std::string Grid::GetStringFromTxt(std::string fileName)
 {
 	std::string txtOutput;
 	std::ifstream file("../../../res/" + fileName);
@@ -240,13 +240,13 @@ std::string CGrid::GetStringFromTxt(std::string fileName)
 	return txtOutput;
 }
 
-void CGrid::Update()
+void Grid::Update()
 {
 	UpdateCellsStatut();
 	DrawGrid();
 }
 
-void CGrid::UpdateCellsStatut()
+void Grid::UpdateCellsStatut()
 {
 	for (auto& row : mAllCells)
 	{
@@ -257,14 +257,14 @@ void CGrid::UpdateCellsStatut()
 	}
 }
 
-void CGrid::DrawGrid()
+void Grid::DrawGrid()
 {
 	DrawColorCell();
 	pCurrentScene->GetView().setCenter(GetPositionToView(pCurrentScene->GetGridRows(), pCurrentScene->GetGridCols(), 0.5f, mCellSize));
 	DrawLineGrid();
 }
 
-void CGrid::DrawColorCell()
+void Grid::DrawColorCell()
 {
 	int rows = 0;
 	int cols = 0;
@@ -295,7 +295,7 @@ void CGrid::DrawColorCell()
 	}
 }
 
-void CGrid::DrawLineGrid()
+void Grid::DrawLineGrid()
 {
 	int lenghtCol = mAllCells.size();
 	int lenghtRow = mAllCells[0].size();
@@ -323,7 +323,7 @@ void CGrid::DrawLineGrid()
 	}
 }
 
-sf::Vector2f CGrid::GetPositionToView(int rows, int cols, float coef, int size)
+sf::Vector2f Grid::GetPositionToView(int rows, int cols, float coef, int size)
 {
 	return sf::Vector2f((int)((float)rows * coef) * mCellSize, (int)((float)cols * coef) * mCellSize);
 }
