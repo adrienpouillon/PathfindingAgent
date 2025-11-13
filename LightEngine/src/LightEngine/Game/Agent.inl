@@ -6,6 +6,15 @@
 template<typename T>
 void Agent<T>::OnUpdate()
 {
+	std::vector<Node<T>*>* allPaths = mPath.GetPath();
+	mIndexPath = mIndexPath;
+	mPath.mCursor = mPath.mCursor;
+	mPath.mFinish = mPath.mFinish;
+	mPath.mQueue = mPath.mQueue;
+	mPath.mStartNode = mPath.mStartNode;
+	mPath.mEndNode = mPath.mEndNode;
+	mRoam = mRoam;
+	mPath.FindPathWithDebug();
 	UpdatePath();
 }
 
@@ -19,6 +28,13 @@ void Agent<T>::UpdatePath()
 
 	std::vector<Node<T>*>* allPaths = mPath.GetPath();
 	int lenghtAllPaths = allPaths->size() - 1;
+
+	if (mIndexPath >= lenghtAllPaths)
+	{
+		return;
+	}
+
+	
 	for (int i = mIndexPath; i < lenghtAllPaths; i++)
 	{
 		T* currentCell = (*allPaths)[i]->GetData();
@@ -42,7 +58,7 @@ void Agent<T>::UpdatePath()
 	mIndexPath++;
 	if (mIndexPath == allPaths->size())
 	{
-		Node<T> startNode = mPath.GetStartNode();
+		Node<T>* startNode = mPath.GetStartNode();
 		mPath.SetPathFinish(true);
 		mPath.SetPath(std::vector<Node<T>*>());
 		mIndexPath = 0;
@@ -73,5 +89,5 @@ void Agent<T>::GoToNode(Node<T>* nodeEnd, Grid<T>* grid)
 {
 	Node<T>* nodeStart = Utils::GetNode(GetPosition(), grid);
 	mPath.PathBegin(nodeStart, nodeEnd);
-	mPath.FindPath();
+	//mPath.FindPath();
 }

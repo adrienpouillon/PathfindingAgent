@@ -8,7 +8,7 @@ class Cursor;
 template<typename T>
 class PathFinding
 {
-protected:
+public://protected:
 	Cursor* mCursor;
 	bool mFinish;
 	std::priority_queue<Node<T>*, std::vector<Node<T>*>, CompareASTAR<T>> mQueue;

@@ -1,6 +1,7 @@
 #include "PathFinding.h"
 #include "../Utils.h"
 #include "Cursor.h"
+#include "../Debug.h"
 
 template<typename T>
 void PathFinding<T>::InitQueue()
@@ -56,6 +57,7 @@ void PathFinding<T>::FindPath()
         T* endCell = endNode->GetData();
         sf::Vector2f endPosition = endCell->getPosition();
 
+
         nodeCurrent->SetVisited(true);
 
         int disStart = nodeCurrent->GetDisStart();
@@ -88,7 +90,7 @@ void PathFinding<T>::FindPathWithDebug()
 
         if (nodeCurrent->GetVisited() == true)
         {
-            continue;
+            return;
         }
 
         if (nodeCurrent == endNode)
@@ -100,6 +102,7 @@ void PathFinding<T>::FindPathWithDebug()
 
         T* endCell = endNode->GetData();
         sf::Vector2f endPosition = endCell->getPosition();
+        Debug::DrawCircle(endPosition.x, endPosition.y, 10.f, sf::Color::Red);
 
         nodeCurrent->SetVisited(true);
 
