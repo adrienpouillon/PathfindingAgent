@@ -14,7 +14,7 @@
 
 void Grid::Start()
 {
-	SetCellSize(100);
+	SetCellSize(50);
 	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
 
 	if (pCurrentScene)
@@ -97,54 +97,25 @@ void Grid::InitNodeNeighbor()
 	{
 		for (int c = 0; c < cols; c++)
 		{
-			Node<Cell>* node = GetNodeInTab(r, c, rows, &mAllNodes);
+			Node<Cell>* node = GetNodeInTab(r, c, cols, &mAllNodes);
 
-			if (node->GetData()->GetObstacle() == true)
+			int addRows[4] = { -1, 1, 0, 0 };
+			int addCols[4] = { 0, 0, -1, 1 };
+
+			for (int n = 0; n < 4; n++)
 			{
-				node->SetNeighbor(std::vector<Node<Cell>*>());
-			}
-			else
-			{
-				std::vector<Node<Cell>*> neighbor = std::vector<Node<Cell>*>();
+				int newRow = r + addRows[n];
+				int newCol = c + addCols[n];
 
-				if (c != 0)
+				if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols)
 				{
-					//î
-					Node<Cell>* nodeNeighbor = GetNodeInTab(r, c - 1, rows, &mAllNodes);
-					if (nodeNeighbor->GetData()->GetObstacle() == false)
-					{
-						neighbor.push_back(nodeNeighbor);
-					}
-				}
-				if (r != 0)
-				{
-					//<-
-					Node<Cell>* nodeNeighbor = GetNodeInTab(r - 1, c, rows, &mAllNodes);
-					if (nodeNeighbor->GetData()->GetObstacle() == false)
-					{
-						neighbor.push_back(nodeNeighbor);
-					}
-				}
-				if (r != rows - 1)
-				{
-					//->
-					Node<Cell>* nodeNeighbor = GetNodeInTab(r + 1, c, rows, &mAllNodes);
-					if (nodeNeighbor->GetData()->GetObstacle() == false)
-					{
-						neighbor.push_back(nodeNeighbor);
-					}
-				}
-				if (c != cols - 1)
-				{
-					//!
-					Node<Cell>* nodeNeighbor = GetNodeInTab(r, c + 1, rows, &mAllNodes);
-					if (nodeNeighbor->GetData()->GetObstacle() == false)
-					{
-						neighbor.push_back(nodeNeighbor);
-					}
-				}
+					Node<Cell>* nodeNeighbor = GetNodeInTab(newRow, newCol, cols, &mAllNodes);
 
-				node->SetNeighbor(neighbor);
+					if (nodeNeighbor->GetData()->GetObstacle() == false)
+					{
+						node->GetAllNeighbors().push_back(nodeNeighbor);
+					}
+				}
 			}
 
 		}

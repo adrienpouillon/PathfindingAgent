@@ -7,12 +7,11 @@
 
 void MainScene::OnInitialize()
 {
-	SetGridDimensions(20, 20);
+	SetGridDimensions(20, 10);
 
 	mView.setSize(1920, 1080);
 
 	mpGrid = new Grid();
-	mpGrid->SetCellSize(100);
 }
 
 void MainScene::OnEvent(const sf::Event& event)
@@ -170,13 +169,15 @@ void MainScene::HandleGridResizing()
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1))
 	{
-		if (mGridRows <= 1 && mGridCols <= 1)
+		if (mGridRows > 1)
 		{
-			return;
+			mGridRows -= 1;
 		}
 
-		mGridRows -= 1;
-		mGridCols -= 1;
+		if (mGridCols > 1)
+		{
+			mGridCols -= 1;
+		}
 
 		CleanEntities();
 
@@ -185,13 +186,15 @@ void MainScene::HandleGridResizing()
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F2))
 	{
-		if (mGridRows >= 50 && mGridCols >= 50)
+		if (mGridRows < 50)
 		{
-			return;
+			mGridRows += 1;
 		}
 
-		mGridRows += 1;
-		mGridCols += 1;
+		if (mGridCols < 50)
+		{
+			mGridCols += 1;
+		}
 
 		CleanEntities();
 		mpGrid->InitTab(mGridRows, mGridCols);

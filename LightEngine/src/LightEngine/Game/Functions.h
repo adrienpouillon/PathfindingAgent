@@ -27,7 +27,7 @@ template<typename T>
 Node<T>* GetNode(sf::Vector2f pos, Grid* grid);
 
 template<typename T>
-Node<T>* GetNodeInTab(int i, int j, int lenght_i, std::vector<Node<T>*>* allNodes);
+Node<T>* GetNodeInTab(int row, int col, int length_col, std::vector<Node<T>*>* allNodes);
 
 template<typename A>
 std::vector<A*>* EraseTab(std::vector<A*>* all);

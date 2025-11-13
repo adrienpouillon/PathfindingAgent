@@ -20,13 +20,13 @@ inline Node<T>* GetNode(sf::Vector2f pos, Grid* grid)
 {
 	sf::Vector2f index = Utils::GetCellInPos(pos, grid->GetCellSize());
 	std::vector<Node<T>*> allNodes = grid->GetAllNodes();
-	return GetNodeInTab(index.x, index.y, grid->GetAllCells().size(), &allNodes);
+	return GetNodeInTab(index.x, index.y, grid->GetAllCells()[0].size(), &allNodes);
 }
 
 template<typename T>
-inline Node<T>* GetNodeInTab(int i, int j, int lenght_i, std::vector<Node<T>*>* allNodes)
+inline Node<T>* GetNodeInTab(int row, int col, int length_col, std::vector<Node<T>*>* allNodes)
 {
-	return (*allNodes)[i * lenght_i + j];
+	return (*allNodes)[row * length_col + col];
 }
 
 template<typename T>
