@@ -1,8 +1,11 @@
 #include "Grid.h"
+
 #include "../GameManager.h"
 #include "../Scene.h"
-#include "MainScene.h"
 #include "../Debug.h"
+
+#include "MainScene.h"
+#include "Functions.h"
 #include "Cell.h"
 
 #include <iostream>
@@ -11,6 +14,7 @@
 
 void Grid::Start()
 {
+	SetCellSize(100);
 	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
 
 	if (pCurrentScene)
@@ -43,7 +47,7 @@ void Grid::InitTab(std::string fileName)
 	InitTab(pCurrentScene->GetGridRows(), pCurrentScene->GetGridCols(), strGrid);
 }
 
-void Grid::CreateTab(int _rows, int _cols, std::string strGrid)
+void Grid::CreateTab(int _rows, int _cols, std::string strGrid = "")
 {
 	int rows = _rows;
 	int cols = _cols;
@@ -56,7 +60,7 @@ void Grid::CreateTab(int _rows, int _cols, std::string strGrid)
 		for (int c = 0; c < cols; c++)
 		{
 			Cell* cell = new Cell();
-			sf::Vector2f pos = sf::Vector2f(c * mCellSize, r * mCellSize);
+			sf::Vector2f pos = sf::Vector2f(r * mCellSize, c * mCellSize);
 			cell->SetAll(pos, false);
 
 			if (strGrid.size() > 0)
@@ -93,7 +97,7 @@ void Grid::InitNodeNeighbor()
 	{
 		for (int c = 0; c < cols; c++)
 		{
-			Node<Cell>* node = Node<Cell>::GetNodeInTab(r, c, rows, &mAllNodes);
+			Node<Cell>* node = GetNodeInTab(r, c, rows, &mAllNodes);
 
 			if (node->GetData()->GetObstacle() == true)
 			{
@@ -105,8 +109,8 @@ void Grid::InitNodeNeighbor()
 
 				if (c != 0)
 				{
-					//
-					Node<Cell>* nodeNeighbor = Node<Cell>::GetNodeInTab(r, c - 1, rows, &mAllNodes);
+					//î
+					Node<Cell>* nodeNeighbor = GetNodeInTab(r, c - 1, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);
@@ -115,7 +119,7 @@ void Grid::InitNodeNeighbor()
 				if (r != 0)
 				{
 					//<-
-					Node<Cell>* nodeNeighbor = Node<Cell>::GetNodeInTab(r - 1, c, rows, &mAllNodes);
+					Node<Cell>* nodeNeighbor = GetNodeInTab(r - 1, c, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);
@@ -124,7 +128,7 @@ void Grid::InitNodeNeighbor()
 				if (r != rows - 1)
 				{
 					//->
-					Node<Cell>* nodeNeighbor = Node<Cell>::GetNodeInTab(r + 1, c, rows, &mAllNodes);
+					Node<Cell>* nodeNeighbor = GetNodeInTab(r + 1, c, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);
@@ -133,7 +137,7 @@ void Grid::InitNodeNeighbor()
 				if (c != cols - 1)
 				{
 					//!
-					Node<Cell>* nodeNeighbor = Node<Cell>::GetNodeInTab(r, c + 1, rows, &mAllNodes);
+					Node<Cell>* nodeNeighbor = GetNodeInTab(r, c + 1, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);

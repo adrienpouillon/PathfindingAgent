@@ -2,13 +2,6 @@
 
 #include <SFML/System/Vector2.hpp>
 
-class Grid;
-
-class Cell;
-
-template<typename T>
-class Node;
-
 namespace Utils
 {
 	bool Normalize(sf::Vector2f& vector);
@@ -18,10 +11,4 @@ namespace Utils
 	int DisManhattan(sf::Vector2f currentPos, sf::Vector2f endPos);
 	sf::Vector2f GetCellInPos(sf::Vector2f pos, int sizeCell);
 
-	Cell* GetCell(sf::Vector2f pos, Grid* grid);
-
-	Node<Cell>* GetNode(sf::Vector2f pos, Grid* grid);
 }
-
-
-#include "Utils.inl"

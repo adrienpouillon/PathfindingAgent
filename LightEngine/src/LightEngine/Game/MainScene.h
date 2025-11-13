@@ -1,8 +1,9 @@
 #pragma once
 #include "../Scene.h"
+#include "PathFinding.h"
 #include "Cell.h"
 
-#include "Agent.h"
+class Agent;
 
 class Grid;
 
@@ -23,40 +24,38 @@ protected:
 	bool mIsSaving = false;
 	bool mIsResizing = false;
 public:
-	void Clear();
-
-	void CleanEntities();
-
-	void SetGridDimensions(int rows, int cols) { mGridRows = rows; mGridCols = cols; }
-	const int& GetGridRows() { return mGridRows; }
-	const int& GetGridCols() { return mGridCols; }
-
-	void SetGridRows(int val) { mGridRows = val; }
-	void SetGridCols(int val) { mGridCols = val; }
-
-	sf::View& GetView() { return mView; }
-
-	Entity* GetSelectedEntity() { return mSelectedEntity; }
-	void SetSelectedEntity(Entity* e) { mSelectedEntity = e; }
-	void SetCellObstacle(sf::Vector2f pos, bool state);
-	// RIP Cursor 2025-2025
-	void InputManager(sf::Vector2f worldMousePos, const sf::Event& e);
-
-	// TMP
-	Entity* GetNearestEntity(sf::Vector2f pos);
-	Cell* GetNearestCell(sf::Vector2f pos);
-
-	Grid* GetGrid() { return mpGrid; }
 
 	void OnInitialize() override;
 	void OnEvent(const sf::Event& event) override;
 	void OnUpdate() override;
-	
-	void ZoomManager();
 
-	Agent<Cell>* CreateAgent(sf::Vector2f pos, float speed, int radius, sf::Color color);
-	PathFinding<Cell> CreatePathFinding();
+	// RIP Cursor 2025-2025
+	void InputManager(sf::Vector2f worldMousePos, const sf::Event& e);
 
 	void HandleGridSave();
 	void HandleGridResizing();
+
+	Agent* CreateAgent(sf::Vector2f pos, float speed, int radius, sf::Color color);
+	PathFinding<Cell> CreatePathFinding();
+
+	void Clear();
+	void CleanEntities();
+
+	void ZoomManager();
+
+	sf::View& GetView() { return mView; }
+
+	void SetCellObstacle(sf::Vector2f pos, bool state);
+
+	Entity* GetSelectedEntity() { return mSelectedEntity; }
+	void SetSelectedEntity(Entity* e) { mSelectedEntity = e; }
+
+	Grid* GetGrid() { return mpGrid; }
+
+	void SetGridRows(int val) { mGridRows = val; }
+	void SetGridCols(int val) { mGridCols = val; }
+
+	void SetGridDimensions(int rows, int cols) { mGridRows = rows; mGridCols = cols; }
+	const int& GetGridRows() { return mGridRows; }
+	const int& GetGridCols() { return mGridCols; }
 };

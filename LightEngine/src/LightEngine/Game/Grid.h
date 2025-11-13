@@ -17,11 +17,12 @@ class Grid
 	void CreateTab(int _rows, int _cols, std::string strGrid);
 	void InitNodeNeighbor();
 public:
-	Grid(int cellSize) { mCellSize = cellSize; Start(); }
+	Grid() { Start(); }
 
 	void Start();
-	void InitTab(int _rows, int _cols, std::string strGrid = "");
 	void InitTab(std::string fileName);
+	void InitTab(int _rows, int _cols, std::string strGrid = "");
+	void InitNodeNeighbor(int rows, int cols);
 
 	void CleanGrid();
 	

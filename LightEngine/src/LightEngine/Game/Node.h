@@ -17,8 +17,6 @@ public:
 
     void Start() { SetData(nullptr); SetVisited(false); SetCallMe(nullptr); SetNeighbor(std::vector<Node<T>*>()); SetDisStart(0); SetDisEnd(0); }
 
-    static Node<T>* GetNodeInTab(int i, int j, int lenght_i, std::vector<Node<T>*>* allNodes);
-
     void SetAll(T* data, bool visited, Node<T>* callMe, std::vector<Node<T>*> neighbor, int disStart, int disEnd)
     {
         SetData(data); SetVisited(visited); SetCallMe(callMe); SetNeighbor(neighbor); SetDisStart(disStart); SetDisEnd(disEnd);
