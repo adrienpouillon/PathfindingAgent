@@ -1,15 +1,154 @@
 #include "MainScene.h"
-#include "Cursor.h"
 #include "Grid.h"
 #include <iostream>
 
 void MainScene::Clear()
 {
-	delete mpCursor;
-	mpCursor = nullptr;
-
 	delete mpGrid;
 	mpGrid = nullptr;
+}
+
+void MainScene::SetCellObstacle(sf::Vector2f pos, bool state)
+{
+	sf::Vector2f fixedPos = { 0, 0 };
+
+	Cell* nearest = GetNearestCell(pos);
+
+	if (nearest != nullptr)
+	{
+		if (nearest->GetAgent() == false)
+		{
+			nearest->SetObstacle(state);
+		}
+	}
+}
+
+void MainScene::InputManager(sf::Vector2f worldMousePos, const sf::Event& e)
+{
+	static bool isPressed = false;
+
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) == false)
+	{
+		isPressed = false;
+	}
+
+	if (isPressed == false)
+	{
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		{
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				isPressed = true;
+				//creer une entity
+
+				Cell* nearest = GetNearestCell(worldMousePos);
+
+				if (nearest->GetAgent() == false && nearest->GetObstacle() == false)
+				{
+					sf::Vector2f pos = nearest->getPosition();
+
+					CreateAgent(pos, 100.f, 25.f, sf::Color::Cyan);
+
+					std::cout << "Created\n";
+				}
+			}
+
+			return;
+		}
+
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			Entity* clicOnEntity = GetNearestEntity(worldMousePos);
+
+			if (mSelectedEntity == nullptr)
+			{
+				if (clicOnEntity != nullptr)
+				{
+					//selectionner une entity
+					mSelectedEntity = clicOnEntity;
+
+					std::cout << "Selected !\n";
+				}
+			}
+			else
+			{
+				if (clicOnEntity == nullptr)
+				{
+					//deplacer une entity
+					if (Agent<Cell>* a = dynamic_cast<Agent<Cell>*>(mSelectedEntity))
+					{
+						a->GoToCell(worldMousePos, GetGrid());
+						mSelectedEntity = nullptr;
+
+						std::cout << "Moving !\n";
+					}
+				}
+			}
+
+			return;
+		}
+	}
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
+	{
+		SetCellObstacle(worldMousePos, true);
+		return;
+	}
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+	{
+		if (Entity* e = GetNearestEntity(worldMousePos))
+		{
+			mSelectedEntity = nullptr;
+			e->Destroy();
+			return;
+		}
+
+		SetCellObstacle(worldMousePos, false);
+
+		return;
+	}
+}
+
+Entity* MainScene::GetNearestEntity(sf::Vector2f pos)
+{
+	for (Entity* e : GameManager::Get()->GetEntities())
+	{
+		if (e->IsInside(pos.x, pos.y))
+		{
+			return e;
+		}
+	}
+
+	return nullptr;
+}
+
+Cell* MainScene::GetNearestCell(sf::Vector2f pos)
+{
+	Cell* nearest = nullptr;
+	float smallestSquaredDist = INT_MAX;
+
+	std::vector<std::vector<Cell*>> allCells = GetGrid()->GetAllCells();
+	for (auto& row : allCells)
+	{
+		for (auto& cell : row)
+		{
+			float dx = abs(cell->getPosition().x - pos.x);
+			float dy = abs(cell->getPosition().y - pos.y);
+
+			float squaredDist = dx * dx + dy * dy;
+
+			if (squaredDist < smallestSquaredDist)
+			{
+				nearest = cell;
+
+				smallestSquaredDist = squaredDist;
+			}
+		}
+	}
+
+	return nearest;
 }
 
 void MainScene::OnInitialize()
@@ -18,21 +157,32 @@ void MainScene::OnInitialize()
 
 	mView.setSize(1920, 1080);
 	mpGrid = new Grid<Cell>(50);
-
-	mpCursor = new Cursor();
 }
 
 void MainScene::OnEvent(const sf::Event& event)
 {
+	auto win = GameManager::Get()->GetWindow();
+	sf::Vector2f worldMousePos = win->mapPixelToCoords(sf::Mouse::getPosition(*win));
+
+	InputManager(worldMousePos, event);
 }
 
 void MainScene::OnUpdate()
 {
+	ZoomManager();
 	GameManager::Get()->GetWindow()->setView(mView);
 
-	mpCursor->Update();
 	mpGrid->Update();
 
+	if (mSelectedEntity != nullptr)
+	{
+		sf::Vector2f pos = mSelectedEntity->GetPosition();
+		Debug::DrawCircle(pos.x, pos.y, 5.f, sf::Color::Magenta);
+	}
+}
+
+void MainScene::ZoomManager()
+{
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
 	{
 		mView.zoom(1.f - GetDeltaTime());
@@ -59,7 +209,6 @@ Agent<Cell>* MainScene::CreateAgent(sf::Vector2f pos, float speed, int radius, s
 PathFinding<Cell> MainScene::CreatePathFinding()
 {
 	PathFinding<Cell> pathFinding = PathFinding<Cell>();
-	pathFinding.SetCursor(mpCursor);
 	pathFinding.SetPathFinish(true);
 	pathFinding.SetStartNode(nullptr);
 	pathFinding.SetEndNode(nullptr);

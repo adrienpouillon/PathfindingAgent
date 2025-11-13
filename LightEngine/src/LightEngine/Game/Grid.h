@@ -11,7 +11,7 @@ class Grid
 {
 	int mCellSize;
 	std::vector<Node<T>*> mAllNodes;
-	std::vector<std::vector<T*>> mAllCells;
+	std::vector<std::vector<Cell*>> mAllCells;
 
 	MainScene* pCurrentScene;
 public:
@@ -22,11 +22,8 @@ public:
 	void CreateTab(int rows, int cols, std::string strGrid);
 	void InitNodeNeighbor(int rows, int cols);
 
-	template<typename A>
-	std::vector<A*>* EraseTab(std::vector<A*>* all);
-	template<typename A>
-	std::vector<std::vector<A*>>* EraseTab(std::vector<std::vector<A*>>* all);
-
+	void CleanGrid();
+	
 	void SaveGrid(std::string fileName);
 	std::string GetStringFromTxt(std::string fileName);
 
@@ -42,9 +39,9 @@ public:
 	const int& GetCellSize() { return mCellSize; }
 	void SetCellSize(int val) { mCellSize = val; }
 
-	std::vector<std::vector<T*>> GetAllCells() { return mAllCells; }
+	std::vector<std::vector<Cell*>>& GetAllCells() { return mAllCells; }
 
-	std::vector<Node<T>*> GetAllNodes() { return mAllNodes; }
+	std::vector<Node<T>*>& GetAllNodes() { return mAllNodes; }
 };
 
 #include "Grid.inl"

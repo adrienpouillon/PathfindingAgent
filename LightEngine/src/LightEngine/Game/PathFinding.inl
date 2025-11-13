@@ -1,6 +1,5 @@
 #include "PathFinding.h"
 #include "../Utils.h"
-#include "Cursor.h"
 #include "../Debug.h"
 
 template<typename T>
@@ -13,10 +12,8 @@ void PathFinding<T>::InitQueue()
 template<typename T>
 void PathFinding<T>::ResetQueue()
 {
-    for (int i = 0; i < mQueue.size(); i++)
-    {
+    while (mQueue.empty() == false)
         mQueue.pop();
-    }
 }
 
 template<typename T>
@@ -146,7 +143,7 @@ void PathFinding<T>::CreatePath()
     std::vector<Node<T>*> allPathStarts;
     if (GetPathFinish())
     {
-        allPathStarts = std::vector<Node<T>*>();
+        allPathStarts.clear();
     }
     else
     {

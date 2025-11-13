@@ -3,7 +3,7 @@
 #include "../Scene.h"
 #include "MainScene.h"
 #include "../Debug.h"
-
+#include "Cell.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -28,8 +28,8 @@ void Grid<T>::InitTab(std::string strGrid)
 	int rows = pCurrentScene->GetGridRows();
 	int cols = pCurrentScene->GetGridCols();
 
-	mAllCells = *EraseTab<T>(&mAllCells);
-	mAllNodes = *EraseTab<Node<T>>(&mAllNodes);
+	CleanGrid();
+
 	CreateTab(rows, cols, strGrid);
 	InitNodeNeighbor(rows, cols);
 	pCurrentScene->GetView().setCenter(GetPositionToView(rows, cols, 0.5f, mCellSize));
@@ -41,11 +41,12 @@ void Grid<T>::CreateTab(int rows, int cols, std::string strGrid)
 	int count = 0;
 	for (int r = 0; r < rows; r++)
 	{
-		std::vector<T*> current;
+		std::vector<Cell*> current;
+
 		for (int c = 0; c < cols; c++)
 		{
-			T* cell = new T();
-			sf::Vector2f pos = sf::Vector2f(r * mCellSize, c * mCellSize);
+			Cell* cell = new Cell();
+			sf::Vector2f pos = sf::Vector2f(c * mCellSize, r * mCellSize);
 			cell->SetAll(pos, false);
 
 			if (strGrid.size() > 0)
@@ -62,12 +63,13 @@ void Grid<T>::CreateTab(int rows, int cols, std::string strGrid)
 			Node<T>* node = new Node<T>();
 			bool visited = false;
 			Node<T>* callMe = nullptr;
-			std::vector<Node<T>*> neighbor = std::vector<Node<T>*>();
+			std::vector<Node<T>*> neighbors = std::vector<Node<T>*>();
 			int disStart = 0;
 			int disEnd = 0;
-			node->SetAll(cell, visited, callMe, neighbor, disStart, disEnd);
+			node->SetAll(cell, visited, callMe, neighbors, disStart, disEnd);
 			mAllNodes.push_back(node);
 		}
+
 		mAllCells.push_back(current);
 	}
 }
@@ -134,33 +136,28 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 }
 
 template<typename T>
-template<typename A>
-inline std::vector<A*>* Grid<T>::EraseTab(std::vector<A*>* all)
+void Grid<T>::CleanGrid()
 {
-	int lenghtAll = all->size() - 1;
-	for (int i = lenghtAll; i > -1; i--)
+	for (auto it = mAllCells.begin(); it != mAllCells.end(); ++it)
 	{
-		delete (*all)[i];
-	}
-	return all;
-}
-
-template<typename T>
-template<typename A>
-inline std::vector<std::vector<A*>>* Grid<T>::EraseTab(std::vector<std::vector<A*>>* all)
-{
-	int lenghtAllI = all->size() - 1;
-	int lenghtAllJ = all[0].size() - 1;
-	for (int i = lenghtAllI; i > -1; i--)
-	{
-		for (int j = lenghtAllJ; j > -1; i--)
+		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
 		{
-			delete (*all)[i][j];
+			delete* it2;
 		}
-		all[0].clear();
 	}
-	all->clear();
-	return all;
+
+	for (auto& row : mAllCells)
+	{
+		row.clear();
+	}
+	mAllCells.clear();
+
+
+	for (auto it = mAllNodes.begin(); it != mAllNodes.end(); ++it)
+	{
+		delete* it;
+	}
+	mAllCells.clear();
 }
 
 template<typename T>
@@ -218,7 +215,7 @@ void Grid<T>::Update()
 template<typename T>
 inline void Grid<T>::UpdateCellsStatut()
 {
-	for (auto row : mAllCells)
+	for (auto& row : mAllCells)
 	{
 		for (auto cell : row)
 		{
@@ -241,7 +238,7 @@ inline void Grid<T>::DrawColorCell()
 	int rows = 0;
 	int cols = 0;
 
-	for (auto row : mAllCells)
+	for (auto& row : mAllCells)
 	{
 		for (auto cell : row)
 		{

@@ -8,13 +8,12 @@ void Agent<T>::OnUpdate()
 {
 	std::vector<Node<T>*>* allPaths = mPath.GetPath();
 	mIndexPath = mIndexPath;
-	mPath.mCursor = mPath.mCursor;
 	mPath.mFinish = mPath.mFinish;
 	mPath.mQueue = mPath.mQueue;
 	mPath.mStartNode = mPath.mStartNode;
 	mPath.mEndNode = mPath.mEndNode;
 	mRoam = mRoam;
-	mPath.FindPathWithDebug();
+	//mPath.FindPathWithDebug();
 	UpdatePath();
 }
 
@@ -34,7 +33,6 @@ void Agent<T>::UpdatePath()
 		return;
 	}
 
-	
 	for (int i = mIndexPath; i < lenghtAllPaths; i++)
 	{
 		T* currentCell = (*allPaths)[i]->GetData();
@@ -89,5 +87,5 @@ void Agent<T>::GoToNode(Node<T>* nodeEnd, Grid<T>* grid)
 {
 	Node<T>* nodeStart = Utils::GetNode(GetPosition(), grid);
 	mPath.PathBegin(nodeStart, nodeEnd);
-	//mPath.FindPath();
+	mPath.FindPath();
 }

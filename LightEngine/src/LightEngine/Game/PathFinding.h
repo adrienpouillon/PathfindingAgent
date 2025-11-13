@@ -3,13 +3,10 @@
 #include "Node.h"
 #include "Compare.h"
 
-class Cursor;
-
 template<typename T>
 class PathFinding
 {
 public://protected:
-	Cursor* mCursor;
 	bool mFinish;
 	std::priority_queue<Node<T>*, std::vector<Node<T>*>, CompareASTAR<T>> mQueue;
 	std::vector<Node<T>*> mPath;
@@ -18,7 +15,7 @@ public://protected:
 public:
 	PathFinding() { Start(); }
 
-	void Start() { SetCursor(nullptr); SetPathFinish(true); SetStartNode(nullptr); SetEndNode(nullptr); }
+	void Start() { SetPathFinish(true); SetStartNode(nullptr); SetEndNode(nullptr); }
 
 	void Update();
 
@@ -31,8 +28,8 @@ public:
 	void CreatePath();
 
 
-	void SetCursor(Cursor* cursor) { mCursor = cursor; }
-	Cursor* GetCursor() { return mCursor; }
+
+
 
 	void SetPathFinish(bool finish);
 	bool GetPathFinish();
