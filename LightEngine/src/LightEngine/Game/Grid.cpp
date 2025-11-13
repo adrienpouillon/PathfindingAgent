@@ -4,49 +4,60 @@
 #include "MainScene.h"
 #include "../Debug.h"
 #include "Functions.h"
+#include "Cell.h"
 
 #include <iostream>
 #include <fstream>
 #include <string>
 
-template<typename T>
-void Grid<T>::Start()
+void Grid::Start()
 {
 	SetCellSize(100);
 	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
 
 	if (pCurrentScene)
 	{
-		//std::string strGrid = GetStringFromTxt("grid.txt");
-		//InitTab(strGrid);
-		InitTab(std::string());
+		int rows = pCurrentScene->GetGridRows();
+		int cols = pCurrentScene->GetGridCols();
+
+		InitTab(rows, cols);
 	}
 }
 
-template<typename T>
-void Grid<T>::InitTab(std::string strGrid)
+void Grid::InitTab(int _rows, int _cols, std::string strGrid)
 {
-	int rows = pCurrentScene->GetGridRows();
-	int cols = pCurrentScene->GetGridCols();
-
-	mAllCells = *EraseTab<T>(&mAllCells);
-	mAllNodes = *EraseTab<Node<T>>(&mAllNodes);
-	CreateTab(rows, cols, strGrid);
-	InitNodeNeighbor(rows, cols);
-	pCurrentScene->GetView().setCenter(GetPositionToView(rows, cols, 0.5f, mCellSize));
+	CleanGrid();
+	CreateTab(_rows, _cols, strGrid);
+	InitNodeNeighbor();
+	pCurrentScene->GetView().setCenter(GetPositionToView(_rows, _cols, 0.5f, mCellSize));
 }
 
-template<typename T>
-void Grid<T>::CreateTab(int rows, int cols, std::string strGrid)
+void Grid::InitTab(std::string fileName)
 {
+	std::string strGrid = GetStringFromTxt(fileName);
+
+	if (strGrid.empty())
+	{
+		std::cout << "error : file can't be found or read !\n";
+		return;
+	}
+
+	InitTab(pCurrentScene->GetGridRows(), pCurrentScene->GetGridCols(), strGrid);
+}
+
+void Grid::CreateTab(int _rows, int _cols, std::string strGrid)
+{
+	int rows = _rows;
+	int cols = _cols;
+
 	int count = 0;
 	for (int r = 0; r < rows; r++)
 	{
-		std::vector<T*> current;
+		std::vector<Cell*> current;
+
 		for (int c = 0; c < cols; c++)
 		{
-			T* cell = new T();
-			//sf::Vector2f pos = sf::Vector2f(r * mCellSize, c * mCellSize);
+			Cell* cell = new Cell();
 			sf::Vector2f pos = sf::Vector2f(c * mCellSize, r * mCellSize);
 			cell->SetAll(pos, false);
 
@@ -61,40 +72,43 @@ void Grid<T>::CreateTab(int rows, int cols, std::string strGrid)
 
 			current.push_back(cell);
 
-			Node<T>* node = new Node<T>();
+			Node<Cell>* node = new Node<Cell>();
 			bool visited = false;
-			Node<T>* callMe = nullptr;
-			std::vector<Node<T>*> neighbor = std::vector<Node<T>*>();
+			Node<Cell>* callMe = nullptr;
+			std::vector<Node<Cell>*> neighbors = std::vector<Node<Cell>*>();
 			int disStart = 0;
 			int disEnd = 0;
-			node->SetAll(cell, visited, callMe, neighbor, disStart, disEnd);
+			node->SetAll(cell, visited, callMe, neighbors, disStart, disEnd);
 			mAllNodes.push_back(node);
 		}
+
 		mAllCells.push_back(current);
 	}
 }
 
-template<typename T>
-void Grid<T>::InitNodeNeighbor(int rows, int cols)
+void Grid::InitNodeNeighbor()
 {
+	int rows = pCurrentScene->GetGridRows();
+	int cols = pCurrentScene->GetGridCols();
+
 	for (int r = 0; r < rows; r++)
 	{
 		for (int c = 0; c < cols; c++)
 		{
-			Node<T>* node = GetNodeInTab(r, c, rows, &mAllNodes);
+			Node<Cell>* node = Node<Cell>::GetNodeInTab(r, c, rows, &mAllNodes);
 
 			if (node->GetData()->GetObstacle() == true)
 			{
-				node->SetNeighbor(std::vector<Node<T>*>());
+				node->SetNeighbor(std::vector<Node<Cell>*>());
 			}
 			else
 			{
-				std::vector<Node<T>*> neighbor = std::vector<Node<T>*>();
+				std::vector<Node<Cell>*> neighbor = std::vector<Node<Cell>*>();
 
 				if (c != 0)
 				{
-					//�
-					Node<T>* nodeNeighbor = GetNodeInTab(r, c - 1, rows, &mAllNodes);
+					//î
+					Node<Cell>* nodeNeighbor = Node<Cell>::GetNodeInTab(r, c - 1, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);
@@ -103,7 +117,7 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 				if (r != 0)
 				{
 					//<-
-					Node<T>* nodeNeighbor = GetNodeInTab(r - 1, c, rows, &mAllNodes);
+					Node<Cell>* nodeNeighbor = Node<Cell>::GetNodeInTab(r - 1, c, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);
@@ -112,7 +126,7 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 				if (r != rows - 1)
 				{
 					//->
-					Node<T>* nodeNeighbor = GetNodeInTab(r + 1, c, rows, &mAllNodes);
+					Node<Cell>* nodeNeighbor = Node<Cell>::GetNodeInTab(r + 1, c, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);
@@ -121,7 +135,7 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 				if (c != cols - 1)
 				{
 					//!
-					Node<T>* nodeNeighbor = GetNodeInTab(r, c + 1, rows, &mAllNodes);
+					Node<Cell>* nodeNeighbor = Node<Cell>::GetNodeInTab(r, c + 1, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);
@@ -135,19 +149,67 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 	}
 }
 
-template<typename T>
-inline void Grid<T>::SaveGrid(std::string fileName)
+void Grid::CleanGrid()
 {
+	for (auto it = mAllCells.begin(); it != mAllCells.end(); ++it)
+	{
+		for (auto it2 = it->begin(); it2 != it->end(); ++it2)
+		{
+			delete* it2;
+		}
+	}
+
+	for (auto& row : mAllCells)
+	{
+		row.clear();
+	}
+	mAllCells.clear();
+
+
+	for (auto it = mAllNodes.begin(); it != mAllNodes.end(); ++it)
+	{
+		delete* it;
+	}
+	mAllNodes.clear();
 }
 
-template<typename T>
-inline std::string Grid<T>::GetStringFromTxt(std::string fileName)
+void Grid::SaveGrid(std::string fileName)
+{
+	std::ofstream file("../../../res/" + fileName, std::ios::out);
+
+	if (file.is_open() == false)
+		return;
+
+	for (auto& row : mAllCells)
+	{
+		for (auto cell : row)
+		{
+			if (cell->GetObstacle())
+			{
+				file << "X ";
+			}
+			else
+			{
+				file << "O ";
+			}
+		}
+
+		file << std::endl;
+	}
+
+	file.close();
+}
+
+std::string Grid::GetStringFromTxt(std::string fileName)
 {
 	std::string txtOutput;
 	std::ifstream file("../../../res/" + fileName);
 
 	if (file.is_open() == false)
-		return;
+	{
+		std::cerr << fileName + " can't be open !" << std::endl;
+		return "";
+	}
 
 	std::string line;
 	int rowsCount = 0;
@@ -180,17 +242,15 @@ inline std::string Grid<T>::GetStringFromTxt(std::string fileName)
 	return txtOutput;
 }
 
-template<typename T>
-void Grid<T>::Update()
+void Grid::Update()
 {
 	UpdateCellsStatut();
 	DrawGrid();
 }
 
-template<typename T>
-inline void Grid<T>::UpdateCellsStatut()
+void Grid::UpdateCellsStatut()
 {
-	for (auto row : mAllCells)
+	for (auto& row : mAllCells)
 	{
 		for (auto cell : row)
 		{
@@ -199,26 +259,22 @@ inline void Grid<T>::UpdateCellsStatut()
 	}
 }
 
-template<typename T>
-inline void Grid<T>::DrawGrid()
+void Grid::DrawGrid()
 {
 	DrawColorCell();
 	pCurrentScene->GetView().setCenter(GetPositionToView(pCurrentScene->GetGridRows(), pCurrentScene->GetGridCols(), 0.5f, mCellSize));
 	DrawLineGrid();
 }
 
-template<typename T>
-inline void Grid<T>::DrawColorCell()
+void Grid::DrawColorCell()
 {
 	int rows = 0;
 	int cols = 0;
 
-	for (auto row : mAllCells)
+	for (auto& row : mAllCells)
 	{
 		for (auto cell : row)
 		{
-			cell->setPosition(rows * mCellSize, cols * mCellSize);
-
 			sf::Color indicator = sf::Color::Transparent;
 
 			if (cell->GetAgent() == true)
@@ -241,8 +297,7 @@ inline void Grid<T>::DrawColorCell()
 	}
 }
 
-template<typename T>
-inline void Grid<T>::DrawLineGrid()
+void Grid::DrawLineGrid()
 {
 	int lenghtCol = mAllCells.size();
 	int lenghtRow = mAllCells[0].size();
@@ -270,8 +325,7 @@ inline void Grid<T>::DrawLineGrid()
 	}
 }
 
-template<typename T>
-inline sf::Vector2f Grid<T>::GetPositionToView(int rows, int cols, float coef, int size)
+sf::Vector2f Grid::GetPositionToView(int rows, int cols, float coef, int size)
 {
 	return sf::Vector2f((int)((float)rows * coef) * mCellSize, (int)((float)cols * coef) * mCellSize);
 }

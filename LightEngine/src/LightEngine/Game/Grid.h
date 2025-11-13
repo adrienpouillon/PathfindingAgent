@@ -6,22 +6,28 @@
 
 class MainScene;
 
-template<typename T>
 class Grid
 {
 	int mCellSize;
-	std::vector<Node<T>*> mAllNodes;
-	std::vector<std::vector<T*>> mAllCells;
+	std::vector<Node<Cell>*> mAllNodes;
+	std::vector<std::vector<Cell*>> mAllCells;
 
-	MainScene* pCurrentScene;
+	MainScene* pCurrentScene = nullptr;
+
+	void CreateTab(int _rows, int _cols, std::string strGrid);
+	void InitNodeNeighbor();
 public:
 	Grid() {Start(); }
 
 	void Start();
-	void InitTab(std::string strGrid);
-	void CreateTab(int rows, int cols, std::string strGrid);
+	void InitTab(std::string fileName); //void InitTab(std::string strGrid);
+	void InitTab(int _rows, int _cols, std::string strGrid = "");//void CreateTab(int rows, int cols, std::string strGrid);
 	void InitNodeNeighbor(int rows, int cols);
+	
+	
 
+	void CleanGrid();
+	
 	void SaveGrid(std::string fileName);
 	std::string GetStringFromTxt(std::string fileName);
 
@@ -37,10 +43,7 @@ public:
 	const int& GetCellSize() { return mCellSize; }
 	void SetCellSize(int val) { mCellSize = val; }
 
-	std::vector<std::vector<T*>>& GetAllCells() { return mAllCells; }
+	std::vector<std::vector<Cell*>>& GetAllCells() { return mAllCells; }
 
-	std::vector<Node<T>*>& GetAllNodes() { return mAllNodes; }
+	std::vector<Node<Cell>*>& GetAllNodes() { return mAllNodes; }
 };
-
-#include "Grid.inl"
-

@@ -4,9 +4,6 @@
 #include "Compare.h"
 
 template<typename T>
-class Grid;
-
-template<typename T>
 class PathFinding
 {
 public://protected:

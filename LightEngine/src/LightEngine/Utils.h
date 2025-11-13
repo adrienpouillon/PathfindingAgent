@@ -11,5 +11,4 @@ namespace Utils
 	int DisManhattan(sf::Vector2f currentPos, sf::Vector2f endPos);
 	sf::Vector2f GetCellInPos(sf::Vector2f pos, int sizeCell);
 
-	
 }
