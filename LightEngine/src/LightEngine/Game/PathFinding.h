@@ -1,7 +1,8 @@
 #pragma once
 #include <queue>
 #include "Node.h"
-#include "Compare.h"
+
+class Grid;
 
 template<typename T>
 class PathFinding
@@ -14,7 +15,7 @@ public:
 
 	void Start() { SetReadFinish(true); }
 
-	void Find(Node<T>* startNode, Node<T>* endNode, Grid<T>* grid);
+	void Find(Node<T>* startNode, Node<T>* endNode, Grid* grid);
 
 	void SetReadFinish(bool readFinish);
 	bool GetReadFinish();

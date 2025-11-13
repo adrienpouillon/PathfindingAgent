@@ -1,17 +1,20 @@
-#include "../Utils.h"
 #include "Functions.h"
+
+#include "../Utils.h"
+#include "../Debug.h"
 #include "Grid.h"
 #include "Node.h"
+#include "Compare.h"
 
 template<typename T>
-inline T* GetCell(sf::Vector2f pos, Grid<T>* grid)
+inline T* GetCell(sf::Vector2f pos, Grid* grid)
 {
 	sf::Vector2f index = Utils::GetCellInPos(pos, grid->GetCellSize());
 	return grid->GetAllCells()[index.x][index.y];
 }
 
 template<typename T>
-inline Node<T>* GetNode(sf::Vector2f pos, Grid<T>* grid)
+inline Node<T>* GetNode(sf::Vector2f pos, Grid* grid)
 {
 	sf::Vector2f index = Utils::GetCellInPos(pos, grid->GetCellSize());
 	std::vector<Node<T>*> allNodes = grid->GetAllNodes();
@@ -25,7 +28,7 @@ inline Node<T>* GetNodeInTab(int i, int j, int lenght_i, std::vector<Node<T>*>* 
 }
 
 template<typename T>
-void ResetNodes(Grid<T>* grid)
+void ResetNodes(Grid* grid)
 {
     std::vector<Node<T>*> allNodes = grid->GetAllNodes();
     int lenght = allNodes.size();
@@ -37,9 +40,10 @@ void ResetNodes(Grid<T>* grid)
 }
 
 template<typename T>
-/*std::vector<Node<T>*>* */ void FindPath(Node<T>* startNode, Node<T>* endNode, Grid<T>* grid, std::vector<Node<T>*>* allFormerPaths)
+/*std::vector<Node<T>*>* */ 
+void FindPath(Node<T>* startNode, Node<T>* endNode, Grid* grid, std::vector<Node<T>*>* allFormerPaths)
 {
-    ResetNodes(grid);
+    ResetNodes<T>(grid);
     std::priority_queue<Node<T>*, std::vector<Node<T>*>, CompareASTAR<T>> queue = std::priority_queue<Node<T>*, std::vector<Node<T>*>, CompareASTAR<T>>();
     queue.push(startNode);
     startNode->SetDisStart(0);

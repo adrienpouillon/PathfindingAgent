@@ -95,7 +95,7 @@ void Grid::InitNodeNeighbor()
 	{
 		for (int c = 0; c < cols; c++)
 		{
-			Node<Cell>* node = Node<Cell>::GetNodeInTab(r, c, rows, &mAllNodes);
+			Node<Cell>* node = GetNodeInTab(r, c, rows, &mAllNodes);
 
 			if (node->GetData()->GetObstacle() == true)
 			{
@@ -108,7 +108,7 @@ void Grid::InitNodeNeighbor()
 				if (c != 0)
 				{
 					//î
-					Node<Cell>* nodeNeighbor = Node<Cell>::GetNodeInTab(r, c - 1, rows, &mAllNodes);
+					Node<Cell>* nodeNeighbor = GetNodeInTab(r, c - 1, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);
@@ -117,7 +117,7 @@ void Grid::InitNodeNeighbor()
 				if (r != 0)
 				{
 					//<-
-					Node<Cell>* nodeNeighbor = Node<Cell>::GetNodeInTab(r - 1, c, rows, &mAllNodes);
+					Node<Cell>* nodeNeighbor = GetNodeInTab(r - 1, c, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);
@@ -126,7 +126,7 @@ void Grid::InitNodeNeighbor()
 				if (r != rows - 1)
 				{
 					//->
-					Node<Cell>* nodeNeighbor = Node<Cell>::GetNodeInTab(r + 1, c, rows, &mAllNodes);
+					Node<Cell>* nodeNeighbor = GetNodeInTab(r + 1, c, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);
@@ -135,7 +135,7 @@ void Grid::InitNodeNeighbor()
 				if (c != cols - 1)
 				{
 					//!
-					Node<Cell>* nodeNeighbor = Node<Cell>::GetNodeInTab(r, c + 1, rows, &mAllNodes);
+					Node<Cell>* nodeNeighbor = GetNodeInTab(r, c + 1, rows, &mAllNodes);
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
 						neighbor.push_back(nodeNeighbor);

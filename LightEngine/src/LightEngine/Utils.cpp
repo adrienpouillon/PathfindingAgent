@@ -1,8 +1,6 @@
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
 #include "Utils.h"
-#include "Game/Node.h"
-#include "Game/Cell.h"
 
 namespace Utils 
 {
@@ -46,18 +44,4 @@ namespace Utils
 	{
 		return sf::Vector2f((int)(pos.x / (float)sizeCell), (int)(pos.y / (float)sizeCell));
 	}
-
-	Cell* GetCell(sf::Vector2f pos, Grid* grid)
-	{
-		sf::Vector2f index = GetCellInPos(pos, grid->GetCellSize());
-		return grid->GetAllCells()[index.x][index.y];
-	}
-
-	Node<Cell>* GetNode(sf::Vector2f pos, Grid* grid)
-	{
-		sf::Vector2f index = GetCellInPos(pos, grid->GetCellSize());
-		std::vector<Node<Cell>*> allNodes = grid->GetAllNodes();
-		return Node<Cell>::GetNodeInTab(index.x, index.y, grid->GetAllCells().size(), &allNodes);
-	}
-
 }

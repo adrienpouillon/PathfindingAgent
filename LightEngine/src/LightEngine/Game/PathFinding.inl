@@ -4,9 +4,8 @@
 #include "Grid.h"
 
 
-
 template<typename T>
-inline void PathFinding<T>::Find(Node<T>* startNode, Node<T>* endNode, Grid<T>* grid)
+inline void PathFinding<T>::Find(Node<T>* startNode, Node<T>* endNode, Grid* grid)
 {
     SetReadFinish(false);
     /*if (GetPath() == nullptr)
@@ -14,7 +13,8 @@ inline void PathFinding<T>::Find(Node<T>* startNode, Node<T>* endNode, Grid<T>* 
         SetReadFinish(false);
         SetPath(std::vector<Node<T>*>());
     }*/
-    /*std::vector<Node<T>*>* path = */FindPath(startNode, endNode, grid, GetPath());
+    /*std::vector<Node<T>*>* path = */
+    FindPath(startNode, endNode, grid, GetPath());
 
     //SetPath(*path);
 }

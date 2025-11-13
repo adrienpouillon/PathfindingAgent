@@ -74,7 +74,7 @@ void MainScene::InputManager(sf::Vector2f worldMousePos, const sf::Event& e)
 				if (clicOnEntity == nullptr)
 				{
 					//deplacer une entity
-					if (Agent<Cell>* a = dynamic_cast<Agent<Cell>*>(mSelectedEntity))
+					if (Agent* a = dynamic_cast<Agent*>(mSelectedEntity))
 					{
 						a->GoToCell(worldMousePos, GetGrid());
 						mSelectedEntity = nullptr;
@@ -163,7 +163,7 @@ void MainScene::OnInitialize()
 
 	mView.setSize(1920, 1080);
 	
-	mpGrid = new Grid<Cell>();
+	mpGrid = new Grid();
 	mpGrid->SetCellSize(100);
 }
 
@@ -204,9 +204,9 @@ void MainScene::ZoomManager()
 	}
 }
 
-Agent<Cell>* MainScene::CreateAgent(sf::Vector2f pos, float speed, int radius, sf::Color color)
+Agent* MainScene::CreateAgent(sf::Vector2f pos, float speed, int radius, sf::Color color)
 {
-	Agent<Cell>* newEntity = CreateCircleEntity<Agent<Cell>>(radius, color);
+	Agent* newEntity = CreateCircleEntity<Agent>(radius, color);
 	newEntity->SetRoam(false);
 	newEntity->SetTag(AGENT);
 	newEntity->SetSpeed(speed);

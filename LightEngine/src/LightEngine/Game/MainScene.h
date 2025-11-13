@@ -38,7 +38,7 @@ public:
 
 	Entity* GetSelectedEntity() { return mSelectedEntity; }
 	void SetSelectedEntity(Entity* e) { mSelectedEntity = e; }
-	void SetCellObstacle(sf::Vector2f pos, bool state);
+	void SetCellObstacle(sf:: Vector2f pos, bool state);
 	// RIP Cursor 2025-2025
 	void InputManager(sf::Vector2f worldMousePos, const sf::Event& e);
 
@@ -54,7 +54,7 @@ public:
 	
 	void ZoomManager();
 
-	Agent<Cell>* CreateAgent(sf::Vector2f pos, float speed, int radius, sf::Color color);
+	Agent* CreateAgent(sf::Vector2f pos, float speed, int radius, sf::Color color);
 	PathFinding<Cell> CreatePathFinding();
 
 	void HandleGridSave();

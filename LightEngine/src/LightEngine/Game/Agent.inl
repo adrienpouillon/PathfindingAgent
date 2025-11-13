@@ -1,20 +1,20 @@
 #include "Agent.h"
+
+#include "../Debug.h"
+
+#include "MainScene.h"
 #include "Node.h"
 #include "Grid.h"
-#include "../Debug.h"
 #include "Functions.h"
 
-
-template<typename T>
-void Agent<T>::OnUpdate()
+void Agent::OnUpdate()
 {
 	UpdatePath();
 }
 
-template<typename T>
-void Agent<T>::UpdatePath()
+void Agent::UpdatePath()
 {
-	std::vector<Node<T>*>* allPaths = mPath.GetPath();
+	std::vector<Node<Cell>*>* allPaths = mPath.GetPath();
 	if (allPaths->size() < 1)
 	{
 		return;
@@ -22,8 +22,8 @@ void Agent<T>::UpdatePath()
 	int lenghtAllPaths = allPaths->size() - 1;
 	for (int i = mIndexPath; i < lenghtAllPaths; i++)
 	{
-		T* currentCell = (*allPaths)[i]->GetData();
-		T* nextCell = (*allPaths)[i + 1]->GetData();
+		Cell* currentCell = (*allPaths)[i]->GetData();
+		Cell* nextCell = (*allPaths)[i + 1]->GetData();
 
 		sf::Vector2f currentPos = currentCell->getPosition();
 		sf::Vector2f nextPos = nextCell->getPosition();
@@ -36,7 +36,7 @@ void Agent<T>::UpdatePath()
 		return;
 	}
 
-	T* currentCell = (*allPaths)[mIndexPath]->GetData();
+	Cell* currentCell = (*allPaths)[mIndexPath]->GetData();
 	sf::Vector2f currentPos = currentCell->getPosition();
 	GoToPosition(currentPos.x, currentPos.y);
 	mIndexPath++;
@@ -53,24 +53,21 @@ void Agent<T>::UpdatePath()
 	}
 }
 
-template<typename T>
-void Agent<T>::GoToCell(T* cellEnd, Grid* grid)
+void Agent::GoToCell(Cell* cellEnd, Grid* grid)
 {
-	GoToCell(cellEnd.getPosition(), grid);
+	GoToCell(cellEnd->getPosition(), grid);
 }
 
-template<typename T>
-void Agent<T>::GoToCell(sf::Vector2f pos, Grid* grid)
+void Agent::GoToCell(sf::Vector2f pos, Grid* grid)
 {
-	GoToNode(GetNode(pos, grid), grid);
+	GoToNode(GetNode<Cell>(pos, grid), grid);
 	//::GetNodeInTab(pos.x, pos.y, allNodes.size(), allNodes));
 }
 
-template<typename T>
-void Agent<T>::GoToNode(Node<T>* endNode, Grid<T>* grid)
+void Agent::GoToNode(Node<Cell>* endNode, Grid* grid)
 {
-	Node<T>* startNode;
-	std::vector<Node<T>*>* currentePath = mPath.GetPath();
+	Node<Cell>* startNode;
+	std::vector<Node<Cell>*>* currentePath = mPath.GetPath();
 	int lenght = currentePath->size();
 	if (lenght > 0)
 	{
@@ -80,7 +77,7 @@ void Agent<T>::GoToNode(Node<T>* endNode, Grid<T>* grid)
 	else
 	{
 		//position actuelle
-		startNode = GetNode(GetPosition(), grid);
+		startNode = GetNode<Cell>(GetPosition(), grid);
 	}
 	SetStartNode(startNode);
 	SetEndNode(endNode);
