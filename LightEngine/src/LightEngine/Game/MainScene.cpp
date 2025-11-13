@@ -48,9 +48,7 @@ void MainScene::InputManager(sf::Vector2f worldMousePos, const sf::Event& e)
 				{
 					sf::Vector2f pos = nearest->getPosition();
 
-					CreateAgent(pos, 100.f, 25.f, sf::Color::Cyan);
-
-					std::cout << "Created\n";
+					CreateAgent(pos, 100.f, 12.5f, sf::Color::Cyan);
 				}
 			}
 
@@ -161,7 +159,7 @@ void MainScene::CleanEntities()
 
 void MainScene::OnInitialize()
 {
-	SetGridSize(20, 20);
+	SetGridDimensions(20, 20);
 
 	mView.setSize(1920, 1080);
 	mpGrid = new CGrid(50);
@@ -271,12 +269,31 @@ void MainScene::HandleGridResizing()
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1))
 	{
+		if (mGridRows <= 1 && mGridCols <= 1)
+		{
+			return;
+		}
+
+		mGridRows -= 1;
+		mGridCols -= 1;
+
 		CleanEntities();
+
+		mpGrid->InitTab(mGridRows, mGridCols);
 		mIsResizing = true;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F2))
 	{
+		if (mGridRows >= 50 && mGridCols >= 50)
+		{
+			return;
+		}
+
+		mGridRows += 1;
+		mGridCols += 1;
+
 		CleanEntities();
+		mpGrid->InitTab(mGridRows, mGridCols);
 		mIsResizing = true;
 	}
 }

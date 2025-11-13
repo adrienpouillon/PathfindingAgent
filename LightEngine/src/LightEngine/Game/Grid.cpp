@@ -11,31 +11,43 @@
 
 void CGrid::Start()
 {
-	mCellSize = 100;
 	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
 
 	if (pCurrentScene)
 	{
-		//std::string strGrid = GetStringFromTxt("grid.txt");
-		//InitTab(strGrid);
-		InitTab(std::string());
+		int rows = pCurrentScene->GetGridRows();
+		int cols = pCurrentScene->GetGridCols();
+
+		InitTab("grid.txt");
 	}
 }
 
-void CGrid::InitTab(std::string strGrid)
+void CGrid::InitTab(int _rows, int _cols, std::string strGrid)
 {
-	int rows = pCurrentScene->GetGridRows();
-	int cols = pCurrentScene->GetGridCols();
-
 	CleanGrid();
-
-	CreateTab(rows, cols, strGrid);
-	InitNodeNeighbor(rows, cols);
-	pCurrentScene->GetView().setCenter(GetPositionToView(rows, cols, 0.5f, mCellSize));
+	CreateTab(_rows, _cols, strGrid);
+	InitNodeNeighbor();
+	pCurrentScene->GetView().setCenter(GetPositionToView(_rows, _cols, 0.5f, mCellSize));
 }
 
-void CGrid::CreateTab(int rows, int cols, std::string strGrid)
+void CGrid::InitTab(std::string fileName)
 {
+	std::string strGrid = GetStringFromTxt(fileName);
+
+	if (strGrid.empty())
+	{
+		std::cout << "error : file can't be found or read !\n";
+		return;
+	}
+
+	InitTab(pCurrentScene->GetGridRows(), pCurrentScene->GetGridCols(), strGrid);
+}
+
+void CGrid::CreateTab(int _rows, int _cols, std::string strGrid)
+{
+	int rows = _rows;
+	int cols = _cols;
+
 	int count = 0;
 	for (int r = 0; r < rows; r++)
 	{
@@ -72,8 +84,11 @@ void CGrid::CreateTab(int rows, int cols, std::string strGrid)
 	}
 }
 
-void CGrid::InitNodeNeighbor(int rows, int cols)
+void CGrid::InitNodeNeighbor()
 {
+	int rows = pCurrentScene->GetGridRows();
+	int cols = pCurrentScene->GetGridCols();
+
 	for (int r = 0; r < rows; r++)
 	{
 		for (int c = 0; c < cols; c++)
@@ -189,7 +204,10 @@ std::string CGrid::GetStringFromTxt(std::string fileName)
 	std::ifstream file("../../../res/" + fileName);
 
 	if (file.is_open() == false)
+	{
+		std::cerr << fileName + " can't be open !" << std::endl;
 		return "";
+	}
 
 	std::string line;
 	int rowsCount = 0;

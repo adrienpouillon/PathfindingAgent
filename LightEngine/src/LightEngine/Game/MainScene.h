@@ -27,7 +27,7 @@ public:
 
 	void CleanEntities();
 
-	void SetGridSize(int rows, int cols) { mGridRows = rows; mGridCols = cols; }
+	void SetGridDimensions(int rows, int cols) { mGridRows = rows; mGridCols = cols; }
 	const int& GetGridRows() { return mGridRows; }
 	const int& GetGridCols() { return mGridCols; }
 

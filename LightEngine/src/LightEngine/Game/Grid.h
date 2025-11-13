@@ -13,13 +13,15 @@ class CGrid
 	std::vector<std::vector<Cell*>> mAllCells;
 
 	MainScene* pCurrentScene = nullptr;
+
+	void CreateTab(int _rows, int _cols, std::string strGrid);
+	void InitNodeNeighbor();
 public:
 	CGrid(int cellSize) { mCellSize = cellSize; Start(); }
 
 	void Start();
-	void InitTab(std::string strGrid);
-	void CreateTab(int rows, int cols, std::string strGrid);
-	void InitNodeNeighbor(int rows, int cols);
+	void InitTab(int _rows, int _cols, std::string strGrid = "");
+	void InitTab(std::string fileName);
 
 	void CleanGrid();
 	
