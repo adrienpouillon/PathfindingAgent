@@ -5,6 +5,7 @@
 #include "Grid.h"
 #include "Node.h"
 #include "Compare.h"
+#include <queue>
 
 template<typename T>
 inline T* GetCell(sf::Vector2f pos, Grid* grid)
