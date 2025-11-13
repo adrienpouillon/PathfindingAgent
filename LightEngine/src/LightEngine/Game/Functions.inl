@@ -5,6 +5,7 @@
 #include "Grid.h"
 #include "Node.h"
 #include "Compare.h"
+
 #include <queue>
 
 template<typename T>
@@ -222,4 +223,31 @@ inline std::vector<std::vector<A*>>* EraseTab(std::vector<std::vector<A*>>* all)
     }
     all->clear();
     return all;
+}
+
+template<typename T>
+inline T* GetNearestCell(sf::Vector2f pos, std::vector<std::vector<T*>> allCells)
+{
+    T* nearest = nullptr;
+    float smallestSquaredDist = INT_MAX;
+
+    for (auto& row : allCells)
+    {
+        for (auto cell : row)
+        {
+            float dx = abs(cell->getPosition().x - pos.x);
+            float dy = abs(cell->getPosition().y - pos.y);
+
+            float squaredDist = dx * dx + dy * dy;
+
+            if (squaredDist < smallestSquaredDist)
+            {
+                nearest = cell;
+
+                smallestSquaredDist = squaredDist;
+            }
+        }
+    }
+
+    return nearest;
 }

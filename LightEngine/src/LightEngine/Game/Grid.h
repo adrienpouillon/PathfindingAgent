@@ -20,8 +20,8 @@ public:
 	Grid() { Start(); }
 
 	void Start();
-	void InitTab(std::string fileName); //void InitTab(std::string strGrid);
-	void InitTab(int _rows, int _cols, std::string strGrid = "");//void CreateTab(int rows, int cols, std::string strGrid);
+	void InitTab(std::string fileName);
+	void InitTab(int _rows, int _cols, std::string strGrid = "");
 	void InitNodeNeighbor(int rows, int cols);
 
 	void CleanGrid();

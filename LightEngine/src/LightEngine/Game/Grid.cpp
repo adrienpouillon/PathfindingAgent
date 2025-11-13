@@ -1,8 +1,10 @@
 #include "Grid.h"
+
 #include "../GameManager.h"
 #include "../Scene.h"
-#include "MainScene.h"
 #include "../Debug.h"
+
+#include "MainScene.h"
 #include "Functions.h"
 #include "Cell.h"
 
@@ -45,7 +47,7 @@ void Grid::InitTab(std::string fileName)
 	InitTab(pCurrentScene->GetGridRows(), pCurrentScene->GetGridCols(), strGrid);
 }
 
-void Grid::CreateTab(int _rows, int _cols, std::string strGrid)
+void Grid::CreateTab(int _rows, int _cols, std::string strGrid = "")
 {
 	int rows = _rows;
 	int cols = _cols;
@@ -58,7 +60,7 @@ void Grid::CreateTab(int _rows, int _cols, std::string strGrid)
 		for (int c = 0; c < cols; c++)
 		{
 			Cell* cell = new Cell();
-			sf::Vector2f pos = sf::Vector2f(c * mCellSize, r * mCellSize);
+			sf::Vector2f pos = sf::Vector2f(r * mCellSize, c * mCellSize);
 			cell->SetAll(pos, false);
 
 			if (strGrid.size() > 0)

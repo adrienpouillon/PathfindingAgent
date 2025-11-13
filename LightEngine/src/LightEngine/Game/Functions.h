@@ -6,6 +6,8 @@
 
 class Grid;
 
+class Entity;
+
 template<typename T>
 class Node;
 
@@ -32,6 +34,11 @@ std::vector<A*>* EraseTab(std::vector<A*>* all);
 
 template<typename A>
 std::vector<std::vector<A*>>* EraseTab(std::vector<std::vector<A*>>* all);
+
+Entity* GetNearestEntity(sf::Vector2f pos);
+
+template<typename T>
+T* GetNearestCell(sf::Vector2f pos, std::vector<std::vector<T*>> allCells);
 
 
 
