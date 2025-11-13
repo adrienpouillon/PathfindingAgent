@@ -151,6 +151,14 @@ Cell* MainScene::GetNearestCell(sf::Vector2f pos)
 	return nearest;
 }
 
+void MainScene::CleanEntities()
+{
+	for (Entity* e : GameManager::Get()->GetEntities())
+	{
+		e->Destroy();
+	}
+}
+
 void MainScene::OnInitialize()
 {
 	SetGridSize(20, 20);
@@ -170,6 +178,9 @@ void MainScene::OnEvent(const sf::Event& event)
 void MainScene::OnUpdate()
 {
 	ZoomManager();
+	HandleGridSave();
+	HandleGridResizing();
+
 	GameManager::Get()->GetWindow()->setView(mView);
 
 	mpGrid->Update();
@@ -213,4 +224,61 @@ PathFinding<Cell> MainScene::CreatePathFinding()
 	pathFinding.SetStartNode(nullptr);
 	pathFinding.SetEndNode(nullptr);
 	return pathFinding;
+}
+
+void MainScene::HandleGridSave()
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) == false)
+	{
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) == false)
+		{
+			mIsSaving = false;
+		}
+	}
+
+	if (mIsSaving == true)
+	{
+		sf::Vector2f center = mView.getCenter();
+		Debug::DrawText(center.x, center.y, "Grid Saved !", 0.5f, 0.5f, 40, sf::Color::Green);
+		return;
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+	{
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		{
+
+			std::cout << "SAVED !\n";
+
+			mpGrid->SaveGrid("grid.txt");
+
+			mIsSaving = true;
+		}
+	}
+}
+
+void MainScene::HandleGridResizing()
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1) == false && sf::Keyboard::isKeyPressed(sf::Keyboard::F2) == false)
+	{
+		mIsResizing = false;
+	}
+
+	if (mIsResizing == true)
+	{
+		return;
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1))
+	{
+		CleanEntities();
+		mpGrid->CreateEmptyGrid(mGridRows + 1, mGridCols + 1);
+		mIsResizing = true;
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F2))
+	{
+		CleanEntities();
+		mpGrid->CreateEmptyGrid(mGridRows - 1, mGridCols - 1);
+		mIsResizing = true;
+	}
 }

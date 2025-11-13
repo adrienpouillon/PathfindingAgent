@@ -4,9 +4,11 @@
 #include "MainScene.h"
 #include "../Debug.h"
 #include "Cell.h"
+
 #include <iostream>
 #include <fstream>
 #include <string>
+
 
 template<typename T>
 void Grid<T>::Start()
@@ -136,7 +138,51 @@ void Grid<T>::InitNodeNeighbor(int rows, int cols)
 }
 
 template<typename T>
-void Grid<T>::CleanGrid()
+void Grid<T>::CreateEmptyGrid(int _rows, int _cols)
+{
+	if (_rows < 1 || _cols < 1)
+		return;
+
+	if (_rows > 50 || _cols > 50)
+		return;
+
+	CleanGrid();
+
+	pCurrentScene->SetGridRows(_rows);
+	pCurrentScene->SetGridCols(_cols);
+
+	int rows = _rows;
+	int cols = _cols;
+
+	for (int r = 0; r < rows; r++)
+	{
+		std::vector<T> current;
+		for (int c = 0; c < cols; c++)
+		{
+			T cell;
+			cell.SetSize(mCellSize);
+			sf::Vector2f pos = sf::Vector2f(c * mCellSize, r * mCellSize);
+			cell.SetAll(pos, false);
+
+			current.push_back(cell);
+
+			Node<T> node;
+			bool visited = false;
+			Node<T>* callMe = nullptr;
+			std::vector<Node<T>*> neighbor = std::vector<Node<T>*>();
+			int disStart = 0;
+			int disEnd = 0;
+			node.SetAll(&cell, visited, callMe, neighbor, disStart, disEnd);
+			mAllNodes.push_back(node);
+		}
+		mAllCells.push_back(current);
+	}
+
+	pCurrentScene->GetView().setCenter((int)((float)rows * 0.5f) * mCellSize, (int)((float)cols * 0.5f) * mCellSize);
+}
+
+template<typename T>
+inline void Grid<T>::CleanGrid()
 {
 	for (auto it = mAllCells.begin(); it != mAllCells.end(); ++it)
 	{
@@ -157,12 +203,38 @@ void Grid<T>::CleanGrid()
 	{
 		delete* it;
 	}
-	mAllCells.clear();
+	mAllNodes.clear();
 }
 
 template<typename T>
 inline void Grid<T>::SaveGrid(std::string fileName)
 {
+	if (typeid(T) != typeid(Cell))
+		return;
+
+	std::ofstream file("../../../res/" + fileName, std::ios::out);
+
+	if (file.is_open() == false)
+		return;
+
+	for (auto& row : mAllCells)
+	{
+		for (auto& cell : row)
+		{
+			if (cell.GetObstacle())
+			{
+				file << "X ";
+			}
+			else
+			{
+				file << "O ";
+			}
+		}
+
+		file << std::endl;
+	}
+
+	file.close();
 }
 
 template<typename T>
@@ -242,8 +314,6 @@ inline void Grid<T>::DrawColorCell()
 	{
 		for (auto cell : row)
 		{
-			cell->setPosition(rows * mCellSize, cols * mCellSize);
-
 			sf::Color indicator = sf::Color::Transparent;
 
 			if (cell->GetAgent() == true)

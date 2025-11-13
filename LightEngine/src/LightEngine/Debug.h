@@ -37,8 +37,8 @@ public:
 	static void DrawRectangleFrame(float x, float y, float width, float height, const sf::Color& color);
 	static void DrawRectangle(float x, float y, float width, float height, const sf::Color& color);
 	static void DrawCircle(float x, float y, float radius, const sf::Color& color);
-	static void DrawText(float x, float y, const std::string& text, const sf::Color& color);
-	static void DrawText(float x, float y, const std::string& text, float ratioX, float ratioY, const sf::Color& color);
+	static void DrawText(float x, float y, const std::string& text, float size, const sf::Color& color);
+	static void DrawText(float x, float y, const std::string& text, float ratioX, float ratioY, float size, const sf::Color& color);
 
 	friend GameManager;
 };

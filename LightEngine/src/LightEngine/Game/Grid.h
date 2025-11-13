@@ -13,7 +13,7 @@ class Grid
 	std::vector<Node<T>*> mAllNodes;
 	std::vector<std::vector<Cell*>> mAllCells;
 
-	MainScene* pCurrentScene;
+	MainScene* pCurrentScene = nullptr;
 public:
 	Grid(int cellSize) { mCellSize = cellSize; Start(); }
 
@@ -24,6 +24,8 @@ public:
 
 	void CleanGrid();
 	
+	void CreateEmptyGrid(int _rows, int _cols);
+
 	void SaveGrid(std::string fileName);
 	std::string GetStringFromTxt(std::string fileName);
 
