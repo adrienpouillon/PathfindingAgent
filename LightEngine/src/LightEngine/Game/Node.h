@@ -12,6 +12,7 @@ protected:
     std::vector<Node<T>*> mAllNeighbors;
     int mDisStart;
     int mDisEnd;
+    int mCost;
 public:
     Node() { Start(); }
 
@@ -42,6 +43,9 @@ public:
 
     void SetDisEnd(int dis) { mDisEnd = dis; }
     int GetDisEnd() { return mDisEnd; }
+
+    void SetCost(int cost) { mCost = cost; }
+    int GetCost() { return mCost; }
 
     ~Node() {}
 };

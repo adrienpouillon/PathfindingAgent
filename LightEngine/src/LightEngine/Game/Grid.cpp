@@ -106,6 +106,10 @@ void Grid::InitNodeNeighbor()
 			else
 			{
 				std::vector<Node<Cell>*> neighbor = std::vector<Node<Cell>*>();
+				bool right = false;
+				bool left = false;
+				bool up = false;
+				bool down = false;
 
 				if (c != 0)
 				{
@@ -115,6 +119,7 @@ void Grid::InitNodeNeighbor()
 					{
 						neighbor.push_back(nodeNeighbor);
 					}
+					up = true;
 				}
 				if (r != 0)
 				{
@@ -124,6 +129,7 @@ void Grid::InitNodeNeighbor()
 					{
 						neighbor.push_back(nodeNeighbor);
 					}
+					left = true;
 				}
 				if (r != rows - 1)
 				{
@@ -133,6 +139,7 @@ void Grid::InitNodeNeighbor()
 					{
 						neighbor.push_back(nodeNeighbor);
 					}
+					right = true;
 				}
 				if (c != cols - 1)
 				{
@@ -142,7 +149,51 @@ void Grid::InitNodeNeighbor()
 					{
 						neighbor.push_back(nodeNeighbor);
 					}
+					down = true;
 				}
+
+				if (up)
+				{
+					if (left)
+					{
+						Node<Cell>* nodeNeighbor = GetNodeInTab(r - 1, c - 1, rows, &mAllNodes);
+						if (nodeNeighbor->GetData()->GetObstacle() == false)
+						{
+							neighbor.push_back(nodeNeighbor);
+						}
+					}
+
+					if (right)
+					{
+						Node<Cell>* nodeNeighbor = GetNodeInTab(r + 1, c - 1, rows, &mAllNodes);
+						if (nodeNeighbor->GetData()->GetObstacle() == false)
+						{
+							neighbor.push_back(nodeNeighbor);
+						}
+					}
+				}
+
+				if (down)
+				{
+					if (left)
+					{
+						Node<Cell>* nodeNeighbor = GetNodeInTab(r - 1, c + 1, rows, &mAllNodes);
+						if (nodeNeighbor->GetData()->GetObstacle() == false)
+						{
+							neighbor.push_back(nodeNeighbor);
+						}
+					}
+
+					if (right)
+					{
+						Node<Cell>* nodeNeighbor = GetNodeInTab(r + 1, c + 1, rows, &mAllNodes);
+						if (nodeNeighbor->GetData()->GetObstacle() == false)
+						{
+							neighbor.push_back(nodeNeighbor);
+						}
+					}
+				}
+
 
 				node->SetNeighbor(neighbor);
 			}
