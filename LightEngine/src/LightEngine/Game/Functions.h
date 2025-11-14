@@ -4,6 +4,8 @@
 #include <SFML/System/Vector2.hpp>
 #include <vector>
 
+#define RACINE std::sqrt(2)
+
 class Grid;
 
 class Entity;

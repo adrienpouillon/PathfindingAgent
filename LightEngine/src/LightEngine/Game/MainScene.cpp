@@ -47,6 +47,8 @@ void MainScene::InputManager(sf::Vector2f worldMousePos, const sf::Event& e)
 	{
 		isPressed = false;
 	}
+	
+	Node<Cell>* nodeEnd = GetNode<Cell>(worldMousePos, GetGrid());
 
 	if (isPressed == false)
 	{

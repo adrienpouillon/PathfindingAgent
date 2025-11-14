@@ -70,12 +70,12 @@ void Agent::GoToCell(sf::Vector2f pos, Grid* grid)
 void Agent::GoToNode(Node<Cell>* endNode, Grid* grid)
 {
 	Node<Cell>* startNode;
-	std::vector<Node<Cell>*>* currentePath = mPath.GetPath();
-	int lenght = currentePath->size();
+	std::vector<Node<Cell>*>* currentPath = mPath.GetPath();
+	int lenght = currentPath->size();
 	if (lenght > 0)
 	{
 		//position final du path precedent
-		startNode = (*currentePath)[lenght - 1];
+		startNode = (*currentPath)[lenght - 1];
 	}
 	else
 	{

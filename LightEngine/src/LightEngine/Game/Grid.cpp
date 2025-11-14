@@ -7,6 +7,7 @@
 #include "MainScene.h"
 #include "Functions.h"
 #include "Cell.h"
+#include "Node.h"
 
 #include <iostream>
 #include <fstream>
@@ -14,7 +15,7 @@
 
 void Grid::Start()
 {
-	SetCellSize(50);
+	SetCellSize(100);
 	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
 
 	if (pCurrentScene)
@@ -77,7 +78,7 @@ void Grid::CreateTab(int _rows, int _cols, std::string strGrid = "")
 			Node<Cell>* node = new Node<Cell>();
 			bool visited = false;
 			Node<Cell>* callMe = nullptr;
-			std::vector<Node<Cell>*> neighbors = std::vector<Node<Cell>*>();
+			std::vector<NeighborsCost<Cell>> neighbors = std::vector<NeighborsCost<Cell>>();
 			int disStart = 0;
 			int disEnd = 0;
 			node->SetAll(cell, visited, callMe, neighbors, disStart, disEnd);
@@ -90,7 +91,7 @@ void Grid::CreateTab(int _rows, int _cols, std::string strGrid = "")
 
 void Grid::InitNodeNeighbor()
 {
-	int rows = pCurrentScene->GetGridRows();
+	/*int rows = pCurrentScene->GetGridRows();
 	int cols = pCurrentScene->GetGridCols();
 
 	for (int r = 0; r < rows; r++)
@@ -98,10 +99,12 @@ void Grid::InitNodeNeighbor()
 		for (int c = 0; c < cols; c++)
 		{
 			Node<Cell>* node = GetNodeInTab(r, c, cols, &mAllNodes);
+			float r2 = RACINE;
 
 			int addRows[] = { -1,  1,  0,  0, -1, -1,  1,  1 };
-			int addCols[] = {  0,  0, -1,  1, -1,  1, -1,  1 };
-			int addCols[] = {  1,  1,  1,  1, ,  1, -1,  1 };
+			int addCols[] = { 0,  0, -1,  1, -1,  1, -1,  1 };
+			bool addCondition[] = { 0,  0, -1,  1, -1,  1, -1,  1 };
+			int addCost[] = { 1,  1,  1,  1, r2, r2, r2, r2 };
 			const int length = 8;
 
 			for (int n = 0; n < length; n++)
@@ -115,10 +118,120 @@ void Grid::InitNodeNeighbor()
 
 					if (nodeNeighbor->GetData()->GetObstacle() == false)
 					{
-						node->GetNeighbor().push_back(nodeNeighbor);
+						node->GetNeighborCost().push_back(NeighborsCost<Cell>(nodeNeighbor, addCost[n]));
 					}
 				}
 			}
+		}
+	}*/
+
+	int rows = pCurrentScene->GetGridRows();
+	int cols = pCurrentScene->GetGridCols();
+
+	for (int r = 0; r < rows; r++)
+	{
+		for (int c = 0; c < cols; c++)
+		{
+			Node<Cell>* node = GetNodeInTab(r, c, cols, &mAllNodes);
+
+			if (node->GetData()->GetObstacle() == true)
+			{
+				node->GetNeighborsCost().clear();
+			}
+			else
+			{
+				bool right = false;
+				bool left = false;
+				bool up = false;
+				bool down = false;
+
+				float r1 = 1;
+				float r2 = RACINE;
+
+				if (c != 0)
+				{
+					//î
+					Node<Cell>* nodeNeighbor = GetNodeInTab(r, c - 1, cols, &mAllNodes);
+					if (nodeNeighbor->GetData()->GetObstacle() == false)
+					{
+						node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r1));
+					}
+					up = true;
+				}
+				if (r != 0)
+				{
+					//<-
+					Node<Cell>* nodeNeighbor = GetNodeInTab(r - 1, c, cols, &mAllNodes);
+					if (nodeNeighbor->GetData()->GetObstacle() == false)
+					{
+						node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r1));
+					}
+					left = true;
+				}
+				if (r != rows - 1)
+				{
+					//->
+					Node<Cell>* nodeNeighbor = GetNodeInTab(r + 1, c, cols, &mAllNodes);
+					if (nodeNeighbor->GetData()->GetObstacle() == false)
+					{
+						node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r1));
+					}
+					right = true;
+				}
+				if (c != cols - 1)
+				{
+					//!
+					Node<Cell>* nodeNeighbor = GetNodeInTab(r, c + 1, cols, &mAllNodes);
+					if (nodeNeighbor->GetData()->GetObstacle() == false)
+					{
+						node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r1));
+					}
+					down = true;
+				}
+
+				if (up)
+				{
+					if (left)
+					{
+						Node<Cell>* nodeNeighbor = GetNodeInTab(r - 1, c - 1, cols, &mAllNodes);
+						if (nodeNeighbor->GetData()->GetObstacle() == false)
+						{
+							node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r2));
+						}
+					}
+
+					if (right)
+					{
+						Node<Cell>* nodeNeighbor = GetNodeInTab(r + 1, c - 1, cols, &mAllNodes);
+						if (nodeNeighbor->GetData()->GetObstacle() == false)
+						{
+							node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r2));
+						}
+					}
+				}
+
+				if (down)
+				{
+					if (left)
+					{
+						Node<Cell>* nodeNeighbor = GetNodeInTab(r - 1, c + 1, cols, &mAllNodes);
+						if (nodeNeighbor->GetData()->GetObstacle() == false)
+						{
+							node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r2));
+						}
+					}
+
+					if (right)
+					{
+						Node<Cell>* nodeNeighbor = GetNodeInTab(r + 1, c + 1, cols, &mAllNodes);
+						if (nodeNeighbor->GetData()->GetObstacle() == false)
+						{
+							node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r2));
+						}
+					}
+				}
+			}
+
 		}
 	}
 }

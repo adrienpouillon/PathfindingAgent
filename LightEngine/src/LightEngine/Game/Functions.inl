@@ -88,13 +88,14 @@ void FindPath(Node<T>* startNode, Node<T>* endNode, Grid* grid, std::vector<Node
 
         int disStart = nodeCurrent->GetDisStart();
 
-        std::vector<Node<T>*> neighbor = nodeCurrent->GetNeighbor();
+        std::vector<NeighborsCost<T>> neighborCost = nodeCurrent->GetNeighborsCost();
 
-        for (Node<T>* nodeN : neighbor)
+        for (NeighborsCost<T> nodeNC : neighborCost)
         {
+            Node<T>* nodeN = nodeNC.GetNeighbor();
             if (nodeN->GetVisited() == false)
             {
-                nodeN->SetDisStart(disStart + 1);
+                nodeN->SetDisStart(disStart + nodeNC.GetCost());
                 nodeN->SetDisEnd(Utils::DisManhattan(nodeN->GetData()->getPosition(), endPosition));
                 nodeN->SetCallMe(nodeCurrent);
 
