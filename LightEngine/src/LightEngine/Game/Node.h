@@ -36,7 +36,7 @@ public:
 
     void SetNeighbor(std::vector<Node<T>*> neighbor) { mAllNeighbors = neighbor; }
     void SetFourNeighbor(Node<T>* neighbor1, Node<T>* neighbor2, Node<T>* neighbor3, Node<T>* neighbor4) { mAllNeighbors.push_back(neighbor1); mAllNeighbors.push_back(neighbor2); mAllNeighbors.push_back(neighbor3); mAllNeighbors.push_back(neighbor4); }
-    std::vector<Node*> GetNeighbor() { return mAllNeighbors; }
+    std::vector<Node*>& GetNeighbor() { return mAllNeighbors; }
 
     void SetDisStart(int dis) { mDisStart = dis; }
     int GetDisStart() { return mDisStart; }

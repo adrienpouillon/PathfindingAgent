@@ -48,16 +48,6 @@ T* GetNearestCell(sf::Vector2f pos, std::vector<std::vector<T*>> allCells);
 
 
 
-
-
-
-
-
-
-
-
-
-
 #include "Functions.inl"
 
 
