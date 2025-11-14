@@ -29,7 +29,7 @@ public:
     void SetData(T* data) { mData = data; }
     T* GetData() { return mData; }
 
-
+    std::vector<Node<T>*>& GetAllNeighbors() { return mAllNeighbors; }
 
     void SetCallMe(Node<T>* callMe) { mCallMe = callMe; }
     Node<T>* GetCallMe() { return mCallMe; }

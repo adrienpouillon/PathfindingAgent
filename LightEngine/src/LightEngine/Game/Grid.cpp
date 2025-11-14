@@ -14,7 +14,7 @@
 
 void Grid::Start()
 {
-	SetCellSize(100);
+	SetCellSize(50);
 	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
 
 	if (pCurrentScene)
