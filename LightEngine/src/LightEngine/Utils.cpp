@@ -1,6 +1,9 @@
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
 #include "Utils.h"
+#include "Game/Functions.h"
+#include "GameManager.h"
+#include "Game/MainScene.h"
 
 namespace Utils 
 {
@@ -35,13 +38,19 @@ namespace Utils
 		return std::atan2(det, dot) * 180 / 3.14159265;
 	}
 
-	int DisManhattan(sf::Vector2f currentPos, sf::Vector2f endPos)
+	float DisManhattan(sf::Vector2f currentPos, sf::Vector2f endPos)
 	{
 		return abs(currentPos.x - endPos.x) + abs(currentPos.y - endPos.y);
 	}
 
 	sf::Vector2f GetCellInPos(sf::Vector2f pos, int sizeCell)
 	{
-		return sf::Vector2f((int)(pos.x / (float)sizeCell), (int)(pos.y / (float)sizeCell));
+		Cell* nearest = GetNearestCell<Cell>(pos, GameManager::Get()->GetScene<MainScene>()->GetGrid()->GetAllCells());
+
+		if (!nearest)
+			return { 0, 0 };
+
+		return 	nearest->GetRowCol();
+
 	}
 }

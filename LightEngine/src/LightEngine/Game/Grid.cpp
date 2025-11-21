@@ -15,23 +15,20 @@
 
 void Grid::Start()
 {
-	SetCellSize(100);
+	mGuardsDataFromTxt.clear();
+	mCivilDataFromTxt.clear();
+	mAssassinDataFromTxt.clear();
 	pCurrentScene = GameManager::Get()->GetScene<MainScene>();
-
-	if (pCurrentScene)
-	{
-		int rows = pCurrentScene->GetGridRows();
-		int cols = pCurrentScene->GetGridCols();
-
-		InitTab(rows, cols);
-	}
 }
 
 void Grid::InitTab(int _rows, int _cols, std::string strGrid)
 {
 	CleanGrid();
 	CreateTab(_rows, _cols, strGrid);
-	InitNodeNeighbor();
+	InitNodeNeighbor(_rows, _cols);
+
+	AddAgentsFromTxt();
+
 	pCurrentScene->GetView().setCenter(GetPositionToView(_rows, _cols, 0.5f, mCellSize));
 }
 
@@ -50,26 +47,36 @@ void Grid::InitTab(std::string fileName)
 
 void Grid::CreateTab(int _rows, int _cols, std::string strGrid = "")
 {
-	int rows = _rows;
-	int cols = _cols;
-
 	int count = 0;
-	for (int r = 0; r < rows; r++)
+	for (int r = 0; r < _rows; r++)
 	{
 		std::vector<Cell*> current;
 
-		for (int c = 0; c < cols; c++)
+		for (int c = 0; c < _cols; c++)
 		{
 			Cell* cell = new Cell();
-			sf::Vector2f pos = sf::Vector2f(r * mCellSize, c * mCellSize);
-			cell->SetAll(pos, false);
+			sf::Vector2f pos = sf::Vector2f(c * mCellSize, r * mCellSize);
+			cell->SetAll(pos, false, r, c);
 
 			if (strGrid.size() > 0)
 			{
 				if (strGrid[count] == 'X')
 				{
-					cell->SetObstacle(true);
+					cell->SetIsObstacle(true);
 				}
+				else if(strGrid[count] == 'G')
+				{
+					mGuardsDataFromTxt.push_back(AgentsData(sf::Vector2f(c * mCellSize, r * mCellSize), 100.f, 25.f, sf::Color::Cyan, sf::Color::Blue));
+				}
+				else if (strGrid[count] == 'C')
+				{
+					mCivilDataFromTxt.push_back(AgentsData(sf::Vector2f(c * mCellSize, r * mCellSize), 75.f, 25.f, sf::Color::Red + sf::Color::Green, sf::Color::Red));
+				}
+				else if (strGrid[count] == 'A')
+				{
+					mAssassinDataFromTxt.push_back(AgentsData(sf::Vector2f(c * mCellSize, r * mCellSize), 100.f, 25.f, sf::Color::Red, sf::Color::Magenta));
+				}
+
 				count++;
 			}
 
@@ -91,146 +98,152 @@ void Grid::CreateTab(int _rows, int _cols, std::string strGrid = "")
 
 void Grid::InitNodeNeighbor()
 {
-	/*int rows = pCurrentScene->GetGridRows();
-	int cols = pCurrentScene->GetGridCols();
-
-	for (int r = 0; r < rows; r++)
-	{
-		for (int c = 0; c < cols; c++)
-		{
-			Node<Cell>* node = GetNodeInTab(r, c, cols, &mAllNodes);
-			float r2 = RACINE;
-
-			int addRows[] = { -1,  1,  0,  0, -1, -1,  1,  1 };
-			int addCols[] = { 0,  0, -1,  1, -1,  1, -1,  1 };
-			bool addCondition[] = { 0,  0, -1,  1, -1,  1, -1,  1 };
-			int addCost[] = { 1,  1,  1,  1, r2, r2, r2, r2 };
-			const int length = 8;
-
-			for (int n = 0; n < length; n++)
-			{
-				int newRow = r + addRows[n];
-				int newCol = c + addCols[n];
-
-				if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols)
-				{
-					Node<Cell>* nodeNeighbor = GetNodeInTab(newRow, newCol, cols, &mAllNodes);
-
-					if (nodeNeighbor->GetData()->GetObstacle() == false)
-					{
-						node->GetNeighborCost().push_back(NeighborsCost<Cell>(nodeNeighbor, addCost[n]));
-					}
-				}
-			}
-		}
-	}*/
-
 	int rows = pCurrentScene->GetGridRows();
 	int cols = pCurrentScene->GetGridCols();
 
-	for (int r = 0; r < rows; r++)
+	InitNodeNeighbor(rows, cols);
+}
+
+void Grid::AddAgentsFromTxt()
+{
+	for (AgentsData& ad : mGuardsDataFromTxt)
 	{
-		for (int c = 0; c < cols; c++)
+		pCurrentScene->CreateGuard(ad.pos, ad.speed, ad.radius, ad.classicColor, ad.roamColor);
+	}
+	for (AgentsData& ad : mCivilDataFromTxt)
+	{
+		pCurrentScene->CreateCivil(ad.pos, ad.speed, ad.radius, ad.classicColor, ad.roamColor);
+	}
+	for (AgentsData& ad : mAssassinDataFromTxt)
+	{
+		pCurrentScene->CreateAssassin(ad.pos, ad.speed, ad.radius, ad.classicColor, ad.roamColor);
+	}
+
+	mGuardsDataFromTxt.clear();
+	mCivilDataFromTxt.clear();
+	mAssassinDataFromTxt.clear();
+
+}
+
+void Grid::InitNodeNeighbor(int _rows, int _cols)
+{
+	for (int r = 0; r < _rows; r++)
+	{
+		for (int c = 0; c < _cols; c++)
 		{
-			Node<Cell>* node = GetNodeInTab(r, c, cols, &mAllNodes);
+			Node<Cell>* node = GetNodeInTab(r, c, _cols, &mAllNodes);
 
-			if (node->GetData()->GetObstacle() == true)
+			std::vector<NeighborsCost<Cell>>& tabNodeCost = node->GetNeighborsCost();
+			tabNodeCost.clear();
+
+			if (node->GetData()->IsObstacle() == true)
 			{
-				node->GetNeighborsCost().clear();
+				continue;
 			}
-			else
+
+			bool right = false;
+			bool left = false;
+			bool up = false;
+			bool down = false;
+
+			float r1 = 1;
+			float r2 = RACINE;
+
+			if (c != 0)
 			{
-				bool right = false;
-				bool left = false;
-				bool up = false;
-				bool down = false;
-
-				float r1 = 1;
-				float r2 = RACINE;
-
-				if (c != 0)
+				//i
+				Node<Cell>* nodeNeighbor = GetNodeInTab(r, c - 1, _cols, &mAllNodes);
+				if (nodeNeighbor->GetData()->IsObstacle() == false)
 				{
-					//î
-					Node<Cell>* nodeNeighbor = GetNodeInTab(r, c - 1, cols, &mAllNodes);
-					if (nodeNeighbor->GetData()->GetObstacle() == false)
-					{
-						node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r1));
-					}
+					tabNodeCost.push_back(NeighborsCost<Cell>(nodeNeighbor, r1));
 					up = true;
 				}
-				if (r != 0)
+			}
+			if (r != 0)
+			{
+				//<-
+				Node<Cell>* nodeNeighbor = GetNodeInTab(r - 1, c, _cols, &mAllNodes);
+				if (nodeNeighbor->GetData()->IsObstacle() == false)
 				{
-					//<-
-					Node<Cell>* nodeNeighbor = GetNodeInTab(r - 1, c, cols, &mAllNodes);
-					if (nodeNeighbor->GetData()->GetObstacle() == false)
-					{
-						node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r1));
-					}
+					tabNodeCost.push_back(NeighborsCost<Cell>(nodeNeighbor, r1));
 					left = true;
 				}
-				if (r != rows - 1)
+			}
+			if (r != _rows - 1)
+			{
+				//->
+				Node<Cell>* nodeNeighbor = GetNodeInTab(r + 1, c, _cols, &mAllNodes);
+				if (nodeNeighbor->GetData()->IsObstacle() == false)
 				{
-					//->
-					Node<Cell>* nodeNeighbor = GetNodeInTab(r + 1, c, cols, &mAllNodes);
-					if (nodeNeighbor->GetData()->GetObstacle() == false)
-					{
-						node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r1));
-					}
+					tabNodeCost.push_back(NeighborsCost<Cell>(nodeNeighbor, r1));
 					right = true;
 				}
-				if (c != cols - 1)
+			}
+			if (c != _cols - 1)
+			{
+				//!
+				Node<Cell>* nodeNeighbor = GetNodeInTab(r, c + 1, _cols, &mAllNodes);
+				if (nodeNeighbor->GetData()->IsObstacle() == false)
 				{
-					//!
-					Node<Cell>* nodeNeighbor = GetNodeInTab(r, c + 1, cols, &mAllNodes);
-					if (nodeNeighbor->GetData()->GetObstacle() == false)
-					{
-						node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r1));
-					}
+					tabNodeCost.push_back(NeighborsCost<Cell>(nodeNeighbor, r1));
 					down = true;
 				}
+			}
 
-				if (up)
+			if (up)
+			{
+				if (left)
 				{
-					if (left)
+					if (r != 0 && c != 0)
 					{
-						Node<Cell>* nodeNeighbor = GetNodeInTab(r - 1, c - 1, cols, &mAllNodes);
-						if (nodeNeighbor->GetData()->GetObstacle() == false)
+						Node<Cell>* nodeNeighbor = GetNodeInTab(r - 1, c - 1, _cols, &mAllNodes);
+						if (nodeNeighbor->GetData()->IsObstacle() == false)
 						{
-							node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r2));
-						}
-					}
-
-					if (right)
-					{
-						Node<Cell>* nodeNeighbor = GetNodeInTab(r + 1, c - 1, cols, &mAllNodes);
-						if (nodeNeighbor->GetData()->GetObstacle() == false)
-						{
-							node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r2));
+							tabNodeCost.push_back(NeighborsCost<Cell>(nodeNeighbor, r2));
 						}
 					}
 				}
 
-				if (down)
+				if (right)
 				{
-					if (left)
+					if (r != _rows - 1 && c != 0)
 					{
-						Node<Cell>* nodeNeighbor = GetNodeInTab(r - 1, c + 1, cols, &mAllNodes);
-						if (nodeNeighbor->GetData()->GetObstacle() == false)
+						Node<Cell>* nodeNeighbor = GetNodeInTab(r + 1, c - 1, _cols, &mAllNodes);
+						if (nodeNeighbor->GetData()->IsObstacle() == false)
 						{
-							node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r2));
-						}
-					}
-
-					if (right)
-					{
-						Node<Cell>* nodeNeighbor = GetNodeInTab(r + 1, c + 1, cols, &mAllNodes);
-						if (nodeNeighbor->GetData()->GetObstacle() == false)
-						{
-							node->GetNeighborsCost().push_back(NeighborsCost<Cell>(nodeNeighbor, r2));
+							tabNodeCost.push_back(NeighborsCost<Cell>(nodeNeighbor, r2));
 						}
 					}
 				}
 			}
+
+			if (down)
+			{
+				if (left)
+				{
+					if (r != 0 && c != _cols - 1)
+					{
+						Node<Cell>* nodeNeighbor = GetNodeInTab(r - 1, c + 1, _cols, &mAllNodes);
+						if (nodeNeighbor->GetData()->IsObstacle() == false)
+						{
+							tabNodeCost.push_back(NeighborsCost<Cell>(nodeNeighbor, r2));
+						}
+					}
+				}
+
+				if (right)
+				{
+					if (r != _rows - 1 && c != _cols - 1)
+					{
+						Node<Cell>* nodeNeighbor = GetNodeInTab(r + 1, c + 1, _cols, &mAllNodes);
+						if (nodeNeighbor->GetData()->IsObstacle() == false)
+						{
+							tabNodeCost.push_back(NeighborsCost<Cell>(nodeNeighbor, r2));
+						}
+					}
+				}
+			}
+
 
 		}
 	}
@@ -267,18 +280,47 @@ void Grid::SaveGrid(std::string fileName)
 	if (file.is_open() == false)
 		return;
 
-	for (auto& row : mAllCells)
+	for (int r = 0; r < pCurrentScene->GetGridRows(); r++)
 	{
-		for (auto cell : row)
+		for (int c = 0; c < pCurrentScene->GetGridCols(); c++)
 		{
-			if (cell->GetObstacle())
+			Cell* currentCell = mAllCells[r][c];
+
+			std::string toAdd = "O";
+
+			if (currentCell->IsObstacle())
 			{
-				file << "X ";
+				toAdd = "X";
 			}
-			else
+			
+			if (currentCell->HasAgent())
 			{
-				file << "O ";
+				if (Entity* e = GetNearestEntity(currentCell->getPosition()))
+				{
+					if (e->IsType(Tag::AGENT))
+					{
+						Cell* nearest = GetNearestCell(e->GetPosition(), pCurrentScene->GetGrid()->GetAllCells());
+
+						if (currentCell == nearest)
+						{
+							if (e->IsTag(Tag::GUARD))
+							{
+								toAdd = "G";
+							}
+							else if(e->IsTag(Tag::CIVIL))
+							{
+								toAdd = "C";
+							}
+							else if (e->IsTag(Tag::ASSASSIN))
+							{
+								toAdd = "A";
+							}
+						}
+					}
+				}
 			}
+
+			file << toAdd + " ";
 		}
 
 		file << std::endl;
@@ -349,7 +391,6 @@ void Grid::UpdateCellsStatut()
 void Grid::DrawGrid()
 {
 	DrawColorCell();
-	pCurrentScene->GetView().setCenter(GetPositionToView(pCurrentScene->GetGridRows(), pCurrentScene->GetGridCols(), 0.5f, mCellSize));
 	DrawLineGrid();
 }
 
@@ -364,10 +405,10 @@ void Grid::DrawColorCell()
 		{
 			sf::Color indicator = sf::Color::Transparent;
 
-			if (cell->GetAgent() == true)
+			if (cell->HasAgent() == true)
 				indicator = sf::Color(255, 0, 0, 100);
 
-			if (cell->GetObstacle() == true)
+			if (cell->IsObstacle() == true)
 			{
 				indicator = sf::Color(255, 255, 255, 255);
 			}
@@ -386,13 +427,13 @@ void Grid::DrawColorCell()
 
 void Grid::DrawLineGrid()
 {
-	int lenghtCol = mAllCells.size();
-	int lenghtRow = mAllCells[0].size();
+	int lenghtCol = mAllCells[0].size();
+	int lenghtRow = mAllCells.size();
 
 	for (int col = 0; col < lenghtCol + 1; col++)
 	{
-		sf::Vector2f startPos = mAllCells[0][0]->getPosition();
-		sf::Vector2f endPos = mAllCells[lenghtCol - 1][lenghtRow - 1]->getPosition();
+		sf::Vector2f startPos = mAllCells.front().front()->getPosition();
+		sf::Vector2f endPos = mAllCells.back().back()->getPosition();
 
 		sf::Vector2f p1 = { startPos.x + mCellSize * col - mCellSize * 0.5f, startPos.y - mCellSize * 0.5f };
 		sf::Vector2f p2 = { startPos.x + mCellSize * col - mCellSize * 0.5f, endPos.y + mCellSize * 0.5f };
@@ -402,8 +443,8 @@ void Grid::DrawLineGrid()
 
 	for (int row = 0; row < lenghtRow + 1; row++)
 	{
-		sf::Vector2f startPos = mAllCells[0][0]->getPosition();
-		sf::Vector2f endPos = mAllCells[lenghtCol - 1][lenghtRow - 1]->getPosition();
+		sf::Vector2f startPos = mAllCells.front().front()->getPosition();
+		sf::Vector2f endPos = mAllCells.back().back()->getPosition();
 
 		sf::Vector2f p1 = { startPos.x - mCellSize * 0.5f, startPos.y + mCellSize * row - mCellSize * 0.5f };
 		sf::Vector2f p2 = { endPos.x + mCellSize * 0.5f, startPos.y + mCellSize * row - mCellSize * 0.5f };
@@ -415,4 +456,17 @@ void Grid::DrawLineGrid()
 sf::Vector2f Grid::GetPositionToView(int rows, int cols, float coef, int size)
 {
 	return sf::Vector2f((int)((float)rows * coef) * mCellSize, (int)((float)cols * coef) * mCellSize);
+}
+
+void Grid::SetParameters(int cellSize, bool usingTxt)
+{
+	mCellSize = cellSize;
+
+	int rows = pCurrentScene->GetGridRows();
+	int cols = pCurrentScene->GetGridCols();
+
+	if (usingTxt)
+		InitTab(GridConfigs::GetConfigString());
+	else
+		InitTab(rows, cols);
 }

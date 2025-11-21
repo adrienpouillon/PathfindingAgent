@@ -2,21 +2,15 @@
 #include "../Utils.h"
 #include "../Debug.h"
 #include "Grid.h"
+#include "Agent.h"
 
 
 template<typename T>
-inline void PathFinding<T>::Find(Node<T>* startNode, Node<T>* endNode, Grid* grid)
+inline void PathFinding<T>::Find(Node<T>* startNode, Node<T>* endNode, Grid* grid, Agent* pOwner)
 {
     SetReadFinish(false);
-    /*if (GetPath() == nullptr)
-    {
-        SetReadFinish(false);
-        SetPath(std::vector<Node<T>*>());
-    }*/
-    /*std::vector<Node<T>*>* path = */
-    FindPath(startNode, endNode, grid, GetPath());
-
-    //SetPath(*path);
+  
+    FindPath(startNode, endNode, grid, GetPath(), pOwner);
 }
 
 template<typename T>
@@ -50,7 +44,8 @@ inline std::vector<Node<T>*>* PathFinding<T>::GetPath()
     }
     else
     {
-        mPath = std::vector<Node<T>*>();
+        mPath.clear();
+
         return &mPath;
     }
 }
@@ -58,5 +53,6 @@ inline std::vector<Node<T>*>* PathFinding<T>::GetPath()
 template<typename T>
 PathFinding<T>::~PathFinding()
 {
-
+    mReadFinish = true;
+    mPath.clear();
 }

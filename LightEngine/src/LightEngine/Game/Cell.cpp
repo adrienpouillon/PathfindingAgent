@@ -3,27 +3,40 @@
 #include "../Entity.h"
 #include "../Debug.h"
 #include <iostream>
+#include "Agent.h"
 
 void Cell::Update()
 {
 }
 
-void Cell::CheckStatus(int size)
+void Cell::CheckStatus(int cellSize)
 {
 	for (Entity* e : GameManager::Get()->GetEntities())
 	{
 		sf::Vector2f pos = getPosition();
 		sf::Vector2f ePos = e->GetPosition();
 		
-		if (ePos.x - e->GetSize().x * 0.5f >= pos.x - size && ePos.x + e->GetSize().x * 0.5f <= pos.x + size)
+		sf::Vector2f entitySize = e->GetSize();
+
+		if (ePos.x + entitySize.x * 0.5f > pos.x - cellSize * 0.5f && ePos.x - entitySize.x * 0.5f < pos.x + cellSize * 0.5f)
 		{
-			if (ePos.y - e->GetSize().y * 0.5f >= pos.y - size && ePos.y + e->GetSize().y * 0.5f <= pos.y + size)
+			if (ePos.y + entitySize.y * 0.5f > pos.y - cellSize * 0.5f && ePos.y - entitySize.y * 0.5f < pos.y + cellSize * 0.5f)
 			{
-				SetAgent(true);
+				if (Agent* a = dynamic_cast<Agent*>(e))
+				{
+					SetAgent(a);
+				}
+				else
+				{
+					SetAgent(nullptr);
+				}
+
+				SetHasAgent(true);
 				return;
 			}
 		}
 	}
 
-	SetAgent(false);
+	SetAgent(nullptr);
+	SetHasAgent(false);
 }

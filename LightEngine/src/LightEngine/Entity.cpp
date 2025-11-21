@@ -120,7 +120,6 @@ void Entity::SetPosition(float x, float y)
 
 	mpShape->setPosition(x, y);
 
-
 	//#TODO Optimise
 	if (mTarget.isSet) 
 	{

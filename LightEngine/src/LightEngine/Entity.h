@@ -3,6 +3,16 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 
+enum Tag
+{
+
+    //agent
+    AGENT,
+    CIVIL,
+    GUARD,
+    ASSASSIN
+};
+
 enum class ShapeType
 {
     Circle,
@@ -59,6 +69,7 @@ public:
 
     bool IsShapeTag(int tag) const { return mShapeTag == tag; }
 	bool IsTag(int tag) const { return mTag == tag; }
+    bool IsType(int tag) const { return mTag >= tag; }
     bool IsColliding(Entity* other) const;
 	bool IsInside(float x, float y) const;
 

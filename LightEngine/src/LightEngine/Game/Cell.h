@@ -1,28 +1,38 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+class Agent;
+
 class Cell : public sf::Transformable
 {
 protected:
-    bool mObstacle = false;
-    bool mAgent = false;
+    sf::Vector2f mRowCol;
+
+    bool mIsObstacle = false;
+    bool mHasAgent = false;
+
+    Agent* mpAgent = nullptr;
 public:
     Cell() { Start(); }
 
-    void Start() { setPosition(0, 0); SetObstacle(false); }
+    void Start() { setPosition(0, 0); SetIsObstacle(false); SetRowCol(-1, -1); }
 
-    void SetAll(sf::Vector2f xy, bool obstacle) { setPosition(xy); SetObstacle(obstacle); }
-
+    void SetAll(sf::Vector2f xy, bool obstacle, int row, int col) { setPosition(xy); SetIsObstacle(obstacle); SetRowCol(row, col); }
+    
     void Update();
     void CheckStatus(int size);
 
-    const bool& GetAgent() { return mAgent; }
-    void SetAgent(bool state) { mAgent = state; }
+    const bool& HasAgent() const { return mHasAgent; }
+    void SetHasAgent(bool state) { mHasAgent = state; }
 
-    void SetObstacle(bool obstacle) { mObstacle = obstacle; }
-    const bool& GetObstacle() const { return mObstacle; }
+    Agent* GetAgent() { return mpAgent; }
+    void SetAgent(Agent* a) { mpAgent = a; }
 
-    ~Cell() = default;
+    const bool& IsObstacle() const { return mIsObstacle; }
+    void SetIsObstacle(bool obstacle) { mIsObstacle = obstacle; }
+
+    const sf::Vector2f& GetRowCol() const { return mRowCol; }
+    void SetRowCol(int row, int col) { mRowCol.x = row; mRowCol.y = col; }
 };
 
 

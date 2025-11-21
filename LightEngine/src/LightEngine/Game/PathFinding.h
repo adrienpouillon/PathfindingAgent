@@ -7,15 +7,16 @@ class Grid;
 template<typename T>
 class PathFinding
 {
-public://protected:
+public:
 	bool mReadFinish;
 	std::vector<Node<T>*> mPath;
+
 public:
 	PathFinding() { Start(); }
 
 	void Start() { SetReadFinish(true); }
 
-	void Find(Node<T>* startNode, Node<T>* endNode, Grid* grid);
+	void Find(Node<T>* startNode, Node<T>* endNode, Grid* grid, Agent* pOwner);
 
 	void SetReadFinish(bool readFinish);
 	bool GetReadFinish();
