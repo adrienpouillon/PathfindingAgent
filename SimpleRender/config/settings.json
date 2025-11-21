@@ -1,0 +1,50 @@
+{
+    "projects": {
+        "Pathfinding3D": {
+            "additionalDependencies": [],
+            "additionalIncludeDirectories": [
+                "$(SolutionDir)../vendor/GCRender/includes/",
+                "$(SolutionDir)../vendor/GCRender/includes/Core/",
+                "$(SolutionDir)../vendor/GCRender/includes/Render/"
+            ],
+            "additionalLibraryDirectories": [],
+            "dependencies": [
+                "lib"
+            ],
+            "dependents": [],
+            "guid": "6F6366D6-338A-7E77-6C03-541776A677C2",
+            "lib": false,
+            "pch": true,
+            "preprocessorDefinitions": [],
+            "vcpkg": false,
+            "window": false
+        },
+        "lib": {
+            "additionalDependencies": [
+                "GCE.lib"
+            ],
+            "additionalIncludeDirectories": [
+                "$(SolutionDir)../vendor/GCRender/includes/",
+                "$(SolutionDir)../vendor/GCRender/includes/Core/",
+                "$(SolutionDir)../vendor/GCRender/includes/Render/"
+            ],
+            "additionalLibraryDirectories": [
+                "$(SolutionDir)../vendor/GCRender/lib/"
+            ],
+            "dependencies": [],
+            "dependents": [
+                "Pathfinding3D"
+            ],
+            "guid": "6B9D4FE0-70E4-281F-6886-163E1CC004E9",
+            "lib": true,
+            "pch": true,
+            "preprocessorDefinitions": [],
+            "vcpkg": false,
+            "window": false
+        }
+    },
+    "solution_guid": "6E7E6BD1-1ECE-4AA7-679E-22602397182F",
+    "solution_name": "Pathfinding3D",
+    "startup_project": "Pathfinding3D",
+    "version": "1.17.4"
+}

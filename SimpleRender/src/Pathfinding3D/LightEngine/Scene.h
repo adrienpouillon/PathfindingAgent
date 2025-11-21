@@ -1,0 +1,30 @@
+#pragma once
+
+class GameManager;
+
+class Scene
+{
+private:
+	GameManager* mpGameManager;
+
+private:
+	void SetGameManager(GameManager* pGameManager) { mpGameManager = pGameManager; }
+	
+protected:
+	Scene() = default;
+
+	virtual void OnInitialize() = 0;
+	virtual void OnUpdate() = 0;
+
+public:
+	template<typename T>
+	T* CreateEntity(Geometry* pGeo, gce::Vector3f32 scale, const gce::Vector3f32& color);
+	float GetDeltaTime() const;
+
+	int GetWindowWidth() const;
+	int GetWindowHeight() const;
+
+	friend GameManager;
+};
+
+#include "Scene.inl"
