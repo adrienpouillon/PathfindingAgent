@@ -17,6 +17,7 @@ void MainScene::OnInitialize()
 	mIsResizing = false;
 	mRestartNode = false;
 	mIsChangingGridConfig = false;
+	mUseCoin = true;
 
 	SetDrawDebug(DRAW_DEBUG_AGENT_NODE);
 
@@ -87,7 +88,7 @@ void MainScene::OnUpdate()
 
 void MainScene::MousePressedInputs(const sf::Event& event, sf::Vector2f worldMousePos, int& actionExecute)
 {
-	float radius = 25.f;
+	float radius = RADIUS;
 
 	switch (event.mouseButton.button)
 	{
@@ -105,37 +106,50 @@ void MainScene::MousePressedInputs(const sf::Event& event, sf::Vector2f worldMou
 			}
 		}
 
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::C) && actionExecute < 1)
+		{
+			//ajouter une piece
+			SetCellCoin(worldMousePos, true);
+			actionExecute++;
+		}
+
 		if (actionExecute < 1)
 		{
 			Entity* clicOnEntity = GetNearestEntity(worldMousePos);
-			if (clicOnEntity == mSelectedEntity)
+			if (clicOnEntity == nullptr)
 			{
-				mSelectedEntity = nullptr;
-				actionExecute++;
-			}
-			else if (clicOnEntity == nullptr)
-			{
-				//deplacer une entity
-				if (Agent* a = dynamic_cast<Agent*>(mSelectedEntity))
+				if (mSelectedEntity != nullptr)
 				{
-					a->GoToCell(worldMousePos, GetGrid());
-					actionExecute++;
-					std::cout << "Moving !\n";
-				}
+					//deplacer une entity
+					if (Agent* a = dynamic_cast<Agent*>(mSelectedEntity))
+					{
+						a->GoToCell(worldMousePos, GetGrid());
+						actionExecute++;
+						std::cout << "Moving !\n";
+					}
 
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) == false && actionExecute < 1)
-				{
-					mSelectedEntity = nullptr;
-					actionExecute++;
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) == false && actionExecute < 1)
+					{
+						mSelectedEntity = nullptr;
+						actionExecute++;
+					}
 				}
 			}
+			//si clicOnEntity != nullptr
 			else
 			{
-				mSelectedEntity = clicOnEntity;
+				if (clicOnEntity == mSelectedEntity)
+				{//deSelect
+					mSelectedEntity = nullptr;
+				}
+				else
+				{//select
+					mSelectedEntity = clicOnEntity;
+				}
 				actionExecute++;
-				//std::cout << "Selected !\n";
 			}
 		}
+
 		break;
 	case sf::Mouse::Button::Middle:
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && actionExecute < 1)
@@ -149,6 +163,12 @@ void MainScene::MousePressedInputs(const sf::Event& event, sf::Vector2f worldMou
 				CreateCivil(pos, 75.f, radius, sf::Color::Yellow, sf::Color(64, 128, 128));
 				actionExecute++;
 			}
+		}
+		else if (actionExecute < 1)
+		{
+			mRestartNode = true;
+			SetCellObstacle(worldMousePos, true);
+			actionExecute++;
 		}
 		break;
 	case sf::Mouse::Button::Right:
@@ -212,6 +232,12 @@ void MainScene::KeyPressedInputs(const sf::Event & event, sf::Vector2f worldMous
 		}
 		actionExecute++;
 	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::K) && actionExecute < 1)
+	{
+		mUseCoin = !mUseCoin;
+		actionExecute++;
+	}
 }
 
 void MainScene::KeyReleasedInputs(const sf::Event & event, sf::Vector2f worldMousePos, int& actionExecute)
@@ -227,12 +253,7 @@ void MainScene::MouseInputs(const sf::Event & event, sf::Vector2f worldMousePos,
 
 		break;
 	case sf::Mouse::Button::Middle:
-		if (actionExecute < 1 && !sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		{
-			mRestartNode = true;
-			SetCellObstacle(worldMousePos, true);
-			actionExecute++;
-		}
+		
 		break;
 	case sf::Mouse::Button::Right:
 		if (actionExecute < 1 && !sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -245,7 +266,7 @@ void MainScene::MouseInputs(const sf::Event & event, sf::Vector2f worldMousePos,
 				e->Destroy();
 				actionExecute++;
 			}
-			SetCellObstacle(worldMousePos, false);
+			SetCellObstacleCoin(worldMousePos, false, false);
 			actionExecute++;
 		}
 		break;
@@ -606,15 +627,50 @@ void MainScene::SwitchGridFile(int val)
 void MainScene::SetCellObstacle(sf::Vector2f pos, bool state)
 {
 	sf::Vector2f fixedPos = { 0, 0 };
+	Cell* nearest = GetNearestCell(pos, GetGrid()->GetAllCells());
 
+	if (nearest != nullptr)
+	{
+		if (nearest->HasAgent() == false && nearest->HasCoin() == false)
+		{
+			nearest->SetIsObstacle(state);
+		}
+	}
+}
+
+void MainScene::SetCellCoin(sf::Vector2f pos, bool state)
+{
+	sf::Vector2f fixedPos = { 0, 0 };
+	Cell* nearest = GetNearestCell(pos, GetGrid()->GetAllCells());
+
+	if (nearest != nullptr)
+	{
+		if (nearest->HasAgent() == false && nearest->IsObstacle() == false)
+		{
+			nearest->SetHasCoin(state);
+		}
+	}
+}
+
+void MainScene::SetCellObstacleCoin(sf::Vector2f pos, bool stateObstacle, bool stateCoin)
+{
+	sf::Vector2f fixedPos = { 0, 0 };
 	Cell* nearest = GetNearestCell(pos, GetGrid()->GetAllCells());
 
 	if (nearest != nullptr)
 	{
 		if (nearest->HasAgent() == false)
 		{
-			nearest->SetIsObstacle(state);
+			if (nearest->HasCoin() == false)
+			{
+				nearest->SetIsObstacle(stateObstacle);
+			}
+			if (nearest->IsObstacle() == false)
+			{
+				nearest->SetHasCoin(stateCoin);
+			}
 		}
+
 	}
 }
 

@@ -51,6 +51,8 @@ T* GetNearestCell(sf::Vector2f pos, std::vector<std::vector<T*>> allCells);
 template<typename T>
 T* GetEntityNearest(sf::Vector2f pos, float minDis);
 
+int GetRandomNumber(int min, int max);
+
 #include "Functions.inl"
 
 

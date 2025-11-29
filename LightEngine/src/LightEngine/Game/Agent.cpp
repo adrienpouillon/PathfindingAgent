@@ -4,6 +4,7 @@
 #include "../GameManager.h"
 #include "MainScene.h"
 #include "Node.h"
+#include "Cell.h"
 #include "Grid.h"
 #include "Functions.h"
 #include <iostream>
@@ -27,6 +28,18 @@ void Agent::OnInitialize()
 	SetGhost(false);
 
 	SetCurrentScene(GameManager::Get()->GetScene<MainScene>());
+
+	int coin = GetRandomNumber(0, 10);
+	if (coin == 10)
+	{
+		coin = GetRandomNumber(0, 18);
+	}
+	SetCoin(coin);
+
+	mWaitTime = 1.f;
+	mWaitProgress = 0.f;
+
+	mNeedToWaitForReset = false;
 }
 
 void Agent::OnUpdate()
@@ -44,6 +57,45 @@ void Agent::OnPathFinish()
 
 void Agent::OnDestroy()
 {
+	sf::Vector2f pos = GetPosition();
+	std::vector<std::vector<Cell*>> allCells = mCurrentScene->GetGrid()->GetAllCells();
+	int size = mCurrentScene->GetGrid()->GetCellSize();
+
+	int i = 1;
+	int createCoin = 0;
+	bool round = true;
+	while (round)
+	{
+		Cell* nearest;
+		nearest = GetNearestCell<Cell>(pos + sf::Vector2f(i * size, 0.f), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+		nearest = GetNearestCell<Cell>(pos + sf::Vector2f(0.f, i * size), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+		nearest = GetNearestCell<Cell>(pos + sf::Vector2f(-i * size, 0.f), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+		nearest = GetNearestCell<Cell>(pos + sf::Vector2f(0.f, -i * size), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+
+		nearest = GetNearestCell<Cell>(pos + sf::Vector2f(i * size, i * size), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+		nearest = GetNearestCell<Cell>(pos + sf::Vector2f(i * size, -i * size), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+		nearest = GetNearestCell<Cell>(pos + sf::Vector2f(-i * size, i * size), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+		nearest = GetNearestCell<Cell>(pos + sf::Vector2f(-i * size, -i * size), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+
+		i++;
+	}
+
 	if (mCurrentScene->GetSelectedEntity() == this)
 	{
 		mCurrentScene->SetSelectedEntity(nullptr);
@@ -261,9 +313,4 @@ int Agent::GetCurrentIndexOnPath(Node<Cell>* currentNode, std::vector<Node<Cell>
 		}
 	}
 	return -1;
-}
-
-void Agent::SetRoam(bool roam)
-{
-	mRoam = roam;
 }

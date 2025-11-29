@@ -9,6 +9,20 @@ void Assassin::OnUpdate()
 {
 	Agent::OnUpdate();
 
+	if (mCurrentScene->GetUseCoin())
+	{
+		int pathSize = mPath.GetPath()->size();
+		if (pathSize > 0)
+		{
+			int cost = 10;
+			if (mCoin >= cost)
+			{
+				mCurrentScene->CreateAssassin(GetPosition(), 100.f, RADIUS, sf::Color::Red, sf::Color::Magenta);
+				IncreaseCoin(-cost);
+			}
+		}
+	}
+
 	if (mCurrentScene->GetSelectedEntity() == this)
 	{
 		ResetEntityTarget();

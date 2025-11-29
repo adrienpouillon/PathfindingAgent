@@ -38,9 +38,9 @@ namespace Utils
 		return std::atan2(det, dot) * 180 / 3.14159265;
 	}
 
-	float DisManhattan(sf::Vector2f currentPos, sf::Vector2f endPos)
+	float DisManhattan(sf::Vector2f currentPos, sf::Vector2f endPos, int sizeCell)
 	{
-		return abs(currentPos.x - endPos.x) + abs(currentPos.y - endPos.y);
+		return (abs(currentPos.x - endPos.x) + abs(currentPos.y - endPos.y)) / sizeCell;
 	}
 
 	sf::Vector2f GetCellInPos(sf::Vector2f pos, int sizeCell)

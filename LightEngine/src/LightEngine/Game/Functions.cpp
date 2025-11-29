@@ -14,3 +14,10 @@ Entity* GetNearestEntity(sf::Vector2f pos)
 
     return nullptr;
 }
+
+int GetRandomNumber(int min, int max)
+{
+    int range = max - min + 1;
+    int value = rand() % range + min;
+    return value;
+}

@@ -7,6 +7,8 @@
 #define DRAW_DEBUG_AGENT DRAW_DEBUG_AGENT_NODE + 1
 #define DRAW_DEBUG_NO DRAW_DEBUG_AGENT + 1
 
+#define RADIUS 25.f
+
 
 constexpr int CamSpeed = 250;
 
@@ -36,7 +38,8 @@ protected:
 	bool mRestartNode = false;
 	bool mIsChangingGridConfig = false;
 
-	int mDrawDebug = false;
+	int mDrawDebug;
+	bool mUseCoin;
 public:
 
 	void OnInitialize() override;
@@ -83,6 +86,11 @@ public:
 	sf::View& GetView() { return mView; }
 
 	void SetCellObstacle(sf::Vector2f pos, bool state);
+	void SetCellCoin(sf::Vector2f pos, bool state);
+	void SetCellObstacleCoin(sf::Vector2f pos, bool stateObstacle, bool stateCoin);
+
+	void SetUseCoin(bool useCoin) { mUseCoin = useCoin; }
+	const bool& GetUseCoin() const { return mUseCoin; }
 
 	void SetRestartNode(bool restartNode) { restartNode = restartNode; }
 	const bool& GetRestartNode() const { return mRestartNode; }

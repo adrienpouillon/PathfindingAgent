@@ -6,6 +6,34 @@
 void Civil::OnUpdate()
 {
 	Agent::OnUpdate();
+
+	if (mCurrentScene->GetUseCoin())
+	{
+		int pathSize = mPath.GetPath()->size();
+		if (pathSize > 0)
+		{
+			int cost = 10;
+			if (mCoin >= cost)
+			{
+				int ran = GetRandomNumber(0, 10);
+				if (ran < 5)
+				{
+					mCurrentScene->CreateGuard(GetPosition(), 100.f, RADIUS, sf::Color::Cyan, sf::Color::Blue);
+					IncreaseCoin(-cost);
+				}
+				else if (ran > 5)
+				{
+					mCurrentScene->CreateCivil(GetPosition(), 75.f, RADIUS, sf::Color::Yellow, sf::Color(64, 128, 128));
+					IncreaseCoin(-cost);
+				}
+				else
+				{
+					mCurrentScene->CreateAssassin(GetPosition(), 100.f, RADIUS, sf::Color::Red, sf::Color::Magenta);
+					IncreaseCoin(-cost);
+				}
+			}
+		}
+	}
 }
 
 void Civil::OnPathFinish()
@@ -25,11 +53,4 @@ void Civil::OnPathFinish()
 	{
 		GoToNode(node, grid);
 	}
-}
-
-int Civil::GetRandomNumber(int min, int max)
-{
-    int range = max - min + 1;
-    int value = rand() % range + min;
-    return value;
 }

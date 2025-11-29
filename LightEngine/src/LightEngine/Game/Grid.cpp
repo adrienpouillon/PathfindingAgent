@@ -66,15 +66,15 @@ void Grid::CreateTab(int _rows, int _cols, std::string strGrid = "")
 				}
 				else if(strGrid[count] == 'G')
 				{
-					mGuardsDataFromTxt.push_back(AgentsData(sf::Vector2f(c * mCellSize, r * mCellSize), 100.f, 25.f, sf::Color::Cyan, sf::Color::Blue));
+					mGuardsDataFromTxt.push_back(AgentsData(sf::Vector2f(c * mCellSize, r * mCellSize), 100.f, RADIUS, sf::Color::Cyan, sf::Color::Blue));
 				}
 				else if (strGrid[count] == 'C')
 				{
-					mCivilDataFromTxt.push_back(AgentsData(sf::Vector2f(c * mCellSize, r * mCellSize), 75.f, 25.f, sf::Color::Red + sf::Color::Green, sf::Color::Red));
+					mCivilDataFromTxt.push_back(AgentsData(sf::Vector2f(c * mCellSize, r * mCellSize), 75.f, RADIUS, sf::Color::Red + sf::Color::Green, sf::Color::Red));
 				}
 				else if (strGrid[count] == 'A')
 				{
-					mAssassinDataFromTxt.push_back(AgentsData(sf::Vector2f(c * mCellSize, r * mCellSize), 100.f, 25.f, sf::Color::Red, sf::Color::Magenta));
+					mAssassinDataFromTxt.push_back(AgentsData(sf::Vector2f(c * mCellSize, r * mCellSize), 100.f, RADIUS, sf::Color::Red, sf::Color::Magenta));
 				}
 
 				count++;
@@ -319,7 +319,10 @@ void Grid::SaveGrid(std::string fileName)
 					}
 				}
 			}
-
+			else if (currentCell->HasCoin())
+			{
+				toAdd = "c";
+			}
 			file << toAdd + " ";
 		}
 
@@ -406,11 +409,16 @@ void Grid::DrawColorCell()
 			sf::Color indicator = sf::Color::Transparent;
 
 			if (cell->HasAgent() == true)
+			{
 				indicator = sf::Color(255, 0, 0, 100);
-
+			}
 			if (cell->IsObstacle() == true)
 			{
 				indicator = sf::Color(255, 255, 255, 255);
+			}
+			if (cell->HasCoin() == true)
+			{
+				indicator = sf::Color(255, 128, 0, 255);
 			}
 
 			sf::Vector2f pos = cell->getPosition();

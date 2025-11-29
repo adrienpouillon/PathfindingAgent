@@ -22,12 +22,14 @@ protected:
 
 	MainScene* mCurrentScene;
 
-	bool mNeedToWaitForReset = false;
+	bool mNeedToWaitForReset;
 
-	float mWaitTime = 1.f;
-	float mWaitProgress = 0.f;
+	float mWaitTime;
+	float mWaitProgress;
 
-	bool mIsGhost = false; 
+	bool mIsGhost; 
+
+	int mCoin;
 public:
 	virtual void OnInitialize();
 
@@ -58,7 +60,7 @@ public:
 	void SetEndNode(Node<Cell>* endNode) { mEndNode = endNode; }
 	Node<Cell>* GetEndNode() { return mEndNode; }
 
-	void SetRoam(bool roam);
+	void SetRoam(bool roam) {mRoam = roam;}
 	const bool& GetRoam() const { return mRoam; }  
 
 	void SetGhost(bool state) { mIsGhost = state; } 
@@ -72,4 +74,8 @@ public:
 
 	void SetCurrentScene(MainScene* currentScene) { mCurrentScene = currentScene; }
 	MainScene* GetCurrentScene() { return mCurrentScene; }
+
+	void SetCoin(int coin) { mCoin = coin; }
+	void IncreaseCoin(int add) { mCoin += add; }
+	const int& IsCoin() const { return mCoin; }
 };

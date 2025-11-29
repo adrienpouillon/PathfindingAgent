@@ -8,6 +8,6 @@ namespace Utils
 	float GetDistance(int x1, int y1, int x2, int y2);
 	float GetAngleDegree(const sf::Vector2f& v1, const sf::Vector2f& v2);
 
-	float DisManhattan(sf::Vector2f currentPos, sf::Vector2f endPos);
+	float DisManhattan(sf::Vector2f currentPos, sf::Vector2f endPos, int sizeCell);
 	sf::Vector2f GetCellInPos(sf::Vector2f pos, int sizeCell);
 }

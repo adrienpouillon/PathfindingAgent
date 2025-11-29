@@ -35,9 +35,11 @@ template<typename T>
 void FindPath(Node<T>* startNode, Node<T>* endNode, Grid* grid, std::vector<Node<T>*>* allFormerPaths, Agent* pOwner)
 {
 	ResetNodes<T>(grid);
+	int sizeCell = grid->GetCellSize();
+
 	std::priority_queue<Node<T>*, std::vector<Node<T>*>, CompareASTAR<T>> queue;
 	startNode->SetDisStart(0.f);
-	startNode->SetDisEnd(Utils::DisManhattan(startNode->GetData()->getPosition(), endNode->GetData()->getPosition()));
+	startNode->SetDisEnd(Utils::DisManhattan(startNode->GetData()->getPosition(), endNode->GetData()->getPosition(), sizeCell));
 	queue.push(startNode);
 
 	while (queue.empty() == false)
@@ -85,16 +87,19 @@ void FindPath(Node<T>* startNode, Node<T>* endNode, Grid* grid, std::vector<Node
 
 		sf::Vector2f endPosition = endNode->GetData()->getPosition();
 
-		for (NeighborsCost<T>& nodeNC : nodeCurrent->GetNeighborsCost())
+		for (NeighborsCost<T>& structNeighborCost : nodeCurrent->GetNeighborsCost())
 		{
-			Node<T>* nodeN = nodeNC.GetNeighbor();
+			Node<T>* nodeN = structNeighborCost.GetNeighbor();
+			T* cell = nodeN->GetData();
 		
-			float minimalDist = nodeCurrent->GetDisStart() + nodeNC.GetCost(); // f = g + h
-
+			float minimalDist = nodeCurrent->GetDisStart() + structNeighborCost.GetCost(); // f = g + h
+			float valueCoin = (float)(cell->HasCoin() * 10);
 			if (minimalDist < nodeN->GetDisStart())
 			{
+				float disEnd = Utils::DisManhattan(cell->getPosition(), endPosition, sizeCell);
+
 				nodeN->SetDisStart(minimalDist);
-				nodeN->SetDisEnd(Utils::DisManhattan(nodeN->GetData()->getPosition(), endPosition));
+				nodeN->SetDisEnd(disEnd - valueCoin);
 				nodeN->SetCallMe(nodeCurrent);
 
 				queue.push(nodeN);

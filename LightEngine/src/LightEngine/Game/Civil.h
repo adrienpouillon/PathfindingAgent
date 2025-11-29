@@ -11,7 +11,5 @@ public:
 	virtual void OnUpdate();
 
 	virtual void OnPathFinish();
-
-	int GetRandomNumber(int min, int max);
 };
 

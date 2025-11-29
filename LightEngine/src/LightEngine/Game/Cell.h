@@ -10,6 +10,7 @@ protected:
 
     bool mIsObstacle = false;
     bool mHasAgent = false;
+    bool mHasCoin = false;
 
     Agent* mpAgent = nullptr;
 public:
@@ -21,6 +22,10 @@ public:
     
     void Update();
     void CheckStatus(int size);
+    void Collide(int cellSize);
+
+    const bool& HasCoin() const { return mHasCoin; }
+    void SetHasCoin(bool state) { mHasCoin = state; }
 
     const bool& HasAgent() const { return mHasAgent; }
     void SetHasAgent(bool state) { mHasAgent = state; }
