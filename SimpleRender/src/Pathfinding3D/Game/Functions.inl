@@ -32,10 +32,12 @@ inline void AddReveseVector2OnVector1(std::vector<A>* vector1, const std::vector
 template<typename T>
 void FindPath(Node<T>* startNode, Node<T>* endNode, Grid* grid, std::vector<Node<T>*>* allFormerPaths, Agent* pOwner)
 {
+	int sizeCell = grid->GetCellSize();
+
 	ResetNodes<T>(grid);
 	std::priority_queue<Node<T>*, std::vector<Node<T>*>, CompareASTAR<T>> queue;
 	startNode->SetDisStart(0.f);
-	startNode->SetDisEnd(Utils::DisManhattan(startNode->GetData()->GetPosition(), endNode->GetData()->GetPosition()));
+	startNode->SetDisEnd(Utils::DisManhattan(startNode->GetData()->GetPosition(), endNode->GetData()->GetPosition(), sizeCell));
 	queue.push(startNode);
 
 	while (queue.empty() == false)
@@ -74,18 +76,20 @@ void FindPath(Node<T>* startNode, Node<T>* endNode, Grid* grid, std::vector<Node
 
 		gce::Vector3f32 endPosition = endNode->GetData()->GetPosition();
 
-		for (NeighborsCost<T>& nodeNC : nodeCurrent->GetNeighborsCost())
+		for (NeighborsCost<T>& structNeighborCost : nodeCurrent->GetNeighborsCost())
 		{
-			Node<T>* nodeN = nodeNC.GetNeighbor();
+			Node<T>* nodeN = structNeighborCost.GetNeighbor();
+			T* cell = nodeN->GetData();
 
-			T* tNeighbor = nodeN->GetData();
-
-			float minimalDist = nodeCurrent->GetDisStart() + nodeNC.GetCost(); 
+			float minimalDist = nodeCurrent->GetDisStart() + structNeighborCost.GetCost();
 
 			if (minimalDist < nodeN->GetDisStart())
 			{
+				float valueCoin = (float)(cell->HasCoin());
+				float disEnd = Utils::DisManhattan(cell->GetPosition(), endPosition, sizeCell);
+
 				nodeN->SetDisStart(minimalDist);
-				nodeN->SetDisEnd(Utils::DisManhattan(nodeN->GetData()->GetPosition(), endPosition));
+				nodeN->SetDisEnd(disEnd - valueCoin);
 				nodeN->SetCallMe(nodeCurrent);
 
 				queue.push(nodeN);

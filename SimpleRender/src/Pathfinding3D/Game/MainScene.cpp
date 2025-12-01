@@ -15,6 +15,8 @@ void MainScene::OnInitialize()
 	mSelectedEntity = nullptr;
 	mIsSaving = false;
 	mRestartNode = false;
+	mDrawDebug = 0;
+	mUseCoin = false;
 
 	mpCam = GameManager::Get()->GetCamera();
 	mpCam->SetRotation({ 90.f, 0.f, 0.f });
@@ -72,11 +74,11 @@ void MainScene::MousePressedInputs(gce::Vector3f32 cursorPos, int& actionExecute
 {
 	if (GetButtonDown(Mouse::LEFT))
 	{
-		if (GetKey(Keyboard::A) && actionExecute == 0)
+		if (GetKey(Keyboard::A) && actionExecute < 1)
 		{
 			//ajouter un agent
 
-			Cell* nearest = GetNearestCell(cursorPos, GetGrid()->GetAllCells());
+			Cell* nearest = GetNearestCell(cursorPos, mpGrid->GetAllCells());
 
 			float cellSize = mpGrid->GetCellSize();
 			float agentSize = cellSize * 0.5f;
@@ -94,21 +96,32 @@ void MainScene::MousePressedInputs(gce::Vector3f32 cursorPos, int& actionExecute
 			}
 		}
 
-		if (actionExecute == 0)
+		if (GetKey(Keyboard::C) && actionExecute < 1)
+		{
+			//ajouter une piece
+			Cell* currentCell = GetNearestCell(cursorPos, mpGrid->GetAllCells());
+			Entity* e = GetNearestAgent(cursorPos);
+			if (e == nullptr && currentCell->HasCoin() == false)
+			{
+				currentCell->SetHasCoin(true);
+				actionExecute++;
+			}
+		}
+
+		if (actionExecute < 1)
 		{
 			Cell* nearest = GetNearestCell(cursorPos, mpGrid->GetAllCells());
-
 			if (nearest->HasAgent() == false && mSelectedEntity != nullptr)
 			{
 				if (Agent* a = dynamic_cast<Agent*>(mSelectedEntity))
 				{
-					a->GoToCell(cursorPos, GetGrid());
+					a->GoToCell(cursorPos, mpGrid);
 					std::cout << "Moving !\n";
 					actionExecute++;
 				}
 			}
 		}
-		if (actionExecute == 0)
+		if (actionExecute < 1)
 		{
 			Entity* clicOnEntity = GetNearestAgent(cursorPos);
 			if (clicOnEntity != nullptr)
@@ -133,15 +146,13 @@ void MainScene::MousePressedInputs(gce::Vector3f32 cursorPos, int& actionExecute
 		}
 	}
 
-	auto& grid = GetGrid()->GetAllCells();
-
 	if (GetButtonDown(Mouse::MIDDLE))
 	{
-		if (GetKey(Keyboard::A) && actionExecute == 0)
+		if (GetKey(Keyboard::A) && actionExecute < 1)
 		{
 			//ajouter un agent
 
-			Cell* nearest = GetNearestCell(cursorPos, GetGrid()->GetAllCells());
+			Cell* nearest = GetNearestCell(cursorPos, mpGrid->GetAllCells());
 
 			float cellSize = mpGrid->GetCellSize();
 			float agentSize = cellSize * 0.5f;
@@ -158,17 +169,11 @@ void MainScene::MousePressedInputs(gce::Vector3f32 cursorPos, int& actionExecute
 			}
 		}
 
-		if(actionExecute == 0)
+		if(actionExecute < 1)
 		{
-			Cell* currentCell = GetNearestCell(cursorPos, grid);
-			if (Entity* e = GetNearestAgent(cursorPos))
-			{
-				if (currentCell == GetNearestCell(e->GetPosition(), grid)) // Si le changement est sur un agent
-				{
-					return;
-				}
-			}
-			else
+			Cell* currentCell = GetNearestCell(cursorPos, mpGrid->GetAllCells());
+			Entity* e = GetNearestAgent(cursorPos);
+			if (e == nullptr)
 			{
 				int currentHeight = currentCell->GetConfigHeight();
 				currentCell->ChangeHeight(currentHeight + 1);
@@ -180,11 +185,11 @@ void MainScene::MousePressedInputs(gce::Vector3f32 cursorPos, int& actionExecute
 
 	if (GetButtonDown(Mouse::RIGHT))
 	{
-		if (GetKey(Keyboard::A) && actionExecute == 0)
+		if (GetKey(Keyboard::A) && actionExecute < 1)
 		{
 			//ajouter un agent
 
-			Cell* nearest = GetNearestCell(cursorPos, GetGrid()->GetAllCells());
+			Cell* nearest = GetNearestCell(cursorPos, mpGrid->GetAllCells());
 
 			float cellSize = mpGrid->GetCellSize();
 			float agentSize = cellSize * 0.5f;
@@ -201,7 +206,7 @@ void MainScene::MousePressedInputs(gce::Vector3f32 cursorPos, int& actionExecute
 			}
 		}
 
-		if (actionExecute == 0)
+		if (actionExecute < 1)
 		{
 			if (Entity* e = GetNearestAgent(cursorPos))
 			{
@@ -219,7 +224,7 @@ void MainScene::KeyPressedInputs(gce::Vector3f32 cursorPos, int& actionExecute)
 	HandleResizingGrid();
 	HandleChangingGridConfig();
 
-	if (GetKeyDown(Keyboard::P) && actionExecute == 0)
+	if (GetKeyDown(Keyboard::P) && actionExecute < 1)
 	{
 		if (Agent* a = dynamic_cast<Agent*>(mSelectedEntity))
 		{
@@ -257,6 +262,12 @@ void MainScene::KeyPressedInputs(gce::Vector3f32 cursorPos, int& actionExecute)
 		{
 			mDrawDebug++;
 		}
+		actionExecute++;
+	}
+
+	if (GetKeyDown(Keyboard::K) && actionExecute < 1)
+	{
+		mUseCoin = !mUseCoin;
 		actionExecute++;
 	}
 }

@@ -6,6 +6,37 @@
 void Civil::OnUpdate()
 {
 	Agent::OnUpdate();
+
+	if (mpCurrentScene->GetUseCoin())
+	{
+		int pathSize = mPath.GetPath()->size();
+		if (pathSize > 0)
+		{
+			int cost = 10;
+			if (mCoin >= cost)
+			{
+				float cellSize = mpCurrentScene->GetGrid()->GetCellSize();
+				float agentSize = cellSize * 0.5f;
+
+				int ran = GetRandomNumber(0, 10);
+				if (ran < 5)
+				{
+					mpCurrentScene->CreateGuard(GetPosition(), 100.f, agentSize, gce::Vector3f32(0.f, 1.f, 1.f), gce::Vector3f32(0.f, 0.f, 1.f));
+					IncreaseCoin(-cost);
+				}
+				else if (ran > 5)
+				{
+					mpCurrentScene->CreateCivil(GetPosition(), 75.f, agentSize, gce::Vector3f32(1.f, 0.5f, 0.f), gce::Vector3f32(1.f, 0.f, 0.f));
+					IncreaseCoin(-cost);
+				}
+				else
+				{
+					mpCurrentScene->CreateAssassin(GetPosition(), 100.f, agentSize, gce::Vector3f32(1.f, 0.f, 0.f), gce::Vector3f32(1.f, 0.f, 1.f));
+					IncreaseCoin(-cost);
+				}
+			}
+		}
+	}
 }
 
 void Civil::OnPathFinish()
@@ -25,11 +56,4 @@ void Civil::OnPathFinish()
 	{
 		GoToNode(node, grid);
 	}
-}
-
-int Civil::GetRandomNumber(int min, int max)
-{
-	int range = max - min + 1;
-	int value = rand() % range + min;
-	return value;
 }

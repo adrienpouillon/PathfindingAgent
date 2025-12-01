@@ -1,13 +1,27 @@
 #include "pch.h"
 #include "Cell.h"
+
 #include "../LightEngine/GameManager.h"
 #include "../LightEngine/Entity.h"
 #include "../LightEngine/Debug.h"
+
+#include "MainScene.h"
 #include "Agent.h"
 #include <iostream>
 
+void Cell::Start()
+{ 
+	SetHasAgent(false);
+	SetHasCoin(false);
+	SetConfigHeight(1);
+	SetRowCol(-1, -1);
+	mpAgent = nullptr;
+	mEntityCoin = CreateCoin();
+}
+
 void Cell::OnUpdate()
 {
+	PrintCoin();
 }
 
 void Cell::CheckStatus(int cellSize)
@@ -57,6 +71,35 @@ void Cell::ChangeHeight(int newHeight)
 	gce::Vector3f32 pos = mpGeo->GetPosition();
 	gce::Vector3f32 scale = mpGeo->GetScale();
 
-	mpGeo->SetScale({ scale.x, CellHeight * mConfigHeight, scale.z });
-	mpGeo->SetPosition({ pos.x, CellHeight * (mConfigHeight - 1), pos.z });
+	mpGeo->SetScale({ scale.x, CELL_HEIGHT_UP * mConfigHeight, scale.z });
+	mpGeo->SetPosition({ pos.x, CELL_HEIGHT_UP * (mConfigHeight - 1), pos.z });
+}
+
+void Cell::PrintCoin()
+{
+	if (mEntityCoin == nullptr)
+	{
+		mEntityCoin = CreateCoin();
+	}
+
+	if (HasCoin())
+	{
+		gce::Vector3f32 pos = mpGeo->GetPosition();
+		mEntityCoin->SetPosition(pos.x, pos.y + CELL_HEIGHT_COIN, pos.z);
+	}
+	else
+	{
+		gce::Vector3f32 pos = mpGeo->GetPosition();
+		if (pos.x != -5000.f || pos.y != -5000.f || pos.z != -5000.f)
+		{
+			mEntityCoin->SetPosition(-5000.f, -5000.f, -5000.f);
+		}
+	}
+}
+
+Entity* Cell::CreateCoin()
+{
+	MainScene* mainScene = GameManager::Get()->GetScene<MainScene>();
+	int size = mainScene->GetGrid()->GetCellSize() * 0.30f;
+	return mainScene->CreateEntity<Entity>(new Sphere(), gce::Vector3f32(size, size, size), gce::Vector3f32(1.f, 0.5f, 0.f));
 }

@@ -23,6 +23,12 @@ void Agent::OnInitialize()
 	SetClassicColor(gce::Vector3f32(1.f, 1.f, 1.f));
 	SetRoamColor(gce::Vector3f32(0.f, 0.f, 0.f));
 	GetGeo()->SetDefaultColor(mClassicColor);
+	int coin = GetRandomNumber(0, 10);
+	if (coin == 10)
+	{
+		coin = GetRandomNumber(0, 18);
+	}
+	SetCoin(coin);
 
 	SetCurrentScene(GameManager::Get()->GetScene<MainScene>());
 }
@@ -42,11 +48,56 @@ void Agent::OnPathFinish()
 
 void Agent::OnDestroy()
 {
+	RecreatCoin();
+
 	if (mpCurrentScene->GetSelectedEntity() == this)
 	{
 		mpCurrentScene->SetSelectedEntity(nullptr);
 	}
 }
+
+void Agent::RecreatCoin()
+{
+	gce::Vector3f32 pos = GetPosition();
+	std::vector<std::vector<Cell*>> allCells = mpCurrentScene->GetGrid()->GetAllCells();
+	int size = mpCurrentScene->GetGrid()->GetCellSize();
+
+	int i = 1;
+	int createCoin = 0;
+	bool round = true;
+	while (round)
+	{
+		Cell* nearest;
+		nearest = GetNearestCell<Cell>(pos + gce::Vector3f32(i * size,0.f, 0.f), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+		nearest = GetNearestCell<Cell>(pos + gce::Vector3f32(0.f, 0.f, i * size), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+		nearest = GetNearestCell<Cell>(pos + gce::Vector3f32(-i * size, 0.f, 0.f), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+		nearest = GetNearestCell<Cell>(pos + gce::Vector3f32(0.f, 0.f, -i * size), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+
+		nearest = GetNearestCell<Cell>(pos + gce::Vector3f32(i * size, 0.f, i * size), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+		nearest = GetNearestCell<Cell>(pos + gce::Vector3f32(i * size, 0.f, -i * size), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+		nearest = GetNearestCell<Cell>(pos + gce::Vector3f32(-i * size, 0.f, i * size), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+		nearest = GetNearestCell<Cell>(pos + gce::Vector3f32(-i * size, 0.f, -i * size), allCells);
+		if (nearest->IsObstacle() == false && nearest->HasCoin() == false) { nearest->SetHasCoin(true); createCoin++; }
+		if (createCoin > mCoin) { round = false; }
+
+		i++;
+	}
+}
+
 
 void Agent::UpdatePath()
 {

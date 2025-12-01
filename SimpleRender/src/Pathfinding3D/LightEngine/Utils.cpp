@@ -31,9 +31,9 @@ namespace Utils
 		return std::sqrt(x * x + y * y + z * z);
 	}
 
-	float DisManhattan(gce::Vector3f32 currentPos, gce::Vector3f32 endPos)
+	float DisManhattan(gce::Vector3f32 currentPos, gce::Vector3f32 endPos, int sizeCell)
 	{
-		return abs(currentPos.x - endPos.x) + abs(currentPos.z - endPos.z);
+		return (abs(currentPos.x - endPos.x) + abs(currentPos.y - endPos.y)) / sizeCell;
 	}
 
 	gce::Vector2f32 GetCellInPos(gce::Vector3f32 pos, int sizeCell)

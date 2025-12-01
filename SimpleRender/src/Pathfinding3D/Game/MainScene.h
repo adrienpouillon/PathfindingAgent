@@ -35,6 +35,7 @@ protected:
 	bool mRestartNode = false;
 
 	int mDrawDebug = 0;
+	bool mUseCoin = false;
 public:
 
 	void OnInitialize() override;
@@ -78,6 +79,9 @@ public:
 	void DebugDrawPath();
 
 	void ResetNode();
+
+	void SetUseCoin(bool useCoin) { mUseCoin = useCoin; }
+	const bool& GetUseCoin() const { return mUseCoin; }
 
 	void SetRestartNode(bool restartNode) { restartNode = restartNode; }
 	const bool& GetRestartNode() const { return mRestartNode; }

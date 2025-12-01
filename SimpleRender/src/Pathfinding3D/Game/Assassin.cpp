@@ -9,6 +9,23 @@ void Assassin::OnUpdate()
 {
 	Agent::OnUpdate();
 
+	if (mpCurrentScene->GetUseCoin())
+	{
+		int pathSize = mPath.GetPath()->size();
+		if (pathSize > 0)
+		{
+			int cost = 10;
+			if (mCoin >= cost)
+			{
+				float cellSize = mpCurrentScene->GetGrid()->GetCellSize();
+				float agentSize = cellSize * 0.5f;
+
+				mpCurrentScene->CreateAssassin(GetPosition(), 100.f, agentSize, gce::Vector3f32(1.f, 0.f, 0.f), gce::Vector3f32(1.f, 0.f, 1.f));
+				IncreaseCoin(-cost);
+			}
+		}
+	}
+
 	if (mpCurrentScene->GetSelectedEntity() == this)
 	{
 		ResetEntityTarget();
@@ -28,11 +45,14 @@ void Assassin::OnUpdate()
 		float distance = Utils::GetDistance(targetPos.x, targetPos.y, targetPos.z, posAssasin.x, posAssasin.y, posAssasin.z);
 
 		if (distance > distanceVisibility)
+		{
 			DeleteFollowPath();
-
+		}
 	}
 	else
+	{
 		DeleteFollowPath();
+	}
 }
 
 void Assassin::OnPathFinish()

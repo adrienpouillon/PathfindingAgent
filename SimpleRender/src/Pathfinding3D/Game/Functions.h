@@ -54,7 +54,7 @@ T* GetNearestCell(gce::Vector3f32 pos, std::vector<std::vector<T*>> allCells);
 template<typename T>
 T* GetEntityNearest(gce::Vector3f32 pos, float minDis);
 
-
+int GetRandomNumber(int min, int max);
 
 
 

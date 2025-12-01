@@ -30,12 +30,17 @@ protected:
 
 	bool mIsGhost = false;
 	bool mIsGoingDown = false;
+
+	int mCoin;
 public:
 	virtual void OnInitialize();
 
 	virtual void OnUpdate();
 	virtual void OnPathFinish();
 	virtual void OnDestroy();
+
+	void RecreatCoin();
+
 	virtual void UpdatePath();
 
 	void GoToCell(Cell* cellEnd, Grid* grid);
@@ -86,4 +91,8 @@ public:
 
 	void SetCurrentScene(MainScene* currentScene) { mpCurrentScene = currentScene; }
 	MainScene* GetCurrentScene() { return mpCurrentScene; }
+
+	void SetCoin(int coin) { mCoin = coin; }
+	void IncreaseCoin(int add) { mCoin += add; }
+	const int& IsCoin() const { return mCoin; }
 };

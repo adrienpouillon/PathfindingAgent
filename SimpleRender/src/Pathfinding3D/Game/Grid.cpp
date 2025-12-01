@@ -53,7 +53,7 @@ void Grid::CreateTab(int _rows, int _cols, std::string strGrid = "")
 
 		for (int c = 0; c < _cols; c++)
 		{
-			gce::Vector3f32 setCellPos = gce::Vector3f32(c * (cellSize + space), CellHeight, -r * (cellSize + space));
+			gce::Vector3f32 setCellPos = gce::Vector3f32(c * (cellSize + space), CELL_HEIGHT_UP, -r * (cellSize + space));
 			int setHeight = 1;
 
 			if (strGrid.size() > 0)
@@ -82,9 +82,9 @@ void Grid::CreateTab(int _rows, int _cols, std::string strGrid = "")
 
 			setCellPos.y *= (setHeight - 1);
 
-			Cell* cell = pCurrentScene->CreateEntity<Cell>(new Cube(), { cellSize, CellHeight, cellSize }, color);
+			Cell* cell = pCurrentScene->CreateEntity<Cell>(new Cube(), { cellSize, CELL_HEIGHT_UP, cellSize }, color);
 
-			cell->GetGeo()->SetScale({ cellSize, CellHeight * setHeight, cellSize });
+			cell->GetGeo()->SetScale({ cellSize, CELL_HEIGHT_UP * setHeight, cellSize });
 
 			cell->SetAll(setCellPos, setHeight, r, c);
 

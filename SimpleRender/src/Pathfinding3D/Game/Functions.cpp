@@ -31,3 +31,10 @@ Entity* GetNearestAgent(gce::Vector3f32 pos)
 
     return nullptr;
 }
+
+int GetRandomNumber(int min, int max)
+{
+    int range = max - min + 1;
+    int value = rand() % range + min;
+    return value;
+}
