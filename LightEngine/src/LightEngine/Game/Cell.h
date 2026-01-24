@@ -16,7 +16,7 @@ protected:
 public:
     Cell() { Start(); }
 
-    void Start() { setPosition(0, 0); SetIsObstacle(false); SetRowCol(-1, -1); }
+    void Start() { setPosition(0, 0); SetHasAgent(false); SetIsObstacle(false); SetHasCoin(false); SetAgent(nullptr); SetRowCol(-1, -1); }
 
     void SetAll(sf::Vector2f xy, bool obstacle, int row, int col) { setPosition(xy); SetIsObstacle(obstacle); SetRowCol(row, col); }
     

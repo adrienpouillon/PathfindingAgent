@@ -57,6 +57,16 @@ void Agent::OnPathFinish()
 
 void Agent::OnDestroy()
 {
+	RecreatCoin();
+
+	if (mCurrentScene->GetSelectedEntity() == this)
+	{
+		mCurrentScene->SetSelectedEntity(nullptr);
+	}
+}
+
+void Agent::RecreatCoin()
+{
 	sf::Vector2f pos = GetPosition();
 	std::vector<std::vector<Cell*>> allCells = mCurrentScene->GetGrid()->GetAllCells();
 	int size = mCurrentScene->GetGrid()->GetCellSize();
@@ -94,11 +104,6 @@ void Agent::OnDestroy()
 		if (createCoin > mCoin) { round = false; }
 
 		i++;
-	}
-
-	if (mCurrentScene->GetSelectedEntity() == this)
-	{
-		mCurrentScene->SetSelectedEntity(nullptr);
 	}
 }
 

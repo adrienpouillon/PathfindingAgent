@@ -93,9 +93,9 @@ void FindPath(Node<T>* startNode, Node<T>* endNode, Grid* grid, std::vector<Node
 			T* cell = nodeN->GetData();
 		
 			float minimalDist = nodeCurrent->GetDisStart() + structNeighborCost.GetCost(); // f = g + h
-			float valueCoin = (float)(cell->HasCoin());
 			if (minimalDist < nodeN->GetDisStart())
 			{
+				float valueCoin = (float)(cell->HasCoin());
 				float disEnd = Utils::DisManhattan(cell->getPosition(), endPosition, sizeCell);
 
 				nodeN->SetDisStart(minimalDist);

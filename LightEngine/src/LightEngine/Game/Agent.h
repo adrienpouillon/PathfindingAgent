@@ -39,6 +39,8 @@ public:
 
 	virtual void OnDestroy();
 
+	void RecreatCoin();
+
 	virtual void UpdatePath();
 
 	void GoToCell(Cell* cellEnd, Grid* grid);

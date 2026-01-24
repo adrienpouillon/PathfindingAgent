@@ -42,11 +42,14 @@ void Assassin::OnUpdate()
 		float distance = Utils::GetDistance(targetPos.x, targetPos.y, posAssasin.x, posAssasin.y);
 
 		if (distance > distanceVisibility)
+		{
 			DeleteFollowPath();
-
+		}
 	}
 	else
+	{
 		DeleteFollowPath();
+	}
 
 }
 
